@@ -1,0 +1,33 @@
+{
+    "name": "@jasperoosthoek/react-toolbox",
+    "version": "0.1.0",
+    "author": "jasperoosthoek",
+    "license": "MIT",
+    "repository": "https://github.com/jasperoosthoek/react-toolbox",
+    "description": "Functional factory to create Redux actions and reducers that interface with a backend",
+    "files": [
+        "src/",
+        "lib-cjs/",
+        "lib-esm/"
+    ],
+    "devDependencies": {
+        "@babel/cli": "^7.14.3",
+        "@babel/core": "^7.14.3",
+        "@babel/preset-env": "^7.14.4",
+        "@babel/preset-react": "^7.16.7",
+        "@babel/register": "^7.13.16",
+        "lodash": "^4.17.21",
+        "moment": "^2.29.1",
+        "react": "^18.1.0",
+        "react-bootstrap": "^2.3.1",
+        "react-icons": "^4.3.1"
+    },
+    "main": "./lib-cjs/index.js",
+    "module": "./lib-esm/index.js",
+    "scripts": {
+        "_build": "babel src --extensions '.js' --source-maps=true",
+        "build:cjs": "NODE_ENV=production BABEL_ENV=cjs npm run _build -- --out-dir lib-cjs --delete-dir-on-start",
+        "build:esm": "NODE_ENV=production BABEL_ENV=esm npm run _build -- --out-dir lib-esm --delete-dir-on-start",
+        "prepublishOnly": "npm run build:esm && npm run build:cjs"
+    }
+}
