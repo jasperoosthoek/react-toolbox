@@ -1,6 +1,6 @@
 {
   "name": "@jasperoosthoek/react-toolbox",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "author": "jasperoosthoek",
   "license": "MIT",
   "repository": {
@@ -10,23 +10,25 @@
   "description": "Functional factory to create Redux actions and reducers that interface with a backend",
   "files": [
     "src/",
-    "lib-cjs/",
-    "lib-esm/"
+    "dist/"
   ],
   "devDependencies": {
     "@babel/cli": "^7.17.10",
     "@babel/core": "^7.17.10",
     "@babel/preset-env": "^7.17.10",
     "@babel/preset-react": "^7.16.7",
-    "@babel/register": "^7.13.16"
+    "@babel/register": "^7.13.16",
+    "babel-loader": "^8.2.5",
+    "webpack-cli": "^4.9.2"
   },
-  "main": "./lib-cjs/index.js",
-  "module": "./lib-esm/index.js",
+  "main": "./dist/main.js",
+  "module": "./dist/main.js",
   "scripts": {
     "_build": "babel src --extensions '.js' --source-maps=true",
+    "build": "webpack --mode production",
     "build:cjs": "NODE_ENV=production BABEL_ENV=cjs npm run _build -- --out-dir lib-cjs --delete-dir-on-start",
     "build:esm": "NODE_ENV=production BABEL_ENV=esm npm run _build -- --out-dir lib-esm --delete-dir-on-start",
-    "prepublishOnly": "npm run build:esm && npm run build:cjs"
+    "prepublishOnly": "npm run build"
   },
   "bugs": {
     "url": "https://github.com/jasperoosthoek/react-toolbox/issues"
@@ -41,9 +43,10 @@
     "react-bootstrap": "^2.0.4",
     "react-dnd": "^14.0.4",
     "react-dom": "^17.0.2",
-    "react-icons": "^4.3.1"
+    "react-icons": "^4.3.1",
+    "webpack": "^5.72.0"
   },
-  "peerDependencies":{
+  "peerDependencies": {
     "bootstrap": "^5.1.3",
     "lodash": "^4.17.21",
     "moment": "^2.29.1",
