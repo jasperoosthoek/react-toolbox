@@ -1,6 +1,6 @@
 import { useEffect, useState, forwardRef, useReducer } from 'react';
 import { FaSort, FaSortUp, FaSortDown } from 'react-icons/fa';
-import { Table, Col, Row, InputGroup, Form, Button, ButtonGroup, ListGroup } from 'react-bootstrap';
+import { Table, Col, Row, InputGroup, Form, Button, ButtonGroup } from 'react-bootstrap';
 
 import { CloseButton } from './IconButtons';
 import DragAndDropList from './DragAndDropList';
@@ -41,7 +41,7 @@ export const DataTable = ({
   const pagesCount = data && parseInt(rowsPerPage) && parseInt((data.length - 1) / parseInt(rowsPerPage)) + 1;
   useEffect(
     () => { if (pagesCount && page >= pagesCount) setPage(pagesCount - 1) },
-    [setPage, pagesCount]
+    [setPage, pagesCount, page]
   );
   const dragAndDrop = !orderBy && !!onMove;
 

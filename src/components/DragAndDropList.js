@@ -93,9 +93,6 @@ const DragAndDropItem = ({ droppedIndex, setDroppedIndex, propsArray, onDrop, re
   );
 };
 
-
-const removeFunctions = arr => arr.filter(obj => typeof obj === 'function');
-
 const DragAndDropList = ({ onDrop, propsArray, component }) => {
   const [listMap, setListMap] = useState(null);
   const [droppedIndex, setDroppedIndex] = useState(null);

@@ -14,7 +14,7 @@ export const useDebouncedEffect = (effect, deps, delay) => {
       const handler = setTimeout(() => effect(), delay);
   
       return () => clearTimeout(handler);
-    }, [...(deps || []), delay]);
+    }, [...(deps || []), delay, effect]);
   };
   
   // https://stackoverflow.com/questions/30626030/can-you-force-a-react-component-to-rerender-without-calling-setstate
