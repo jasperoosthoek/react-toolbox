@@ -1,6 +1,6 @@
 {
   "name": "@jasperoosthoek/react-toolbox",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "author": "jasperoosthoek",
   "license": "MIT",
   "repository": {
@@ -28,10 +28,10 @@
     "webpack-cli": "^4.9.2",
     "webpack-node-externals": "^3.0.0"
   },
-  "main": "./dist/main.js",
+  "main": "dist/index.js",
   "scripts": {
-    "build": "webpack --mode production",
-    "prepublish": "npm run build"
+    "build": "webpack",
+    "prepublishOnly": "npm run build"
   },
   "bugs": {
     "url": "https://github.com/jasperoosthoek/react-toolbox/issues"
