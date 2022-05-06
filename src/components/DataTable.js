@@ -1,4 +1,4 @@
-import { useEffect, useState, forwardRef, useReducer } from 'react';
+import React, { useEffect, useState, forwardRef, useReducer } from 'react';
 import { FaSort, FaSortUp, FaSortDown } from 'react-icons/fa';
 import { Table, Col, Row, InputGroup, Form, Button, ButtonGroup } from 'react-bootstrap';
 

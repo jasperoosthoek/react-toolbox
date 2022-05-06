@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { useCallback, useEffect, useState, useRef } from 'react';
 import { useDrag, useDrop } from 'react-dnd';
 
-import { usePrevious, useForceUpdate } from '../utils/Hooks';
+import React, { usePrevious, useForceUpdate } from '../utils/Hooks';
 
 const ItemTypes = {
   OBJECT: 'object',
