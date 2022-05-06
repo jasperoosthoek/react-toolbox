@@ -7,10 +7,9 @@ module.exports = {
     output: {
       path: path.resolve(__dirname, 'dist'),
       filename: "index.js",
-      library: {
-        name: pkg.name,
-        type: "umd",
-      },
+      library: pkg.name,
+      libraryTarget: 'umd',
+      globalObject: 'this',
     },
     module: {
       rules: [
@@ -18,22 +17,22 @@ module.exports = {
           test: /\.(js|jsx)$/,
           exclude: /node_modules/,
           use: {
-            loader: "babel-loader"
-          }
+            loader: "babel-loader",
+          },
         },
         {
           test: /\.css$/i,
-          use: ["style-loader", "css-loader"]
+          use: ["style-loader", "css-loader"],
         },
         {
           test: /\.(png|jpg|gif)$/i,
           use: {
             loader: 'url-loader',
             options: {
-              limit: 8192
-            }
-          }
-        }
+              limit: 8192,
+            },
+          },
+        },
       ]
     },
     target: 'node',
