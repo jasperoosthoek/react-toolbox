@@ -9,7 +9,7 @@ module.exports = {
       filename: "index.js",
       library: {
         name: pkg.name,
-        type: "commonjs2",
+        type: "umd",
       },
     },
     module: {
