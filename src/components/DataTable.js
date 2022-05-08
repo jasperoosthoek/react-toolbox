@@ -1,9 +1,10 @@
-import React, { useEffect, useState, forwardRef, useReducer } from 'react';
+import React, { useEffect, useState, forwardRef, useReducer, useContext } from 'react';
 import { FaSort, FaSortUp, FaSortDown } from 'react-icons/fa';
 import { Table, Col, Row, InputGroup, Form, Button, ButtonGroup } from 'react-bootstrap';
 
 import { CloseButton } from './IconButtons';
 import DragAndDropList from './DragAndDropList';
+import { LocalizationContext } from '../localization/LocalizationContext';
 
 const PaginationButton = props => <Button variant="outline-secondary" size="" {...props} />
 
@@ -43,6 +44,7 @@ export const DataTable = ({
     () => { if (pagesCount && page >= pagesCount) setPage(pagesCount - 1) },
     [setPage, pagesCount, page]
   );
+  const { strings } = useContext(LocalizationContext);
   const dragAndDrop = !orderBy && !!onMove;
 
   if (!data || !columns) return null;
@@ -65,7 +67,6 @@ export const DataTable = ({
     data = data.slice(page * rowsPerPage, (page + 1) * rowsPerPage);
   }
 
-  // {...{ ...typeof onClickRow === 'function' ? { onClick: () => onClickRow(row)} : {}}}>
   const Component = forwardRef(({ row }, ref) =>
     <tr ref={ref} {...{ ...typeof onClickRow === 'function' ? { onClick: () => onClickRow(row)} : {}}}>
       {columns.map(({ selector, className }, index) =>
@@ -89,7 +90,7 @@ export const DataTable = ({
               type="text"
               name="table-filter"
               value={filterText}
-              placeholder="Zoeken"
+              placeholder={strings.search}
               onChange={e => setFilterText(e.target.value)}
             />
             <CloseButton
@@ -113,7 +114,7 @@ export const DataTable = ({
               name="table-pagination-options"
               value={rowsPerPage}
               as="select"
-              placeholder="Selecteer"
+              placeholder={strings.select}
               onChange={e => setRowsPerPage(e.target.value)}
             >
               {rowsPerPageOptions.map((option, index) => (
@@ -213,7 +214,7 @@ export const DataTable = ({
           <tr>
             <td colSpan={columns.length}>
               <center style={{ margin: '15px' }}>
-                <i>{textOnEmpty || 'Geen informatie om weer te geven.'}</i>
+                <i>{textOnEmpty || strings.no_information_to_display}</i>
               </center>
             </td>
           </tr>

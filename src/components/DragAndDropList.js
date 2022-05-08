@@ -104,8 +104,8 @@ const DragAndDropList = ({ onDrop, propsArray, component }) => {
     if (JSON.stringify(propsArrayPrev) !== JSON.stringify(propsArray)) {
       reset();
     } else {
-      // Some reason the first drag doesn't work anymore and the mouse cursor only selects text. Forcing the
-      // component to update again solves this
+      // Some reason the first drag doesn't work anymore and instead of dragging you only selects text when this hook 
+      // runs after render. Forcing the component to update again solves this somehow as this hook will not run twice
       forceUpdate();
     }
   }, [propsArrayPrev, propsArray]);
@@ -124,8 +124,8 @@ const DragAndDropList = ({ onDrop, propsArray, component }) => {
     [listMap]
   );
 
-  return (<>
-    {listMap && listMap.map((movedIndex, index) =>
+  return (
+    listMap && listMap.map((movedIndex, index) =>
       propsArray[movedIndex] &&
         <DragAndDropItem
           key={movedIndex}
@@ -140,8 +140,8 @@ const DragAndDropList = ({ onDrop, propsArray, component }) => {
           setDroppedIndex={setDroppedIndex}
           propsArray={propsArray}
         />
-    )}
-  </>);
+    )
+  );
 };
 DragAndDropList.propTypes = {
   component: PropTypes.object.isRequired,
