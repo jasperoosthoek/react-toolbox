@@ -8,7 +8,7 @@ const localizationStrings = {
     no_information_to_display: 'No information to display',
     information_is_being_loaded: 'The information is being loaded...',
     delete: 'Delete',
-    are_you_sure: 'Weet u het zeker?',
+    are_you_sure: 'Are you sure?',
     close: 'Close',
     save: 'Save',
   },
@@ -18,7 +18,7 @@ const localizationStrings = {
     search: "Zoeken",
     information_is_being_loaded: 'De gegevens worden geladen...',
     delete: 'Verwijderen',
-    are_you_sure: 'Are you sure?',
+    are_you_sure: 'Weet u het zeker?',
     close: 'Sluiten',
     save: 'Opslaan',
   }
@@ -26,8 +26,12 @@ const localizationStrings = {
 
 export const LocalizationContext = React.createContext();
 
-export const LocalizationProvider = ({ lang = 'en', strings: additionalStrings = {}, children, ...restProps }) => {
-console.log({ lang })
+export const LocalizationProvider = ({
+  lang = 'en',
+  strings: additionalStrings = {},
+  children,
+  ...restProps
+ }) => {
   const strings = new LocalizedStrings({ ...localizationStrings, ...additionalStrings })
   strings.setLanguage(lang);
   return (
