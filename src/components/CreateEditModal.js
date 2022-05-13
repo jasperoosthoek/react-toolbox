@@ -83,7 +83,7 @@ export const CreateEditModal = ({
                     isInvalid={!!(validated !== true && validated[key])}
                     onChange={e => setState(
                       typeof onChange === 'function'
-                        ? onChange(e.target.value, state)
+                        ? { ...state, ...onChange(e.target.value, state) }
                         : { ...state, [key]: e.target.value }
                     )}
                     onKeyPress={e => {
