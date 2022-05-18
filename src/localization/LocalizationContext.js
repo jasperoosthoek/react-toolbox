@@ -11,6 +11,8 @@ const localizationStrings = {
     are_you_sure: 'Are you sure?',
     close: 'Close',
     save: 'Save',
+    cancel: 'Cancel',
+    ok: 'OK',
   },
   nl: {
     no_information_to_display: 'Geen informatie om weer te geven.',
@@ -21,6 +23,8 @@ const localizationStrings = {
     are_you_sure: 'Weet u het zeker?',
     close: 'Sluiten',
     save: 'Opslaan',
+    cancel: 'Annuleren',
+    ok: 'OK',
   }
 };
 

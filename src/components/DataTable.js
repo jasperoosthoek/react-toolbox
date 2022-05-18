@@ -3,7 +3,7 @@ import { FaSort, FaSortUp, FaSortDown } from 'react-icons/fa';
 import { Table, Col, Row, InputGroup, Form, Button, ButtonGroup } from 'react-bootstrap';
 
 import { CloseButton } from './IconButtons';
-import DragAndDropList from './DragAndDropList';
+import { DragAndDropList } from './DragAndDropList';
 import { LocalizationContext } from '../localization/LocalizationContext';
 
 const PaginationButton = props => <Button variant="outline-secondary" size="" {...props} />
@@ -23,6 +23,7 @@ export const DataTable = ({
   onClickRow = null,
   textOnEmpty = null,
   className,
+  style,
   ...restProps
 }) => {
   if (Object.keys(restProps).length !== 0) console.error('Unrecognised props:', restProps);
@@ -77,7 +78,7 @@ export const DataTable = ({
     </tr>
   );
   
-  return <div className={className}>
+  return <div style={style} className={className}>
     {showHeader &&
       <Row className="mb-4">
         <Col

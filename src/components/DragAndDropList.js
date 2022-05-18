@@ -93,7 +93,7 @@ const DragAndDropItem = ({ droppedIndex, setDroppedIndex, propsArray, onDrop, re
   );
 };
 
-const DragAndDropList = ({ onDrop, propsArray, component }) => {
+export const DragAndDropList = ({ onDrop, propsArray, component }) => {
   const [listMap, setListMap] = useState(null);
   const [droppedIndex, setDroppedIndex] = useState(null);
   const propsArrayPrev = usePrevious(propsArray);
@@ -148,5 +148,3 @@ DragAndDropList.propTypes = {
   propsArray: PropTypes.array.isRequired,
   onDrop: PropTypes.func.isRequired,
 };
-
-export default DragAndDropList;
