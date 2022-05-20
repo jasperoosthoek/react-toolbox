@@ -1,4 +1,5 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
+import { useDispatch } from 'react-redux';
 
 export const usePrevious = (value) => {
     const ref = useRef();
@@ -23,7 +24,26 @@ export const useDebouncedEffect = (effect, deps, delay) => {
     return useCallback(() => updateState({}), []);
   }
   
-export const useSetState = obj => {
-
-  return [{}, () => {}];
+export const useSetState = initialState => {
+  const [state, setState] = useState(initialState);
+  return [state, obj => setState({ ...state, ...obj })];
 }
+
+export const useWithDispatch = (obj) => {
+  const dispatch = useDispatch();
+
+  if (typeof obj === 'function') {
+    const hook = (...args) => dispatch(obj(...args))
+    return hook;
+  }
+  
+  return Object.entries(obj).reduce((o, [name, func]) => {
+    const hook = (...args) => dispatch(func(...args))
+    return (
+      {
+        ...o,
+        [name]: hook,
+      }
+    );
+  }, {});
+};

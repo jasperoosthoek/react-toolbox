@@ -11,3 +11,7 @@
 
 ##### Version 0.2.3
 - New `dialogClassName` prop in `CreateEditModal` component
+
+##### Version 0.2.4
+- New `useSetState` hook that mimics the `setState` behavior of class based components
+- New `useWithDispatch` hook that turns a redux action or object with redux actions to dispatchable hooks
