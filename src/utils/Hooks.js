@@ -23,3 +23,7 @@ export const useDebouncedEffect = (effect, deps, delay) => {
     return useCallback(() => updateState({}), []);
   }
   
+export const useSetState = obj => {
+
+  return [{}, () => {}];
+}

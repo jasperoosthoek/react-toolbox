@@ -16,7 +16,12 @@ export const CreateEditModal = ({
   validate,
   modalTitle,
   loading,
+  dialogClassName,
+  ...restProps
 }) => {
+  if (Object.values(restProps).length !==0) {
+    console.error(`Unrecognised props given to CreateEditModal:`, restProps);
+  }
   const [state, setState] = useState(
     initialState
     ? initialState
@@ -50,6 +55,7 @@ export const CreateEditModal = ({
       onHide={onHide}
       onClick={e => e.stopPropagation()}
       centered
+      dialogClassName={dialogClassName}
     >
       <Modal.Header closeButton>
         <Modal.Title>{modalTitle}</Modal.Title>

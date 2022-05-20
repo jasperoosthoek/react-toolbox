@@ -8,3 +8,6 @@
 - `FormSelect` correctly handles "no data" by selecting hidden option
 - Refactor `IconButtons` & be able to pass `children` prop
 - Language strings for `DeleteConfirmButton`
+
+##### Version 0.2.3
+- New `dialogClassName` prop in `CreateEditModal` component
