@@ -15,3 +15,9 @@
 ##### Version 0.2.4
 - New `useSetState` hook that mimics the `setState` behavior of class based components
 - New `useWithDispatch` hook that turns a redux action or object with redux actions to dispatchable hooks
+
+##### Version 0.2.5
+- Optional `width` prop in `CreateEditModal` component
+- Improved `FormCheckbox` and `FormSelectControl` component
+- `LoadingIndicator` component uses jumbotron component from Bootstrap 4
+- New `loginFactory` that creates `Login` component & redux actions and reducer

@@ -14,7 +14,7 @@ import {
   AiOutlineCheck,
 } from 'react-icons/ai';
 import { FiCopy } from 'react-icons/fi';
-import { FaTimes, FaSort, FaSortUp, FaSortDown, FaRegFlag } from 'react-icons/fa';
+import { FaTimes, FaSort, FaSortUp, FaSortDown, FaRegFlag, FaSyncAlt } from 'react-icons/fa';
 import { CgTrash, CgNotes, CgSpinner } from 'react-icons/cg';
 import { BsArrowsMove, BsPencil } from 'react-icons/bs';
 import { BiRightArrow, BiSquare } from 'react-icons/bi';
@@ -24,7 +24,7 @@ import { VscMenu } from 'react-icons/vsc';
 import { SmallSpinner } from './LoadingIndicator';
 import { LocalizationContext } from '../localization/LocalizationContext';
 
-export const ButtonBase = ({ onClick, loading, icon: Icon, children, size, ...props }) => (
+export const ButtonBase = ({ onClick, loading, icon: Icon, spin, children, size, ...props }) => (
   <Button
     variant='light'
     size='sm'
@@ -35,35 +35,39 @@ export const ButtonBase = ({ onClick, loading, icon: Icon, children, size, ...pr
     }}
     {...props}
   >
-    {loading ? <CgSpinner style={{ animation: 'spinner-border .75s linear infinite' }}/> : Icon && <Icon size={size}/>}
+    {loading 
+      ? <CgSpinner style={{ animation: 'spinner-border .75s linear infinite' }}/>
+      : Icon && <Icon size={size}/>
+    }
     {children && <>&nbsp;</>}
     {children}
   </Button>
 );
 
-export const MoveButton = props => <ButtonBase {...props} icon={BsArrowsMove} />;
-export const UpButton = props => <ButtonBase {...props} icon={AiFillCaretUp} />;
-export const DownButton = props => <ButtonBase {...props} icon={AiFillCaretDown} />;
+export const CheckButton = props => <ButtonBase {...props} icon={AiOutlineCheck} />;
+export const CloseButton = props => <ButtonBase {...props} icon={FaTimes} />;
+export const CogButton = props => <ButtonBase {...props} icon={HiOutlineCog} />;
 export const CreateButton = props => <ButtonBase {...props} icon={AiOutlinePlus} />;
 export const CreateFolderButton = props => <ButtonBase {...props} icon={AiOutlineFolderAdd} />;
 export const CreateSubFolderButton = props => <ButtonBase {...props} icon={AiOutlineArrowRight} />;
 export const CreateFileButton = props => <ButtonBase {...props} icon={AiOutlineFileAdd} />;
-export const UploadButton = props => <ButtonBase {...props} icon={AiOutlineUpload} />;
+export const DownButton = props => <ButtonBase {...props} icon={AiFillCaretDown} />;
 export const DownloadButton = props => <ButtonBase {...props} icon={AiOutlineDownload} />;
-export const UnlockButton = props => <ButtonBase {...props} icon={AiOutlineUnlock} />;
+export const FlagButton = props => <ButtonBase {...props} icon={FaRegFlag} />;
+export const LinkButton = props => <ButtonBase {...props} icon={HiOutlineLink} />;
+export const MenuButton = props => <ButtonBase {...props} icon={VscMenu} />;
+export const MoveButton = props => <ButtonBase {...props} icon={BsArrowsMove} />;
+export const NotesButton = props => <ButtonBase {...props} icon={CgNotes} />;
+export const PencilButton = props => <ButtonBase {...props} icon={BsPencil} />;
 export const PlayButton = props => <ButtonBase {...props} icon={BiRightArrow} />;
-export const StopButton = props => <ButtonBase {...props} icon={BiSquare} />;
-export const CheckButton = props => <ButtonBase {...props} icon={AiOutlineCheck} />;
-export const CloseButton = props => <ButtonBase {...props} icon={FaTimes} />;
 export const SortButton = props => <ButtonBase {...props} icon={FaSort} />;
 export const SortUpButton = props => <ButtonBase {...props} icon={FaSortUp} />;
 export const SortDownButton = props => <ButtonBase {...props} icon={FaSortDown} />;
-export const MenuButton = props => <ButtonBase {...props} icon={VscMenu} />;
-export const CogButton = props => <ButtonBase {...props} icon={HiOutlineCog} />;
-export const FlagButton = props => <ButtonBase {...props} icon={FaRegFlag} />;
-export const NotesButton = props => <ButtonBase {...props} icon={CgNotes} />;
-export const PencilButton = props => <ButtonBase {...props} icon={BsPencil} />;
-export const LinkButton = props => <ButtonBase {...props} icon={HiOutlineLink} />;
+export const StopButton = props => <ButtonBase {...props} icon={BiSquare} />;
+export const SyncButton = props => <ButtonBase {...props} icon={FaSyncAlt} />;
+export const UnlockButton = props => <ButtonBase {...props} icon={AiOutlineUnlock} />;
+export const UpButton = props => <ButtonBase {...props} icon={AiFillCaretUp} />;
+export const UploadButton = props => <ButtonBase {...props} icon={AiOutlineUpload} />;
 
 export const UploadTextButton = ({ accept, onLoad, ...restProps }) => {
   const inputFile = useRef(null);

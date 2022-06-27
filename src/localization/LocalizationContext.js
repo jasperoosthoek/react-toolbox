@@ -13,6 +13,12 @@ const localizationStrings = {
     save: 'Save',
     cancel: 'Cancel',
     ok: 'OK',
+    your_email: 'Your email',
+    your_password: 'Your password',
+    enter_password: 'Enter password',
+    login: 'Login',
+    forgot_password: 'Forgot password?',
+    reset_password: 'Reset password',
   },
   nl: {
     no_information_to_display: 'Geen informatie om weer te geven.',
@@ -25,6 +31,12 @@ const localizationStrings = {
     save: 'Opslaan',
     cancel: 'Annuleren',
     ok: 'OK',
+    your_email: 'Uw email',
+    your_password: 'Uw wachtwoord',
+    enter_password: 'Voer wachtwoord in',
+    login: 'Inloggen',
+    forgot_password: 'Wachtwoord vergeten?',
+    reset_password: 'Wachtwoord resetten',
   }
 };
 

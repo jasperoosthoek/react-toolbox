@@ -1,13 +1,29 @@
 import React, { useContext } from 'react';
-import { Button, Spinner } from 'react-bootstrap';
+import { Button, Spinner, Container, Row, Col } from 'react-bootstrap';
 import { LocalizationContext } from '../localization/LocalizationContext';
 
 export const LoadingIndicator = ({ style = {}}) => {
   const { strings } = useContext(LocalizationContext);
   return (
-    <Spinner animation="border" role="status" style={style}>
-      <span className="sr-only">{strings.information_is_being_loaded}</span>
-    </Spinner>
+    
+    <Container>
+      <Row className="error-page">
+        <Col>
+          <div
+            // Bootstrap 5 legacy jumbotron 
+            style={{
+              padding: '2rem 1rem',
+              marginBottom: '2rem',
+              backgroundColor: '#e9ecef',
+              borderRadius: '.3rem',
+            }}
+          >
+            <Spinner animation="border" role="status" style={{ marginRight: '20px', ...style }} />
+            {strings.information_is_being_loaded}
+          </div>
+        </Col>
+      </Row>
+    </Container>
   );
 };
 

@@ -10,4 +10,6 @@ export * from './utils/Hooks';
 export * from './utils/TimeAndDate';
 export * from './utils/Utils';
 
+export * from './login/Login';
+
 export * from './localization/LocalizationContext';

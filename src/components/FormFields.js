@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form } from 'react-bootstrap';
+import { Form, FormControl, InputGroup } from 'react-bootstrap';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 
@@ -29,7 +29,7 @@ export const FormTextArea = ({ as = 'textarea', rows = 3, ...restProps }) =>
     {...restProps}
   />
 
-export const FormCheckbox = ({ value, onChange, state, label, ...restProps }) =>
+export const FormCheckbox = ({ value, onChange, state, label, keyName, ...restProps }) =>
   <Form.Group>
     {label && <Form.Label onClick={() => onChange(!value)}>{label}</Form.Label>}
     <Form.Check
@@ -52,58 +52,87 @@ export const FormSelect = ({
   list,
   id = 'id',
   value,
+  defaultValue,
   onChange,
+  label,
+  controlId,
   size = '5',
   integer = false,
   state,
-  formatTitle,
+  formatTitle = null,
   multiple,
-  disabled
+  disabled,
 }) => {
   multiple = multiple || multiple === false ? multiple : _.isArray(value);
   const parseInteger = id => integer ? parseInt(id) : id;
 
-  return <>
-    <Form.Select
-      htmlSize={size}
-      multiple={multiple}
-      value={multiple ? value.map(id => parseInteger(id)) : parseInteger(value) || ''}
-      // Dummy onChange is used to suppress warning.
-      onChange={() => {}}
-      disabled={disabled}
-    >
-      <option value='' disabled hidden />
-      {Object.values(list).map((item, index) => {
-        const hasItem = multiple ? value.find(id => parseInteger(id) === parseInteger(item[id])) : value === item[id];
-        return (
-          <option
-            key={index}
-            value={parseInteger(item[id])}
-            disabled={typeof disabled === 'function' ? disabled({ list, value, state }) : disabled }
-            onClick={() => {
-              // Use onClick here instead of onChange in Form.Select to be able to unset all the options which isn't possible otherwise
-              if (onChange === null) {
-                return;
-              }
-              if (multiple) {
-                if(hasItem) {
-                  onChange(value.filter(id => parseInteger(id) !== parseInteger(item[id])));
-                } else {
-                  onChange([...value, parseInteger(item[id])]);
+  //
+  return <>  
+    <Form.Group controlId={controlId}>
+      {label && <Form.Label>{label}</Form.Label>}
+      <FormControl as="select"
+        htmlSize={size}
+        multiple={multiple}
+        value={multiple ? value.map(id => parseInteger(id)) : parseInteger(value) || ''}
+        // Dummy onChange is used to suppress warning.
+        onChange={() => {}}
+        disabled={disabled}
+      >
+        <option value='' disabled hidden />
+        {Object.values(list).map((item, index) => {
+          const hasItem = multiple ? value.find(id => parseInteger(id) === parseInteger(item[id])) : value === item[id];
+          return (
+            <option
+              key={index}
+              value={parseInteger(item[id])}
+              disabled={typeof disabled === 'function' ? disabled({ list, value, state }) : disabled }
+              onClick={() => {
+                // Use onClick here instead of onChange in Form.Select to be able to unset all the options which isn't possible otherwise
+                if (onChange === null) {
+                  return;
                 }
-              } else {
-                onChange(hasItem ? null : parseInteger(item[id]))
-              }
-            }}
-        >
-            {formatTitle(item)}
-        </option>
+                if (multiple) {
+                  if(hasItem) {
+                    onChange(value.filter(id => parseInteger(id) !== parseInteger(item[id])));
+                  } else {
+                    onChange([...value, parseInteger(item[id])]);
+                  }
+                } else {
+                  onChange(hasItem ? null : parseInteger(item[id]))
+                }
+              }}
+              defaultValue={defaultValue}
+            >
+                {formatTitle === null ? item.children : formatTitle(item)}
+            </option>
+          )}
         )}
-      )}
-    </Form.Select>
+      </FormControl>
+    </Form.Group>
   </>;
 }
 FormSelect.propTypes = {
-formatTitle: PropTypes.func.isRequired,
-onChange: PropTypes.func.isRequired,
+  formatTitle: PropTypes.func.isRequired,
+  onChange: PropTypes.func.isRequired,
 }
+
+export const FormSelectControl = ({ controlId, label, formProps, onChange, options, defaultValue, children }) =>
+  <InputGroup controlId={controlId}>
+    {label && <Form.Label>{label}</Form.Label>}
+    <FormControl as='select'
+      onChange={e => onChange(e.target.value)}
+      {...formProps}
+    >
+      {options.map(({ value, children, ...option }) =>
+        <option
+          key={value}
+          value={value}
+          defaultValue={defaultValue}
+          {...option}
+        >
+          {children}
+        </option>
+      )}
+    </FormControl>
+    {children}
+  </InputGroup>;

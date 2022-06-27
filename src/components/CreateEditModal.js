@@ -16,7 +16,8 @@ export const CreateEditModal = ({
   validate,
   modalTitle,
   loading,
-  dialogClassName,
+  dialogClassName='',
+  width,
   ...restProps
 }) => {
   if (Object.values(restProps).length !==0) {
@@ -55,7 +56,7 @@ export const CreateEditModal = ({
       onHide={onHide}
       onClick={e => e.stopPropagation()}
       centered
-      dialogClassName={dialogClassName}
+      dialogClassName={`${dialogClassName} ${width ? `mw-100 w-${width}` : ''}`}
     >
       <Modal.Header closeButton>
         <Modal.Title>{modalTitle}</Modal.Title>
