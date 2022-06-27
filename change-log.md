@@ -21,3 +21,8 @@
 - Improved `FormCheckbox` and `FormSelectControl` component
 - `LoadingIndicator` component uses jumbotron component from Bootstrap 4
 - New `loginFactory` that creates `Login` component & redux actions and reducer
+
+##### Version 0.2.6
+- New `useLocalization` hook
+- New `requires` property in `CreateEditModal` component
+- Make initial state of `auth.user` `null` instead of `{}`

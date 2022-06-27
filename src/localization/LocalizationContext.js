@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import LocalizedStrings from 'react-localization';
 
 const localizationStrings = {
@@ -19,6 +19,7 @@ const localizationStrings = {
     login: 'Login',
     forgot_password: 'Forgot password?',
     reset_password: 'Reset password',
+    required_field: 'required',
   },
   nl: {
     no_information_to_display: 'Geen informatie om weer te geven.',
@@ -37,6 +38,7 @@ const localizationStrings = {
     login: 'Inloggen',
     forgot_password: 'Wachtwoord vergeten?',
     reset_password: 'Wachtwoord resetten',
+    required_field: 'verplicht',
   }
 };
 
@@ -63,3 +65,4 @@ export const LocalizationProvider = ({
   );
 };
 
+export const useLocalization = () => useContext(LocalizationContext);

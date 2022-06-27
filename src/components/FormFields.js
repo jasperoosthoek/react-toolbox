@@ -62,6 +62,7 @@ export const FormSelect = ({
   formatTitle = null,
   multiple,
   disabled,
+  isInvalid,
 }) => {
   multiple = multiple || multiple === false ? multiple : _.isArray(value);
   const parseInteger = id => integer ? parseInt(id) : id;
@@ -77,6 +78,7 @@ export const FormSelect = ({
         // Dummy onChange is used to suppress warning.
         onChange={() => {}}
         disabled={disabled}
+        isInvalid={isInvalid}
       >
         <option value='' disabled hidden />
         {Object.values(list).map((item, index) => {
@@ -112,16 +114,16 @@ export const FormSelect = ({
   </>;
 }
 FormSelect.propTypes = {
-  formatTitle: PropTypes.func.isRequired,
   onChange: PropTypes.func.isRequired,
 }
 
-export const FormSelectControl = ({ controlId, label, formProps, onChange, options, defaultValue, children }) =>
+export const FormSelectControl = ({ controlId, label, formProps, onChange, options, defaultValue, children, ...restProps }) =>
   <InputGroup controlId={controlId}>
     {label && <Form.Label>{label}</Form.Label>}
     <FormControl as='select'
       onChange={e => onChange(e.target.value)}
       {...formProps}
+      {...restProps}
     >
       {options.map(({ value, children, ...option }) =>
         <option

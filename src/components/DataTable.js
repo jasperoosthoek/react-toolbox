@@ -1,10 +1,10 @@
-import React, { useEffect, useState, forwardRef, useReducer, useContext } from 'react';
+import React, { useEffect, useState, forwardRef, useReducer } from 'react';
 import { FaSort, FaSortUp, FaSortDown } from 'react-icons/fa';
 import { Table, Col, Row, InputGroup, Form, Button, ButtonGroup } from 'react-bootstrap';
 
 import { CloseButton } from './IconButtons';
 import { DragAndDropList } from './DragAndDropList';
-import { LocalizationContext } from '../localization/LocalizationContext';
+import { useLocalization } from '../localization/LocalizationContext';
 
 const PaginationButton = props => <Button variant="outline-secondary" size="" {...props} />
 
@@ -45,7 +45,7 @@ export const DataTable = ({
     () => { if (pagesCount && page >= pagesCount) setPage(pagesCount - 1) },
     [setPage, pagesCount, page]
   );
-  const { strings } = useContext(LocalizationContext);
+  const { strings } = useLocalization();
   const dragAndDrop = !orderBy && !!onMove;
 
   if (!data || !columns) return null;
@@ -72,7 +72,7 @@ export const DataTable = ({
     <tr ref={ref} {...{ ...typeof onClickRow === 'function' ? { onClick: () => onClickRow(row)} : {}}}>
       {columns.map(({ selector, className }, index) =>
         <td key={index} className={className}>
-          {selector(row)}
+          {typeof selector === 'function' ? selector(row) : row[selector]}
         </td>
       )}
     </tr>

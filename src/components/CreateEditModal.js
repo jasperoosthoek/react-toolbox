@@ -1,10 +1,11 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Form, Modal, Button } from 'react-bootstrap';
 
 import { SmallSpinner } from './LoadingIndicator';
 import { usePrevious } from '../utils/Hooks';
-import { LocalizationContext } from '../localization/LocalizationContext';
+import { useSetState } from '../utils/Hooks';
+import { useLocalization } from '../localization/LocalizationContext';
 
 export const CreateEditModal = ({
   initialState,
@@ -23,32 +24,53 @@ export const CreateEditModal = ({
   if (Object.values(restProps).length !==0) {
     console.error(`Unrecognised props given to CreateEditModal:`, restProps);
   }
-  const [state, setState] = useState(
-    initialState
-    ? initialState
-    : Object.entries(formFields).reduce((o, [key, { initialValue }]) => ({ ...o, [key]: initialValue || '' }), {})
-  )
+  const [{ pristine, formData }, setState] = useSetState({
+    pristine: true,
+    formData: initialState
+        ? initialState
+        : Object.entries(formFields).reduce((o, [key, { initialValue }]) => ({ ...o, [key]: initialValue || '' }), {}),
+  })
 
   const prevShow = usePrevious(show)
   useEffect(() => {
     if (prevShow && prevShow !== show) {
-      setState(initialState);
+      setState({ formData: initialState });
     }
   }, [show, prevShow])
+  const { strings } = useLocalization();
 
-  const { strings } = useContext(LocalizationContext);
+  const getValue = key => {
+    return(
+      formData[key]
+      ? formData[key]
+      : (formFields[key] || {}).type === 'number' && formData[key] === 0
+      ? '0'
+      : ''
+    )
+  }
+  const validationErrors = {
+    ...validate ? validate(formData) : {},
+    ...Object.keys(formData).reduce(
+      (o, key) => {
+        if (!formFields[key] || !formFields[key].required || !!getValue(key)) return o;
+        return { ...o, [key]: strings.required_field };
+      },
+      {}
+    ),
+  }
+  const validated = Object.values(validationErrors).length === 0;
 
   const handleSave = e => {
+    setState({ pristine: false })
+    if (!validated) return;
     onSave(
       {
-        ...state,
+        ...formData,
         ...includeData,
       },
       onHide,
     );
   }
-
-  const validated = validate ? validate(state) : true;
   
   return (
     <Modal
@@ -64,46 +86,47 @@ export const CreateEditModal = ({
 
       <Modal.Body>
         <Form>
-          {Object.entries(formFields).map(([key, { formProps = {}, label, component: Component, onChange }]) =>
-            <Form.Group controlId="name" key={key}>
-              {label && <Form.Label>{label}</Form.Label>}
-              {validated !== true && validated[key] && ` (${validated[key]})`}
-              {Component
-                ? <Component
-                    keyName={key}
-                    value={state[key]}
-                    state={state}
-                    onChange={value => setState({ ...state, [key]: value })}
-                    {...formProps}
-                  />
-                : <Form.Control
-                    as="input"
-                    autoComplete="off"
-                    {...formProps}
-                    value={
-                      state[key]
-                      ? state[key]
-                      : formProps.type === 'number' && state[key] === 0
-                      ? '0'
-                      : ''
-                    }
-                    isInvalid={!!(validated !== true && validated[key])}
-                    onChange={e => setState(
-                      typeof onChange === 'function'
-                        ? { ...state, ...onChange(e.target.value, state) }
-                        : { ...state, [key]: e.target.value }
-                    )}
-                    onKeyPress={e => {
-                      if (e.charCode === 13 && formProps.as !== 'textarea') {
-                        // Pressing the enter key will save data unless it is a multi line text area
-                        e.preventDefault();
-                        handleSave();
-                      }
-                    }}
-                  />
-              }
-            </Form.Group>
-          )}
+          {Object.entries(formFields).map(([key, { formProps = {}, label, component: Component, onChange, required }]) => {
+            const isInvalid = !pristine && !!(!validated && validationErrors[key]);
+            const value = getValue(key);
+            return (
+              <Form.Group controlId="name" key={key}>
+                {label && <Form.Label>{label}{required && ' *'}</Form.Label>}
+                {isInvalid && ` (${validationErrors[key]})`}
+                {Component
+                  ? <Component
+                      keyName={key}
+                      pristine={pristine}
+                      isInvalid={isInvalid}
+                      value={formData[key]}
+                      state={formData}
+                      onChange={value => setState({ formData: { ...formData, [key]: value } })}
+                      {...formProps}
+                    />
+                  : <Form.Control
+                      as="input"
+                      autoComplete="off"
+                      {...formProps}
+                      value={value}
+                      isInvalid={isInvalid}
+                      onChange={e => setState({
+                        formData:
+                          typeof onChange === 'function'
+                            ? { ...formData, ...onChange(e.target.value, formData) }
+                            : { ...formData, [key]: e.target.value }
+                      })}
+                      onKeyPress={e => {
+                        if (e.charCode === 13 && formProps.as !== 'textarea') {
+                          // Pressing the enter key will save data unless it is a multi line text area
+                          e.preventDefault();
+                          handleSave();
+                        }
+                      }}
+                    />
+                }
+              </Form.Group>
+            )
+          })}
         </Form>
       </Modal.Body>
 
@@ -118,7 +141,6 @@ export const CreateEditModal = ({
         <Button
           variant="primary"
           onClick={handleSave}
-          disabled={validated !== true}
         >
           {strings.save}
         </Button>

@@ -66,8 +66,7 @@ export const loginFactory = ({
   const getCurrentUser = () => async dispatch => {
     try {
       const response = await axios.get(getUserUrl);
-      const user = response.data;
-      dispatch(setCurrentUser(user));
+      dispatch(setCurrentUser(response.data));
     } catch(error) {
       dispatch(unsetCurrentUser());
       if (error.response) {
@@ -84,7 +83,8 @@ export const loginFactory = ({
     };
   };
   
-  const setCurrentUser = (user) => dispatch => {
+  const setCurrentUser = user => dispatch => {
+    console.log({ user })
     localStorage.setItem(localStorageUser, JSON.stringify(user));
     dispatch({
       type: LOGIN_SET_CURRENT_USER,
@@ -142,7 +142,7 @@ export const loginFactory = ({
     }
     : {
         isAuthenticated: false,
-        user: {},
+        user: null,
         token: ''
       },
   };
