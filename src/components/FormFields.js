@@ -22,12 +22,28 @@ export const FormInput = ({ label, value, onEnter, placeholder, onChange, contro
     />
   </Form.Group>
 
-export const FormTextArea = ({ as = 'textarea', rows = 3, ...restProps }) =>
+export const FormTextArea = ({ as = 'textarea', rows = 3, ...restProps }) => (
   <FormInput
     as={as}
     rows={rows}
     {...restProps}
   />
+);
+
+export const FormDate = props => (
+  <FormInput
+    {...props}
+    type='date'
+  />
+)
+
+export const FormDateTime = ({ value, ...restProps }) => (
+  <FormInput
+    {...restProps}
+    value={typeof value === 'string' ? value.slice(0, 16) : value}
+    type='datetime-local'
+  />
+);
 
 export const FormCheckbox = ({ value, onChange, state, label, keyName, ...restProps }) =>
   <Form.Group>

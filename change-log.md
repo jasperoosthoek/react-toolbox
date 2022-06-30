@@ -26,3 +26,6 @@
 - New `useLocalization` hook
 - New `requires` property in `CreateEditModal` component
 - Make initial state of `auth.user` `null` instead of `{}`
+
+##### Version 0.2.7
+- New `FormDate` and `FormDateTime` component
