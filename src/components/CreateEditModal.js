@@ -100,6 +100,7 @@ export const CreateEditModal = ({
                       isInvalid={isInvalid}
                       value={formData[key]}
                       state={formData}
+                      setState={(newState = {}) => setState({ formData: { ...formData, ...newState} })}
                       onChange={value => setState({ formData: { ...formData, [key]: value } })}
                       {...formProps}
                     />
