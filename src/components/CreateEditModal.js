@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 import { Form, Modal, Button } from 'react-bootstrap';
 
 import { SmallSpinner } from './LoadingIndicator';
-import { usePrevious } from '../utils/Hooks';
-import { useSetState } from '../utils/Hooks';
+import { usePrevious, useSetState } from '../utils/Hooks';
+import { isEmpty } from '../utils/Utils';
 import { useLocalization } from '../localization/LocalizationContext';
 
 export const CreateEditModal = ({
@@ -26,9 +26,10 @@ export const CreateEditModal = ({
   }
   const [{ pristine, formData }, setState] = useSetState({
     pristine: true,
-    formData: initialState
-        ? initialState
-        : Object.entries(formFields).reduce((o, [key, { initialValue }]) => ({ ...o, [key]: initialValue || '' }), {}),
+    formData: {
+      ...Object.entries(formFields).reduce((o, [key, { initialValue }]) => ({ ...o, [key]: initialValue || '' }), {}),
+      ...initialState || {},
+    },
   })
 
   const prevShow = usePrevious(show)
@@ -52,7 +53,7 @@ export const CreateEditModal = ({
     ...validate ? validate(formData) : {},
     ...Object.keys(formData).reduce(
       (o, key) => {
-        if (!formFields[key] || !formFields[key].required || !!getValue(key)) return o;
+        if (!formFields[key] || !formFields[key].required || !isEmpty(getValue(key))) return o;
         return { ...o, [key]: strings.required_field };
       },
       {}

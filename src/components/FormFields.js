@@ -1,9 +1,18 @@
 import React from 'react';
-import { Form, FormControl, InputGroup } from 'react-bootstrap';
-import _ from 'lodash';
+import { Form, FormControl, InputGroup, Badge } from 'react-bootstrap';
 import PropTypes from 'prop-types';
 
-export const FormInput = ({ label, value, onEnter, placeholder, onChange, controlId, ...formProps }) =>
+export const FormInput = ({
+  label,
+  value,
+  onEnter,
+  placeholder,
+  onChange,
+  controlId,
+  state,
+  setState,
+  ...formProps
+}) =>
   <Form.Group controlId={controlId}>
     {label && <Form.Label>{label}</Form.Label>}
     <Form.Control
@@ -80,11 +89,10 @@ export const FormSelect = ({
   disabled,
   isInvalid,
 }) => {
-  multiple = multiple || multiple === false ? multiple : _.isArray(value);
+  multiple = multiple || multiple === false ? multiple : value instanceof Array;
   const parseInteger = id => integer ? parseInt(id) : id;
 
-  //
-  return <>  
+  return <>
     <Form.Group controlId={controlId}>
       {label && <Form.Label>{label}</Form.Label>}
       <FormControl as="select"
@@ -98,7 +106,7 @@ export const FormSelect = ({
       >
         <option value='' disabled hidden />
         {Object.values(list).map((item, index) => {
-          const hasItem = multiple ? value.find(id => parseInteger(id) === parseInteger(item[id])) : value === item[id];
+          const selected = multiple ? value.find(id => parseInteger(id) === parseInteger(item[id])) : value === item[id];
           return (
             <option
               key={index}
@@ -110,13 +118,13 @@ export const FormSelect = ({
                   return;
                 }
                 if (multiple) {
-                  if(hasItem) {
+                  if(selected) {
                     onChange(value.filter(id => parseInteger(id) !== parseInteger(item[id])));
                   } else {
                     onChange([...value, parseInteger(item[id])]);
                   }
                 } else {
-                  onChange(hasItem ? null : parseInteger(item[id]))
+                  onChange(selected ? null : parseInteger(item[id]))
                 }
               }}
               defaultValue={defaultValue}
@@ -131,6 +139,68 @@ export const FormSelect = ({
 }
 FormSelect.propTypes = {
   onChange: PropTypes.func.isRequired,
+}
+
+export const BadgeSelection = ({ selected = true, cursor = 'pointer', style, ...restProps }) => (
+  <Badge
+    bg={selected ? 'primary' : 'secondary'}
+    style={{
+      userSelect: 'none',
+      ...cursor ? { cursor } : {},
+      ...style || {},
+    }}
+    {...restProps}
+  />
+)
+export const FormBadgesSelection = ({
+  list=[],
+  id = 'id',
+  value,
+  onChange,
+  multiple,
+  label,
+  controlId,
+  isInvalid,
+  state,
+  setState,
+  ...restProps
+}) => {
+  multiple = multiple || multiple === false ? multiple : value instanceof Array;
+  // return <div className="form-control-lg">
+  
+  return (
+    <Form.Group controlId={controlId}>
+      {label && <Form.Label>{label}</Form.Label>}
+      <div className={`form-control ${isInvalid ? 'is-invalid' : ''}`}>
+        {list.map((item, key) => {
+          const selected = multiple
+            ? !!value && value.includes(item[id])
+            : value === item[id];
+          return (
+            <BadgeSelection
+              key={key}
+              selected={selected}
+              cursor='pointer'
+              onClick={() => {
+                if (multiple) {
+                  if (selected) {
+                    onChange(value.filter(i => i !== item[id]));
+                  } else {
+                    onChange([...value || [], item[id]]);
+                  }
+                } else {
+                  onChange(item[id])
+                }
+              }}
+              {...restProps}
+            >
+              {item.name}
+            </BadgeSelection>
+          );
+        })}
+      </div>
+    </Form.Group>
+  );
 }
 
 export const FormSelectControl = ({ controlId, label, formProps, onChange, options, defaultValue, children, ...restProps }) =>
