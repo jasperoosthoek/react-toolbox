@@ -24,16 +24,17 @@ import { VscMenu } from 'react-icons/vsc';
 import { SmallSpinner } from './LoadingIndicator';
 import { LocalizationContext } from '../localization/LocalizationContext';
 
-export const ButtonBase = ({ onClick, loading, icon: Icon, spin, children, size, ...props }) => (
+export const ButtonBase = ({ onClick, loading, icon: Icon, spin, children, size, className, ...restProps }) => (
   <Button
     variant='light'
     size='sm'
+    className={`icon-button ${className || ''}`}
     onClick={e => {
       e.stopPropagation();
       e.preventDefault();
       onClick(e);
     }}
-    {...props}
+    {...restProps}
   >
     {loading 
       ? <CgSpinner style={{ animation: 'spinner-border .75s linear infinite' }}/>

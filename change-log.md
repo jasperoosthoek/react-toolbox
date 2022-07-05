@@ -31,3 +31,6 @@
 - New `FormDate` and `FormDateTime` component
 ##### Version 0.2.8
 - New `setState` prop given to custom component in `CreateEditModal` component
+
+##### Version 0.2.9
+- New `icon-button` html class added to `IconButton` component
