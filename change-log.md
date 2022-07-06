@@ -42,3 +42,6 @@
 
 ##### Version 0.2.11
 - New `initialState` and `initialValue` props given to form component in `CreateEditModal` and to `disabled` function in `FormSelect` and `FormBadgesSelection` components
+
+##### Version 0.2.12
+- Fix giving unrecognised `restProps` to form components
