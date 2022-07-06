@@ -34,3 +34,11 @@
 
 ##### Version 0.2.9
 - New `icon-button` html class added to `IconButton` component
+
+##### Version 0.2.10
+- Remove `lodash` dependency as it was only used once
+- New `FormBadgesSelection` component as an alternative to `FormSelect`
+- Merge `initialState` with automatically produced state in `CreateEditModal`
+
+##### Version 0.2.11
+- New `initialState` and `initialValue` props given to form component in `CreateEditModal` and to `disabled` function in `FormSelect` and `FormBadgesSelection` components

@@ -11,6 +11,8 @@ export const FormInput = ({
   controlId,
   state,
   setState,
+  initialState,
+  initiatialValue,
   ...formProps
 }) =>
   <Form.Group controlId={controlId}>
@@ -88,6 +90,8 @@ export const FormSelect = ({
   multiple,
   disabled,
   isInvalid,
+  initialState,
+  initiatialValue,
 }) => {
   multiple = multiple || multiple === false ? multiple : value instanceof Array;
   const parseInteger = id => integer ? parseInt(id) : id;
@@ -111,7 +115,7 @@ export const FormSelect = ({
             <option
               key={index}
               value={parseInteger(item[id])}
-              disabled={typeof disabled === 'function' ? disabled({ list, value, state }) : disabled }
+              disabled={typeof disabled === 'function' ? disabled({ list, value: parseInteger(item[id]), state, initialState, initiatialValue }) : disabled }
               onClick={() => {
                 // Use onClick here instead of onChange in Form.Select to be able to unset all the options which isn't possible otherwise
                 if (onChange === null) {
@@ -141,7 +145,7 @@ FormSelect.propTypes = {
   onChange: PropTypes.func.isRequired,
 }
 
-export const BadgeSelection = ({ selected = true, cursor = 'pointer', style, ...restProps }) => (
+export const BadgeSelection = ({ selected = true, cursor, style, ...restProps }) => (
   <Badge
     bg={selected ? 'primary' : 'secondary'}
     style={{
@@ -163,6 +167,9 @@ export const FormBadgesSelection = ({
   isInvalid,
   state,
   setState,
+  disabled,
+  initialState,
+  initiatialValue,
   ...restProps
 }) => {
   multiple = multiple || multiple === false ? multiple : value instanceof Array;
@@ -179,6 +186,7 @@ export const FormBadgesSelection = ({
           return (
             <BadgeSelection
               key={key}
+              disabled={typeof disabled === 'function' ? disabled({ list, value: item[id], state, initialState }) : disabled }
               selected={selected}
               cursor='pointer'
               onClick={() => {

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Form, Modal, Button } from 'react-bootstrap';
 
@@ -24,12 +24,14 @@ export const CreateEditModal = ({
   if (Object.values(restProps).length !==0) {
     console.error(`Unrecognised props given to CreateEditModal:`, restProps);
   }
+  const [initialFormData,] = useState({
+    ...Object.entries(formFields).reduce((o, [key, { initialValue }]) => ({ ...o, [key]: initialValue || '' }), {}),
+    ...initialState || {},
+  });
+
   const [{ pristine, formData }, setState] = useSetState({
     pristine: true,
-    formData: {
-      ...Object.entries(formFields).reduce((o, [key, { initialValue }]) => ({ ...o, [key]: initialValue || '' }), {}),
-      ...initialState || {},
-    },
+    formData: initialFormData,
   })
 
   const prevShow = usePrevious(show)
@@ -103,6 +105,8 @@ export const CreateEditModal = ({
                       state={formData}
                       setState={(newState = {}) => setState({ formData: { ...formData, ...newState} })}
                       onChange={value => setState({ formData: { ...formData, [key]: value } })}
+                      initialState={initialFormData}
+                      initialValue={initialFormData[key]}
                       {...formProps}
                     />
                   : <Form.Control
