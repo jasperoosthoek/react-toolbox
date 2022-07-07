@@ -238,3 +238,12 @@ export const FormSelectControl = ({ controlId, label, formProps, onChange, optio
     </FormControl>
     {children}
   </InputGroup>;
+
+
+export const DisabledFormField = ({ value }) => (
+  <Form.Control
+    as='input'
+    disabled
+    value={value || ''}
+  />
+);
