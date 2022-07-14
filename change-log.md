@@ -52,3 +52,6 @@
 
 ##### Version 0.2.14
 - New `UnCheckButton` component with same icon as `CheckIndicator`
+
+##### Version 0.2.15
+- Fix missing `React` import in `CheckIndicator` component
