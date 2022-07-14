@@ -55,3 +55,6 @@
 
 ##### Version 0.2.15
 - Fix missing `React` import in `CheckIndicator` component
+
+##### Version 0.2.16
+- Make 'Are u sure?' default text in `ConfirmButton` component

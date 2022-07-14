@@ -26,7 +26,17 @@ import { RiQuestionnaireLine } from 'react-icons/ri';
 import { SmallSpinner } from './LoadingIndicator';
 import { LocalizationContext } from '../localization/LocalizationContext';
 
-export const ButtonBase = ({ onClick, loading, icon: Icon, spin, children, buttonSize='sm', size, className, ...restProps }) => (
+export const ButtonBase = ({
+  onClick,
+  loading,
+  icon: Icon,
+  spin,
+  children,
+  buttonSize='sm',
+  size,
+  className,
+  ...restProps
+}) => (
   <Button
     variant='light'
     size={buttonSize}
@@ -48,15 +58,17 @@ export const ButtonBase = ({ onClick, loading, icon: Icon, spin, children, butto
 );
 
 export const CheckButton = props => <ButtonBase {...props} icon={AiOutlineCheck} />;
-export const UnCheckButton = props => <ButtonBase {...props} icon={AiOutlineClose} />;
+export const CopyButton = props => <ButtonBase {...props} icon={FiCopy} />;
 export const CloseButton = props => <ButtonBase {...props} icon={FaTimes} />;
 export const CogButton = props => <ButtonBase {...props} icon={HiOutlineCog} />;
 export const CreateButton = props => <ButtonBase {...props} icon={AiOutlinePlus} />;
 export const CreateFolderButton = props => <ButtonBase {...props} icon={AiOutlineFolderAdd} />;
 export const CreateSubFolderButton = props => <ButtonBase {...props} icon={AiOutlineArrowRight} />;
 export const CreateFileButton = props => <ButtonBase {...props} icon={AiOutlineFileAdd} />;
+export const DeleteButton = props => <ButtonBase {...props} icon={CgTrash} />;
 export const DownButton = props => <ButtonBase {...props} icon={AiFillCaretDown} />;
 export const DownloadButton = props => <ButtonBase {...props} icon={AiOutlineDownload} />;
+export const EditButton = props => <ButtonBase {...props} icon={AiFillEdit} />;
 export const FlagButton = props => <ButtonBase {...props} icon={FaRegFlag} />;
 export const LinkButton = props => <ButtonBase {...props} icon={HiOutlineLink} />;
 export const MenuButton = props => <ButtonBase {...props} icon={VscMenu} />;
@@ -69,6 +81,7 @@ export const SortUpButton = props => <ButtonBase {...props} icon={FaSortUp} />;
 export const SortDownButton = props => <ButtonBase {...props} icon={FaSortDown} />;
 export const StopButton = props => <ButtonBase {...props} icon={BiSquare} />;
 export const SyncButton = props => <ButtonBase {...props} icon={FaSyncAlt} />;
+export const UnCheckButton = props => <ButtonBase {...props} icon={AiOutlineClose} />;
 export const UnlockButton = props => <ButtonBase {...props} icon={AiOutlineUnlock} />;
 export const UpButton = props => <ButtonBase {...props} icon={AiFillCaretUp} />;
 export const UploadButton = props => <ButtonBase {...props} icon={AiOutlineUpload} />;
@@ -103,12 +116,15 @@ export const UploadTextButton = ({ accept, onLoad, ...restProps }) => {
     />
   </>;
 }
-
-export const EditButton = props => <ButtonBase {...props} icon={AiFillEdit} />;
-export const DeleteButton = props => <ButtonBase {...props} icon={CgTrash} />;
-export const CopyButton = props => <ButtonBase {...props} icon={FiCopy} />;
-
-export const ConfirmButton = ({ modalTitle, modalBody, confirmText, onConfirm, loading, button: ButtonComponent, ...props }) => {
+export const ConfirmButton = ({
+  modalTitle,
+  modalBody,
+  confirmText,
+  onConfirm,
+  loading,
+  buttonComponent: ButtonComponent,
+  ...props
+}) => {
   const [modalActive, setModalActive] = useState(false);
   const { strings } = useContext(LocalizationContext);
 
@@ -129,7 +145,7 @@ export const ConfirmButton = ({ modalTitle, modalBody, confirmText, onConfirm, l
         </Modal.Header>
 
         <Modal.Body>
-          {modalBody}
+          {modalBody || strings.are_you_sure}
         </Modal.Body>
 
         <Modal.Footer>
@@ -169,10 +185,10 @@ export const DeleteConfirmButton = ({
     <ConfirmButton
       {...props}
       modalTitle={modalTitle || strings.delete }
-      modalBody={modalBody || strings.are_you_sure}
+      modalBody={modalBody}
       confirmText={confirmText || strings.delete}
       onConfirm={onDelete}
-      button={DeleteButton}
+      buttonComponent={DeleteButton}
     />
   );
 }
