@@ -20,14 +20,15 @@ import { BsArrowsMove, BsPencil } from 'react-icons/bs';
 import { BiRightArrow, BiSquare } from 'react-icons/bi';
 import { HiOutlineCog, HiOutlineLink } from 'react-icons/hi';
 import { VscMenu } from 'react-icons/vsc';
+import { RiQuestionnaireLine } from 'react-icons/ri';
 
 import { SmallSpinner } from './LoadingIndicator';
 import { LocalizationContext } from '../localization/LocalizationContext';
 
-export const ButtonBase = ({ onClick, loading, icon: Icon, spin, children, size, className, ...restProps }) => (
+export const ButtonBase = ({ onClick, loading, icon: Icon, spin, children, buttonSize='sm', size, className, ...restProps }) => (
   <Button
     variant='light'
-    size='sm'
+    size={buttonSize}
     className={`icon-button ${className || ''}`}
     onClick={e => {
       e.stopPropagation();
@@ -69,6 +70,7 @@ export const SyncButton = props => <ButtonBase {...props} icon={FaSyncAlt} />;
 export const UnlockButton = props => <ButtonBase {...props} icon={AiOutlineUnlock} />;
 export const UpButton = props => <ButtonBase {...props} icon={AiFillCaretUp} />;
 export const UploadButton = props => <ButtonBase {...props} icon={AiOutlineUpload} />;
+export const QuestionnaireButton = props => <ButtonBase {...props} icon={RiQuestionnaireLine} />;
 
 export const UploadTextButton = ({ accept, onLoad, ...restProps }) => {
   const inputFile = useRef(null);

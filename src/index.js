@@ -5,6 +5,7 @@ export * from './components/Errors';
 export * from './components/FormFields';
 export * from './components/IconButtons';
 export * from './components/LoadingIndicator';
+export * from './components/CheckIndicator';
 
 export * from './utils/Hooks';
 export * from './utils/TimeAndDate';
