@@ -49,3 +49,6 @@
 ##### Version 0.2.13
 - New `buttonSize` prop in Icon buttons to set the size of the `Button` component
 - New `QuestionnaireButton` and `CheckIndicator` component
+
+##### Version 0.2.14
+- New `UnCheckButton` component with same icon as `CheckIndicator`

@@ -12,6 +12,7 @@ import {
   AiOutlineArrowRight,
   AiOutlineUnlock,
   AiOutlineCheck,
+  AiOutlineClose,
 } from 'react-icons/ai';
 import { FiCopy } from 'react-icons/fi';
 import { FaTimes, FaSort, FaSortUp, FaSortDown, FaRegFlag, FaSyncAlt } from 'react-icons/fa';
@@ -47,6 +48,7 @@ export const ButtonBase = ({ onClick, loading, icon: Icon, spin, children, butto
 );
 
 export const CheckButton = props => <ButtonBase {...props} icon={AiOutlineCheck} />;
+export const UnCheckButton = props => <ButtonBase {...props} icon={AiOutlineClose} />;
 export const CloseButton = props => <ButtonBase {...props} icon={FaTimes} />;
 export const CogButton = props => <ButtonBase {...props} icon={HiOutlineCog} />;
 export const CreateButton = props => <ButtonBase {...props} icon={AiOutlinePlus} />;
