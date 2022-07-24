@@ -58,3 +58,7 @@
 
 ##### Version 0.2.16
 - Make 'Are u sure?' default text in `ConfirmButton` component
+
+##### Version 0.2.17
+- New `BigSpinner` component
+- Fix `UploadTextButton` not working 

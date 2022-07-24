@@ -40,3 +40,7 @@ export const SmallSpinner = ({ style = {}, component: Component = Button, classN
       </Component>
     : <Spinner className={className} animation="border" role="status" size="sm" />
 );
+
+export const BigSpinner = () => (
+  <Spinner animation="border" role="status" />
+);

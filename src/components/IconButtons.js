@@ -89,13 +89,13 @@ export const QuestionnaireButton = props => <ButtonBase {...props} icon={RiQuest
 
 export const UploadTextButton = ({ accept, onLoad, ...restProps }) => {
   const inputFile = useRef(null);
-
+  
   return <>
     <UploadButton
       {...restProps}
       onClick={() => inputFile.current.click()}
     />
-    <Form.File
+    <Form.Control
       type="file"
       accept={accept}
       ref={inputFile}
