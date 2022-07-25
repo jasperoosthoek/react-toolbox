@@ -47,3 +47,19 @@ export const useWithDispatch = (obj) => {
     );
   }, {});
 };
+
+// https://devtrium.com/posts/set-interval-react
+export const useInterval = (func, value) => useEffect(() => {
+  if (typeof func !== 'function') {
+    throw('First argument of useInterval should be a function');
+  } else if(
+    typeof value !== 'number'
+    || !isFinite(value)
+    || value <= 0
+  ) {
+    throw('Second argument of useInterval should be a positive number');
+  }
+  const interval = setInterval(func, value);
+
+  return () => clearInterval(interval);
+}, []);

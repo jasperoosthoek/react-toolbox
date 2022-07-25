@@ -24,7 +24,7 @@
 
 ##### Version 0.2.6
 - New `useLocalization` hook
-- New `requires` property in `CreateEditModal` component
+- New `required` property in `CreateEditModal` component
 - Make initial state of `auth.user` `null` instead of `{}`
 
 ##### Version 0.2.7
@@ -65,4 +65,7 @@
 
 ##### Version 0.2.18
 - New `FormDropdown` component
-- Fix `CreateEditModal` component crashes when using `show` prop to toggle
+- Fix `CreateEditModal` component crashes when using `show` prop to toggle modal
+
+##### Version 0.2.19
+- New `useInterval` hook
