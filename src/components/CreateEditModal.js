@@ -38,10 +38,16 @@ export const CreateEditModal = ({
   useEffect(() => {
     if (prevShow && prevShow !== show) {
       setState({ formData: initialState });
+    } else if (show && prevShow === false) {
+      setState({
+        pristine: true,
+        formData: initialFormData,
+      });
     }
   }, [show, prevShow])
   const { strings } = useLocalization();
 
+  if (!formData) return null;
   const getValue = key => {
     return(
       formData[key]

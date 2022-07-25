@@ -20,6 +20,7 @@ const localizationStrings = {
     forgot_password: 'Forgot password?',
     reset_password: 'Reset password',
     required_field: 'required',
+    choose_one: 'Choose one',
   },
   nl: {
     no_information_to_display: 'Geen informatie om weer te geven.',
@@ -39,6 +40,7 @@ const localizationStrings = {
     forgot_password: 'Wachtwoord vergeten?',
     reset_password: 'Wachtwoord resetten',
     required_field: 'verplicht',
+    choose_one: 'Maak een keuze',
   }
 };
 

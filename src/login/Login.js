@@ -84,7 +84,6 @@ export const loginFactory = ({
   };
   
   const setCurrentUser = user => dispatch => {
-    console.log({ user })
     localStorage.setItem(localStorageUser, JSON.stringify(user));
     dispatch({
       type: LOGIN_SET_CURRENT_USER,

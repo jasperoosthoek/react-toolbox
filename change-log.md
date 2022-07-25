@@ -61,4 +61,8 @@
 
 ##### Version 0.2.17
 - New `BigSpinner` component
-- Fix `UploadTextButton` not working 
+- Fix `UploadTextButton` not working
+
+##### Version 0.2.18
+- New `FormDropdown` component
+- Fix `CreateEditModal` component crashes when using `show` prop to toggle

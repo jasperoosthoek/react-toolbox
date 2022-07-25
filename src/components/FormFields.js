@@ -1,6 +1,7 @@
 import React from 'react';
-import { Form, FormControl, InputGroup, Badge } from 'react-bootstrap';
+import { Form, FormControl, InputGroup, Badge, Dropdown } from 'react-bootstrap';
 import PropTypes from 'prop-types';
+import { useLocalization } from '../localization/LocalizationContext';
 
 export const FormInput = ({
   label,
@@ -217,7 +218,16 @@ export const FormBadgesSelection = ({
   );
 }
 
-export const FormSelectControl = ({ controlId, label, formProps, onChange, options, defaultValue, children, ...restProps }) =>
+export const FormSelectControl = ({
+  controlId,
+  label,
+  formProps,
+  onChange,
+  options,
+  defaultValue,
+  children,
+  ...restProps
+}) => (
   <InputGroup controlId={controlId}>
     {label && <Form.Label>{label}</Form.Label>}
     <FormControl as='select'
@@ -237,4 +247,57 @@ export const FormSelectControl = ({ controlId, label, formProps, onChange, optio
       )}
     </FormControl>
     {children}
-  </InputGroup>;
+  </InputGroup>
+);
+
+export const FormDropdown = ({  
+  list=[],
+  id = 'id',
+  value,
+  onChange,
+  label,
+  controlId,
+  isInvalid,
+  state,
+  setState,
+  disabled,
+  initialState,
+  initialValue,
+  variant='light',
+  keyName,
+  pristine,
+  ...restProps
+}) => {
+  const { strings } = useLocalization();
+  const selectedItem = list.find(({ [id]: itemId }) => itemId === value);
+  return (
+    <Form.Group controlId={controlId}>
+      {label && <Form.Label>{label}</Form.Label>}
+      
+      <div className={`form-control ${isInvalid ? 'is-invalid' : ''}`}>
+        <Dropdown>
+          <Dropdown.Toggle variant={variant}>
+            {selectedItem
+              ? selectedItem.name
+              : strings.choose_one
+            }
+          </Dropdown.Toggle>
+          <Dropdown.Menu>
+            {list.map((item, key) =>
+              <Dropdown.Item
+                key={key}
+                disabled={typeof disabled === 'function' ? disabled({ list, value: item[id], state, initialState }) : disabled }
+                selected={value === item[id]}
+                cursor='pointer'
+                onClick={() => onChange(item[id])}
+                {...restProps}
+              >
+                {item.name}
+              </Dropdown.Item>
+            )}
+          </Dropdown.Menu>
+        </Dropdown>
+      </div>
+    </Form.Group>
+  );
+};
