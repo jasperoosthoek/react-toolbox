@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import { Container, Button, Row, Col, Form } from 'react-bootstrap';
 
 import { useSetState, useWithDispatch } from '../utils/Hooks';
-import { LocalizationContext } from '../localization/LocalizationContext';
+import { useLocalization } from '../localization/LocalizationContext';
 import { isEmpty } from '../utils/Utils';
 
 export const LOGIN_SET_TOKEN = 'LOGIN_SET_TOKEN';
@@ -181,7 +181,7 @@ export const loginFactory = ({
     });
     const isAuthenticated = useSelector(({ auth }) => auth.isAuthenticated );
     const { login } = useLogin();
-    const { strings } = useContext(LocalizationContext);
+    const { strings } = useLocalization();
   
     const onChange = e => {
       setState({ [e.target.name]: e.target.value });

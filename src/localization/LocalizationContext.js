@@ -3,8 +3,8 @@ import LocalizedStrings from 'react-localization';
 
 const localizationStrings = {
   en:{
-    select: "Select",
-    search: "Search",
+    select: 'Select',
+    search: 'Search',
     no_information_to_display: 'No information to display',
     information_is_being_loaded: 'The information is being loaded...',
     delete: 'Delete',
@@ -24,8 +24,8 @@ const localizationStrings = {
   },
   nl: {
     no_information_to_display: 'Geen informatie om weer te geven.',
-    select: "Selecteer",
-    search: "Zoeken",
+    select: 'Selecteer',
+    search: 'Zoeken',
     information_is_being_loaded: 'De gegevens worden geladen...',
     delete: 'Verwijderen',
     are_you_sure: 'Weet u het zeker?',
@@ -41,7 +41,7 @@ const localizationStrings = {
     reset_password: 'Wachtwoord resetten',
     required_field: 'verplicht',
     choose_one: 'Maak een keuze',
-  }
+  },
 };
 
 export const LocalizationContext = React.createContext();

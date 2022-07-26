@@ -24,10 +24,12 @@ export const CreateEditModal = ({
   if (Object.values(restProps).length !==0) {
     console.error(`Unrecognised props given to CreateEditModal:`, restProps);
   }
-  const [initialFormData,] = useState({
+
+  const getInitialFormData = () => ({
     ...Object.entries(formFields).reduce((o, [key, { initialValue }]) => ({ ...o, [key]: initialValue || '' }), {}),
     ...initialState || {},
-  });
+  })
+  const [initialFormData, setInitialFormData] = useState(getInitialFormData());
 
   const [{ pristine, formData }, setState] = useSetState({
     pristine: true,
@@ -37,8 +39,11 @@ export const CreateEditModal = ({
   const prevShow = usePrevious(show)
   useEffect(() => {
     if (prevShow && prevShow !== show) {
-      setState({ formData: initialState });
+      setState({ formData: null });
     } else if (show && prevShow === false) {
+      //
+      const initialFormData = getInitialFormData();
+      setInitialFormData(initialFormData);
       setState({
         pristine: true,
         formData: initialFormData,

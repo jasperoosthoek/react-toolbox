@@ -1,11 +1,10 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { Button, Spinner, Container, Row, Col } from 'react-bootstrap';
-import { LocalizationContext } from '../localization/LocalizationContext';
+import { useLocalization } from '../localization/LocalizationContext';
 
 export const LoadingIndicator = ({ style = {}}) => {
-  const { strings } = useContext(LocalizationContext);
+  const { strings } = useLocalization();
   return (
-    
     <Container>
       <Row className="error-page">
         <Col>

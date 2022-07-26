@@ -69,3 +69,7 @@
 
 ##### Version 0.2.19
 - New `useInterval` hook
+
+##### Version 0.2.20
+- New `SearchBox` and `SearchIcon` components
+- Fix not resetting state in `CreateEditModal` when toggle `show` prop

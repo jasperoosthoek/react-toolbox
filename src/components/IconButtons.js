@@ -13,6 +13,7 @@ import {
   AiOutlineUnlock,
   AiOutlineCheck,
   AiOutlineClose,
+  AiOutlineSearch,
 } from 'react-icons/ai';
 import { FiCopy } from 'react-icons/fi';
 import { FaTimes, FaSort, FaSortUp, FaSortDown, FaRegFlag, FaSyncAlt } from 'react-icons/fa';
@@ -76,6 +77,7 @@ export const MoveButton = props => <ButtonBase {...props} icon={BsArrowsMove} />
 export const NotesButton = props => <ButtonBase {...props} icon={CgNotes} />;
 export const PencilButton = props => <ButtonBase {...props} icon={BsPencil} />;
 export const PlayButton = props => <ButtonBase {...props} icon={BiRightArrow} />;
+export const SearchButton = props => <ButtonBase {...props} icon={AiOutlineSearch} />;
 export const SortButton = props => <ButtonBase {...props} icon={FaSort} />;
 export const SortUpButton = props => <ButtonBase {...props} icon={FaSortUp} />;
 export const SortDownButton = props => <ButtonBase {...props} icon={FaSortDown} />;
