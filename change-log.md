@@ -73,3 +73,7 @@
 ##### Version 0.2.20
 - New `SearchBox` and `SearchIcon` components
 - Fix not resetting state in `CreateEditModal` when toggle `show` prop
+
+##### Version 0.2.21
+- Move localization strings to `src/localizations/strings.js`
+- Fix making additional localization strings work
