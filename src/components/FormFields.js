@@ -2,6 +2,7 @@ import React from 'react';
 import { Form, FormControl, InputGroup, Badge, Dropdown } from 'react-bootstrap';
 import PropTypes from 'prop-types';
 import { useLocalization } from '../localization/LocalizationContext';
+import moment from 'moment';
 
 export const FormInput = ({
   label,
@@ -51,10 +52,15 @@ export const FormDate = props => (
   />
 )
 
-export const FormDateTime = ({ value, ...restProps }) => (
+export const FormDateTime = ({ value, onChange, ...restProps }) => (
   <FormInput
     {...restProps}
-    value={typeof value === 'string' ? value.slice(0, 16) : value}
+    value={
+      typeof value === 'string'
+      ? moment(value).format('YYYY-MM-DDTHH:mm')
+      : value
+    }
+    onChange={newValue => onChange(moment(newValue).utc().format())}
     type='datetime-local'
   />
 );

@@ -77,3 +77,4 @@
 ##### Version 0.2.21
 - Move localization strings to `src/localizations/strings.js`
 - Fix making additional localization strings work
+- Convert back and forth to `utc` in `FormDateTime` component
