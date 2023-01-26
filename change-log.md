@@ -81,3 +81,6 @@
 
 ##### Version 0.2.22
 - New `ShowButton` and `HideButton` components
+
+##### Version 0.2.23
+- Await result of `onConfirm()` in `ConfirmButton`

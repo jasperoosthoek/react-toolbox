@@ -162,8 +162,8 @@ export const ConfirmButton = ({
           </Button>
           <Button
             variant="primary"
-            onClick={() => {
-              onConfirm();
+            onClick={async () => {
+              await onConfirm();
               setModalActive(false);
             }}
           >
