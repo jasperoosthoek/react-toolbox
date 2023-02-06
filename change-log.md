@@ -93,3 +93,6 @@
 
 ##### Version 0.3.1
 - Add `*.d.ts` files during build
+
+##### Version 0.3.2
+- Fix missing `types` in `package.json`

@@ -1,6 +1,6 @@
 {
   "name": "@jasperoosthoek/react-toolbox",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "author": "jasperoosthoek",
   "license": "MIT",
   "repository": {
@@ -12,6 +12,7 @@
     "src/",
     "dist/"
   ],
+  "types": "dist/index.d.ts",
   "devDependencies": {
     "@babel/cli": "^7.17.10",
     "@babel/core": "^7.17.10",
