@@ -90,3 +90,6 @@
 
 ##### Version 0.3.0
 - Minimal typescript configuration
+
+##### Version 0.3.1
+- Add `*.d.ts` files during build
