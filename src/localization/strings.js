@@ -19,6 +19,8 @@ const localizationStrings = {
     reset_password: 'Reset password',
     required_field: 'required',
     choose_one: 'Choose one',
+    everything: 'Everything',
+    number_of_rows: 'Number of rows',
   },
   nl: {
     no_information_to_display: 'Geen informatie om weer te geven.',
@@ -39,6 +41,8 @@ const localizationStrings = {
     reset_password: 'Wachtwoord resetten',
     required_field: 'verplicht',
     choose_one: 'Maak een keuze',
+    number_of_rows: 'Aantal rijen',
+    everything: 'Alles',
   },
 };
 

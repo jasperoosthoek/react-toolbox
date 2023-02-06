@@ -12,7 +12,7 @@ export const DataTable = ({
   data: allData,
   columns = null,
   rowsPerPage: rowsPerPageDefault = 10,
-  rowsPerPageOptions = [10,25, 50, 100, 'Alles'],
+  rowsPerPageOptions = [10,25, 50, 100, 'everything'],
   filterColumn = null,
   orderByDefault,
   orderByDefaultDirection='asc',
@@ -23,6 +23,7 @@ export const DataTable = ({
   onClickRow = null,
   textOnEmpty = null,
   className,
+  rowClassName = null,
   style,
   ...restProps
 }) => {
@@ -69,7 +70,17 @@ export const DataTable = ({
   }
 
   const Component = forwardRef(({ row }, ref) =>
-    <tr ref={ref} {...{ ...typeof onClickRow === 'function' ? { onClick: () => onClickRow(row)} : {}}}>
+    <tr
+      ref={ref}
+      className={
+        typeof rowClassName === 'string'
+        ? rowClassName
+        : typeof rowClassName === 'function'
+        ? rowClassName(row)
+        : null
+      }
+      {...{ ...typeof onClickRow === 'function' ? { onClick: () => onClickRow(row)} : {}}}
+    >
       {columns.map(({ selector, className }, index) =>
         <td key={index} className={className}>
           {typeof selector === 'function' ? selector(row) : row[selector]}
@@ -109,7 +120,7 @@ export const DataTable = ({
         >
           <Form.Group>
             <Form.Label>
-              Aantal rijen
+              {strings.number_of_rows}
             </Form.Label>
             <Form.Select
               name="table-pagination-options"
@@ -120,7 +131,7 @@ export const DataTable = ({
             >
               {rowsPerPageOptions.map((option, index) => (
                 <option key={index}>
-                  {option}
+                  {option === 'everything' ? strings.everything : option}
                 </option>
               ))}
             </Form.Select>

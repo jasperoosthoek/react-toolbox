@@ -84,3 +84,6 @@
 
 ##### Version 0.2.23
 - Await result of `onConfirm()` in `ConfirmButton`
+
+##### Version 0.2.24
+- New `rowClassName` prop and add missing localization strings to `DataTable`
