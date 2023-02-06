@@ -87,3 +87,6 @@
 
 ##### Version 0.2.24
 - New `rowClassName` prop and add missing localization strings to `DataTable`
+
+##### Version 0.3.0
+- Minimal typescript configuration
