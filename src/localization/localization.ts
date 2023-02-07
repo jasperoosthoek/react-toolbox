@@ -1,5 +1,38 @@
 
-const localizationStrings = {
+export type AdditionalLocalization = {
+  [lang: string]: {
+    [languageString: string]: string;
+  }
+}
+export interface LocalizationStrings {
+  select: string;
+  search: string;
+  no_information_to_display: string;
+  information_is_being_loaded: string;
+  delete: string;
+  are_you_sure: string;
+  close: string;
+  save: string;
+  cancel: string;
+  ok: string;
+  your_email: string;
+  your_password: string;
+  enter_password: string;
+  login: string;
+  forgot_password: string;
+  reset_password: string;
+  required_field: string;
+  choose_one: string;
+  everything: string;
+  number_of_rows: string;
+  [additionalString: string]: string;
+};
+
+export type Localization = {
+  [lang: string]: LocalizationStrings;
+}
+
+const localization: Localization = {
   en: {
     select: 'Select',
     search: 'Search',
@@ -46,4 +79,4 @@ const localizationStrings = {
   },
 };
 
-export default localizationStrings;
+export default localization;
