@@ -1,3 +1,4 @@
+import LocalizedStrings, { LocalizedStringsMethods } from 'react-localization';
 
 export type AdditionalLocalization = {
   [lang: string]: {
@@ -25,8 +26,11 @@ export interface LocalizationStrings {
   choose_one: string;
   everything: string;
   number_of_rows: string;
-  [additionalString: string]: string;
-};
+}
+
+// export interface LocalizationStrings extends DefaultLocalizationStrings{
+//   [additionalString: string]: string;
+// };
 
 export type Localization = {
   [lang: string]: LocalizationStrings;

@@ -18,7 +18,7 @@ export const LoadingIndicator = ({ style = {}}) => {
             }}
           >
             <Spinner animation="border" role="status" style={{ marginRight: '20px', ...style }} />
-            {strings.information_is_being_loaded}
+            {strings.getString('information_is_being_loaded')}
           </div>
         </Col>
       </Row>
@@ -26,10 +26,16 @@ export const LoadingIndicator = ({ style = {}}) => {
   );
 };
 
-export const SmallSpinner = ({ style = {}, component: Component = Button, className }) => (
+export type SmallSpinnerProps = {
+  style?: any;
+  component?: (props: any) => React.ReactElement | null;
+  className?: string;
+}
+
+export const SmallSpinner = ({ style = {}, component: Component = Button, className }: SmallSpinnerProps) => (
   Component
     ? <Component
-        className={className}
+        {...className ? { className } : {}}
         variant="link"
         disabled
         size="sm"
@@ -37,7 +43,12 @@ export const SmallSpinner = ({ style = {}, component: Component = Button, classN
       >
         <Spinner animation="border" role="status" size="sm" />
       </Component>
-    : <Spinner className={className} animation="border" role="status" size="sm" />
+    : <Spinner 
+        {...className ? { className } : {}}
+        animation="border"
+        role="status"
+        size="sm"
+      />
 );
 
 export const BigSpinner = () => (

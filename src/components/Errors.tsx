@@ -1,6 +1,11 @@
+import React from 'react';
 import { Row, Col, Container } from 'react-bootstrap';
 
-export const ErrorPage = ({ children }) =>
+export type ErrorPageProps = {
+  children: any;
+}
+
+export const ErrorPage = ({ children }: ErrorPageProps) =>
   <Container>
     <Row className="error-page">
       <Col>
