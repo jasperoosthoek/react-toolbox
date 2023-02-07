@@ -28,10 +28,6 @@ export interface LocalizationStrings {
   number_of_rows: string;
 }
 
-// export interface LocalizationStrings extends DefaultLocalizationStrings{
-//   [additionalString: string]: string;
-// };
-
 export type Localization = {
   [lang: string]: LocalizationStrings;
 }

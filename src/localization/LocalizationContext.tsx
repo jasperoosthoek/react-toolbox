@@ -1,10 +1,6 @@
-import React, { useContext, useMemo } from 'react';
-import LocalizedStrings, { LocalizedStringsMethods } from 'react-localization';
-import defaultLocalization, { AdditionalLocalization, LocalizationStrings as LocalizationStringsType } from './localization';
-
-// interface LocalizedT extends LocalizationStringsType | LocalizedStringsMethods ;
-
-const strings: LocalizationStringsType = new LocalizedStrings(defaultLocalization)
+import React, { useContext } from 'react';
+import LocalizedStrings from 'react-localization';
+import defaultLocalization, { AdditionalLocalization } from './localization';
 
 export const LocalizationContext = React.createContext({
   lang: 'en',
