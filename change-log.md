@@ -96,3 +96,6 @@
 
 ##### Version 0.3.2
 - Fix missing `types` in `package.json`
+
+##### Version 0.3.3
+- Fix default `rowsPerPage` option in `DataTable`

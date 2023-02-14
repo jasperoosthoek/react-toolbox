@@ -12,7 +12,7 @@ export const DataTable = ({
   data: allData,
   columns = null,
   rowsPerPage: rowsPerPageDefault = 10,
-  rowsPerPageOptions = [10,25, 50, 100, 'everything'],
+  rowsPerPageOptions = [10,25, 50, 100, null],
   filterColumn = null,
   orderByDefault,
   orderByDefaultDirection='asc',
@@ -124,14 +124,14 @@ export const DataTable = ({
             </Form.Label>
             <Form.Select
               name="table-pagination-options"
-              value={rowsPerPage}
+              value={rowsPerPage === null ? 'everything' : rowsPerPage}
               as="select"
               placeholder={strings.select}
               onChange={e => setRowsPerPage(e.target.value)}
             >
               {rowsPerPageOptions.map((option, index) => (
-                <option key={index}>
-                  {option === 'everything' ? strings.everything : option}
+                <option key={index} value={option === null ? 'everything' : option}>
+                  {option === null ? strings.everything : option}
                 </option>
               ))}
             </Form.Select>
