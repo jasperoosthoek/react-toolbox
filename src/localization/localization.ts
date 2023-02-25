@@ -32,7 +32,7 @@ export type Localization = {
   [lang: string]: LocalizationStrings;
 }
 
-const localization: Localization = {
+export const defaultLocalization: Localization = {
   en: {
     select: 'Select',
     search: 'Search',
@@ -79,4 +79,3 @@ const localization: Localization = {
   },
 };
 
-export default localization;

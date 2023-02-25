@@ -14,4 +14,5 @@ export * from './utils/Utils';
 
 export * from './login/Login';
 
+export * from './localization/localization';
 export * from './localization/LocalizationContext';

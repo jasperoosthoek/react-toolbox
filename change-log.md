@@ -99,3 +99,7 @@
 
 ##### Version 0.3.3
 - Fix default `rowsPerPage` option in `DataTable`
+
+##### Version 0.3.4
+- Simplify `IconButtons` & new `makeIconButton` function
+- New `text` tagFunction to make using localization strings more concise
