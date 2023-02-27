@@ -26,7 +26,16 @@ export const useDebouncedEffect = (effect, deps, delay) => {
   
 export const useSetState = initialState => {
   const [state, setState] = useState(initialState);
-  return [state, obj => setState({ ...state, ...obj })];
+  const [callback, setCallback] = useState();
+  useEffect(() => {
+    if (typeof callback === 'function') callback();
+  }, [callback]);
+  
+  const setSubState = (obj, callback) => {
+    setState({ ...state, ...obj });
+    if (callback) setCallback(callback);
+  }
+  return [state, setSubState];
 }
 
 export const useWithDispatch = (obj) => {
