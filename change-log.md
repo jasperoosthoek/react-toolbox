@@ -102,5 +102,6 @@
 
 ##### Version 0.3.4
 - Simplify `IconButtons` & new `makeIconButton` function
-- New `text` tagFunction to make using localization strings more concise
+- New `text` tag function to make using localization strings more concise
+- Additional localization supports function and takes arguments from`text` tag function
 - `useSetState` hook supports `callback` in setter function similar to `setState` in `class` components

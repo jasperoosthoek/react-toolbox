@@ -1,8 +1,10 @@
 import LocalizedStrings, { LocalizedStringsMethods } from 'react-localization';
 
+export type LocalizationFunction = (...args: (string | number)[]) => string;
+
 export type AdditionalLocalization = {
   [lang: string]: {
-    [languageString: string]: string;
+    [languageString: string]: string | LocalizationFunction;
   }
 }
 export interface LocalizationStrings {

@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import LocalizedStrings from 'react-localization';
-import { defaultLocalization, AdditionalLocalization } from './localization';
+import { defaultLocalization, AdditionalLocalization, LocalizationFunction } from './localization';
 
 export const LocalizationContext = React.createContext({
   lang: 'en',
@@ -50,14 +50,14 @@ export const LocalizationProvider = ({
   const strings = new LocalizedStrings(localizationStrings);
   strings.setLanguage(lang);
 
-  const text = (str: TemplateStringsArray, name: string) => {
-    const text = strings.getString(str[0]);
-    if (!text) {
+  const text = (str: TemplateStringsArray, ...values: (string | number)[]) => {
+    const text_or_func = strings.getString(str[0]) as string | LocalizationFunction;
+    if (!text_or_func) {
       console.error(`Language string not found: "${str[0]}"`);
       return str[0];
     }
 
-    return text;
+    return typeof text_or_func === 'function' ? text_or_func(...values) : text_or_func;
   }
   return (
     <LocalizationContext.Provider
