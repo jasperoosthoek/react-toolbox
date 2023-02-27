@@ -55,9 +55,22 @@ export const LocalizationProvider = ({
     if (!text_or_func) {
       console.error(`Language string not found: "${str[0]}"`);
       return str[0];
+    } else if (typeof text_or_func === 'function') {
+      if (text_or_func.length !== values.length) {
+        console.error(
+          `Language function "${str[0]}" expects exactly ${text_or_func.length} argument${text_or_func.length === 1 ? '' : 's'}. `
+          + (
+            text_or_func.length > 0
+            ? ` Use text${'`'}${str[0]}${'${arg1}${arg2}`'}`
+            : ` Use text${'`'}${str[0]}${'`'}`
+          )
+        );
+        return text_or_func.length > 0 ? `${str[0]}${'${arg1}${arg2}'}` : str[0];
+      }
+      return text_or_func(...values);
     }
 
-    return typeof text_or_func === 'function' ? text_or_func(...values) : text_or_func;
+    return text_or_func;
   }
   return (
     <LocalizationContext.Provider
