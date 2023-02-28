@@ -41,12 +41,13 @@ export const loginFactory = ({
   if (error) return;
   const AuthenticatedComponent = authenticatedComponent;
 
-  const login = userData => async dispatch => {
+  const login = (userData, callback) => async dispatch => {
     try {
       const response = await axios.post(loginUrl, userData);
       const { auth_token } = response.data;
       dispatch(setToken(auth_token));
       dispatch(getCurrentUser());
+      if (typeof callback === 'function') callback();
     } catch(error) {
       dispatch(unsetCurrentUser());
       onError(error);
@@ -63,10 +64,12 @@ export const loginFactory = ({
     }
   };
   
-  const getCurrentUser = () => async dispatch => {
+  const getCurrentUser = ({ callback } = {}) => async dispatch => {
     try {
       const response = await axios.get(getUserUrl);
       dispatch(setCurrentUser(response.data));
+      if (typeof callback === 'function') callback(response.data);
+      
     } catch(error) {
       dispatch(unsetCurrentUser());
       if (error.response) {

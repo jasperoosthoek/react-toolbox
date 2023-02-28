@@ -104,4 +104,6 @@
 - Simplify `IconButtons` & new `makeIconButton` function
 - New `text` tag function to make using localization strings more concise
 - Additional localization supports function and takes arguments from `text` tag function
+- New `setLanguage` function and `languages` override to set available languages
 - `useSetState` hook supports `callback` in setter function similar to `setState` in `class` components
+- New optional `callback` function argument to `getCurrentUser`

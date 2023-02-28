@@ -1,11 +1,21 @@
-import React, { useContext } from 'react';
+import React, { useState, useContext } from 'react';
 import LocalizedStrings from 'react-localization';
-import { defaultLocalization, AdditionalLocalization, LocalizationFunction } from './localization';
+import {
+  defaultLocalization,
+  AdditionalLocalization,
+  LocalizationFunction,
+  defaultLanguages,
+  Languages,
+} from './localization';
+
+const out_of_context_error = 'This component should be used as a child of LocalizationProvider.';
 
 export const LocalizationContext = React.createContext({
   lang: 'en',
+  languages: Object.keys(defaultLanguages),
+  setLanguage: (lang: string) => console.error(out_of_context_error),
   text: (str: TemplateStringsArray, name: string) => {
-    console.error('This component should be used as a child of LocalizationProvider.');
+    console.error(out_of_context_error);
     return str[0];
   },
   strings: new LocalizedStrings({ en: {} }),
@@ -15,37 +25,30 @@ export type RestProps = {
   [prop: string]: any;
 }
 export interface LocalizationProviderProps extends RestProps {
-  lang: string
+  lang: string;
   localization?: AdditionalLocalization;
+  languages?: string[];
   children: any;
   [prop: string]: any;
 }
 
 export const LocalizationProvider = ({
-  lang = 'en',
+  lang: initialLanguage = 'en',
   localization: additionalLocalization = {},
+  languages: languagesOverride,
   children,
   ...restProps
  }: LocalizationProviderProps) => {
-  const langs = Array.from(new Set([...Object.keys(defaultLocalization), ...Object.keys(additionalLocalization)]));
-  const localizationStrings = langs.reduce(
-    (o, lang) => {
-      console.log(
-        lang,
-        defaultLocalization[lang],
-        additionalLocalization[lang],
-        {
-          ...defaultLocalization[lang] || {},
-          ...additionalLocalization[lang] || {},
-        },
-      )
-      return ({
+  const [lang, setLanguage] = useState(initialLanguage);
+  const languages = languagesOverride || Array.from(new Set([...Object.keys(defaultLocalization), ...Object.keys(additionalLocalization)]));
+  const localizationStrings = languages.reduce(
+    (o, lang) => ({
       ...o,
       [lang]: {
         ...defaultLocalization[lang] || {},
         ...additionalLocalization[lang] || {},
       },
-    })}, {});
+    }), {});
     
   const strings = new LocalizedStrings(localizationStrings);
   strings.setLanguage(lang);
@@ -76,6 +79,14 @@ export const LocalizationProvider = ({
     <LocalizationContext.Provider
       value={{
         lang,
+        languages,
+        setLanguage: (lang: string) => {
+          if (!languages.includes(lang)) {
+            console.error(`Language ${lang} not available`);
+            return;
+          }
+          setLanguage(lang);
+        },
         strings,
         text,
         ...restProps,

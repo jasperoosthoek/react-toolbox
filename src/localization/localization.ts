@@ -22,6 +22,7 @@ export interface LocalizationStrings {
   your_password: string;
   enter_password: string;
   login: string;
+  logout: string;
   forgot_password: string;
   reset_password: string;
   required_field: string;
@@ -33,6 +34,14 @@ export interface LocalizationStrings {
 export type Localization = {
   [lang: string]: LocalizationStrings;
 }
+
+export type Languages = {
+  [languageIso: string]: string;
+}
+export const defaultLanguages: Languages = {
+  en: 'English',
+  nl: 'Nederlands',
+} as const;
 
 export const defaultLocalization: Localization = {
   en: {
@@ -50,6 +59,7 @@ export const defaultLocalization: Localization = {
     your_password: 'Your password',
     enter_password: 'Enter password',
     login: 'Login',
+    logout: 'Logout',
     forgot_password: 'Forgot password?',
     reset_password: 'Reset password',
     required_field: 'required',
@@ -72,6 +82,7 @@ export const defaultLocalization: Localization = {
     your_password: 'Uw wachtwoord',
     enter_password: 'Voer wachtwoord in',
     login: 'Inloggen',
+    logout: 'Uitloggen',
     forgot_password: 'Wachtwoord vergeten?',
     reset_password: 'Wachtwoord resetten',
     required_field: 'verplicht',
@@ -79,5 +90,5 @@ export const defaultLocalization: Localization = {
     number_of_rows: 'Aantal rijen',
     everything: 'Alles',
   },
-};
+} as const;
 
