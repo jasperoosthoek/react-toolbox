@@ -40,6 +40,7 @@ export type Languages = {
 }
 export const defaultLanguages: Languages = {
   en: 'English',
+  fr: 'Français',
   nl: 'Nederlands',
 } as const;
 
@@ -66,6 +67,29 @@ export const defaultLocalization: Localization = {
     choose_one: 'Choose one',
     everything: 'Everything',
     number_of_rows: 'Number of rows',
+  },
+  fr: {
+    no_information_to_display: 'Sélectionner',
+    select: 'Recherche',
+    search: 'Aucune information à afficher',
+    information_is_being_loaded: "L'information est en cours de téléchargement...",
+    delete: 'Supprimer',
+    are_you_sure: 'Es-tu sûr?',
+    close: 'Fermer',
+    save: 'Sauvegarder',
+    cancel: 'Annuler',
+    ok: "D'accord'",
+    your_email: 'Votre e-mail',
+    your_password: 'Votre mot de passe',
+    enter_password: 'Entrer le mot de passe',
+    login: 'Connexion',
+    logout: 'Se déconnecter',
+    forgot_password: 'Mot de passe oublié?',
+    reset_password: 'Réinitialiser le mot de passe',
+    required_field: 'requis',
+    choose_one: 'Choisissez-en un',
+    number_of_rows: 'Tout',
+    everything: 'Nombre de rangées',
   },
   nl: {
     no_information_to_display: 'Geen informatie om weer te geven.',

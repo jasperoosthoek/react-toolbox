@@ -107,3 +107,4 @@
 - New `setLanguage` function and `languages` override to set available languages
 - `useSetState` hook supports `callback` in setter function similar to `setState` in `class` components
 - New optional `callback` function argument to `getCurrentUser`
+- New French translation
