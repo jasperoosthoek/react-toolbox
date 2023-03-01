@@ -29,6 +29,8 @@ export const loginFactory = ({
 }) => {
   const localStorageUser = localStoragePrefix ? `${localStoragePrefix}-user` : 'user';
   const localStorageToken = localStoragePrefix ? `${localStoragePrefix}-token` : 'token';
+  const localStorageState = localStoragePrefix ? `${localStoragePrefix}-state` : 'state';
+  const localStorageLang = localStoragePrefix ? `${localStoragePrefix}-lang` : 'lang';
 
   const error = errorIfUndefined({
     authenticatedComponent,
@@ -69,7 +71,7 @@ export const loginFactory = ({
       const response = await axios.get(getUserUrl);
       dispatch(setCurrentUser(response.data));
       if (typeof callback === 'function') callback(response.data);
-      
+
     } catch(error) {
       dispatch(unsetCurrentUser());
       if (error.response) {
@@ -107,6 +109,7 @@ export const loginFactory = ({
     setAxiosAuthToken('');
     localStorage.removeItem(localStorageToken);
     localStorage.removeItem(localStorageUser);
+    localStorage.removeItem(localStorageState);
     dispatch({
       type: LOGIN_UNSET_CURRENT_USER
     });
@@ -134,6 +137,7 @@ export const loginFactory = ({
 
   const token = localStorage.getItem(localStorageToken);
   const user = localStorage.getItem(localStorageUser);
+
   const hasLocalStorage = !isEmpty(user) && !isEmpty(token);
   const initialState = {
     ...hasLocalStorage
@@ -256,6 +260,18 @@ export const loginFactory = ({
     logout,
     authReducer,
     useAuth,
+    storeState: (state, action) => {
+      if (action.type === LOGIN_UNSET_CURRENT_USER) {
+        localStorage.removeItem(localStorageState);
+      } else {
+        localStorage.setItem(localStorageState, JSON.stringify(state));
+      }
+    },
+    retrieveState: () => {
+      const state = localStorage.getItem(localStorageState);
+      if (!state) return {};
+      return JSON.parse(state);
+    },
   }
 }
 

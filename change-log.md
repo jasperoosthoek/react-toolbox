@@ -108,3 +108,4 @@
 - `useSetState` hook supports `callback` in setter function similar to `setState` in `class` components
 - New optional `callback` function argument to `getCurrentUser`
 - New French translation
+- New `storeState` & `retrieveState` functions to store and retrieve state object from `localStorage`
