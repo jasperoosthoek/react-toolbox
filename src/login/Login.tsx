@@ -1,8 +1,10 @@
-import React, { useContext } from 'react';
-import { useSelector } from 'react-redux';
+import React, { useContext, ReactElement, ChangeEvent } from 'react';
+import { useSelector, useDispatch, useStore } from 'react-redux';
+import { ThunkDispatch } from 'redux-thunk';
+import Axios, { AxiosResponse } from 'axios';
 import { Container, Button, Row, Col, Form } from 'react-bootstrap';
 
-import { useSetState, useWithDispatch } from '../utils/Hooks';
+import { useSetState, useWithDispatch } from '../utils/hooks';
 import { useLocalization } from '../localization/LocalizationContext';
 import { isEmpty } from '../utils/Utils';
 
@@ -10,12 +12,40 @@ export const LOGIN_SET_TOKEN = 'LOGIN_SET_TOKEN';
 export const LOGIN_SET_CURRENT_USER = 'LOGIN_SET_CURRENT_USER';
 export const LOGIN_UNSET_CURRENT_USER = 'LOGIN_UNSET_CURRENT_USER';
 
-const errorIfUndefined = obj => Object.entries(obj).reduce((error, [param, value]) => {
+const useThunkDispatch = () => {
+  const store = useStore();
+  const dispatch = useDispatch<typeof store.dispatch>();
+  return dispatch;
+}
+
+export type AuthState = {
+  isAuthenticated: boolean;
+  user: any | null;
+  token: string;
+}
+
+type Action = {
+  type: string,
+  [key: string]: any,
+}
+export type LoginFactoryProps = {
+  authenticatedComponent: (props: any) => ReactElement;
+  passwordResetUrl: string;
+  axios: typeof Axios;
+  onError: (error: any) => void;
+  onLogout: () => void;
+  loginUrl: string;
+  getUserUrl: string;
+  logoutUrl: string;
+  localStoragePrefix: string;
+}
+const errorIfUndefined = (obj: Partial<LoginFactoryProps>) => Object.entries(obj).reduce((error, [param, value]) => {
   if (typeof value === 'undefined') {
     console.error(`Parameter ${param} of loginFactory cannot be undefined`);
   }
   return error;
 }, false)
+
 export const loginFactory = ({
   authenticatedComponent,
   passwordResetUrl,
@@ -26,13 +56,14 @@ export const loginFactory = ({
   getUserUrl,
   logoutUrl,
   localStoragePrefix,
-}) => {
+}: LoginFactoryProps) => {
+  // type State = ReturnType<typeof store.getState>
+
   const localStorageUser = localStoragePrefix ? `${localStoragePrefix}-user` : 'user';
   const localStorageToken = localStoragePrefix ? `${localStoragePrefix}-token` : 'token';
   const localStorageState = localStoragePrefix ? `${localStoragePrefix}-state` : 'state';
-  const localStorageLang = localStoragePrefix ? `${localStoragePrefix}-lang` : 'lang';
-
-  const error = errorIfUndefined({
+  
+  errorIfUndefined({
     authenticatedComponent,
     passwordResetUrl,
     axios,
@@ -40,10 +71,10 @@ export const loginFactory = ({
     getUserUrl,
     logoutUrl,
   });
-  if (error) return;
+
   const AuthenticatedComponent = authenticatedComponent;
 
-  const login = (userData, callback) => async dispatch => {
+  const login = (userData: any, callback?: () => void) => async (dispatch: ThunkDispatch<any, undefined, any>) => {
     try {
       const response = await axios.post(loginUrl, userData);
       const { auth_token } = response.data;
@@ -56,7 +87,7 @@ export const loginFactory = ({
     };
   };
 
-  const setAxiosAuthToken = token => {
+  const setAxiosAuthToken = (token: string) => {
     if (typeof token !== 'undefined' && token) {
       // Apply for every request
       axios.defaults.headers.common['Authorization'] = 'Token ' + token;
@@ -66,29 +97,29 @@ export const loginFactory = ({
     }
   };
   
-  const getCurrentUser = ({ callback } = {}) => async dispatch => {
+  const getCurrentUser = ({ callback }: { callback?: (userData: any) => void} = {}) => async (dispatch: ThunkDispatch<any, undefined, any>) => {
     try {
-      const response = await axios.get(getUserUrl);
+      const response = await axios.get(getUserUrl) as AxiosResponse;
       dispatch(setCurrentUser(response.data));
       if (typeof callback === 'function') callback(response.data);
 
     } catch(error) {
       dispatch(unsetCurrentUser());
-      if (error.response) {
-        if (
-          error.response.status === 401 &&
-          error.response.hasOwnProperty('data') &&
-          error.response.data.hasOwnProperty('detail') &&
-          error.response.data['detail'] === 'User inactive or deleted.'
-        ) {
-        }
-      } else {
-        onError(error);
-      }
+      // if (error.response) {
+      //   if (
+      //     error.response.status === 401 &&
+      //     error.response.hasOwnProperty('data') &&
+      //     error.response.data.hasOwnProperty('detail') &&
+      //     error.response.data['detail'] === 'User inactive or deleted.'
+      //   ) {
+      //   }
+      // } else {
+      onError(error);
+      // }
     };
   };
   
-  const setCurrentUser = user => dispatch => {
+  const setCurrentUser = (user: any) => (dispatch: ThunkDispatch<any, undefined, any>) => {
     localStorage.setItem(localStorageUser, JSON.stringify(user));
     dispatch({
       type: LOGIN_SET_CURRENT_USER,
@@ -96,7 +127,7 @@ export const loginFactory = ({
     });
   };
   
-  const setToken = token => dispatch => {
+  const setToken = (token: string) => (dispatch: ThunkDispatch<any, undefined, any>) => {
     setAxiosAuthToken(token);
     localStorage.setItem(localStorageToken, token);
     dispatch({
@@ -105,7 +136,7 @@ export const loginFactory = ({
     });
   };
   
-  const unsetCurrentUser = () => dispatch => {
+  const unsetCurrentUser = () => (dispatch: ThunkDispatch<any, undefined, any>) => {
     setAxiosAuthToken('');
     localStorage.removeItem(localStorageToken);
     localStorage.removeItem(localStorageUser);
@@ -115,7 +146,7 @@ export const loginFactory = ({
     });
   };
   
-  const logout = () => async dispatch => {
+  const logout = () => async (dispatch: ThunkDispatch<any, undefined, any>) => {
     try {
       await axios.post(logoutUrl);
       dispatch(unsetCurrentUser());
@@ -143,7 +174,7 @@ export const loginFactory = ({
     ...hasLocalStorage
     ? {
       isAuthenticated: true,
-      user: JSON.parse(user),
+      user: user ? JSON.parse(user) : null,
       token,
     }
     : {
@@ -151,14 +182,14 @@ export const loginFactory = ({
         user: null,
         token: ''
       },
-  };
-  if (hasLocalStorage) {
+  } as AuthState;
+  if (hasLocalStorage && token) {
     setAxiosAuthToken(token);
   }
 
   const authReducer = {
     auth:
-      (state = initialState, action) => {
+      (state = initialState, action: Action) => {
         switch (action.type) {
           case LOGIN_SET_TOKEN:
             return {
@@ -179,18 +210,20 @@ export const loginFactory = ({
       },
   };
   const useAuth = () => {
-    return useSelector(state => state.auth);
+    return useSelector((state: any) => state.auth);
   }
   const Login = () => {
     const [state, setState] = useSetState({
       email: '',
       password: ''
     });
-    const isAuthenticated = useSelector(({ auth }) => auth.isAuthenticated );
-    const { login } = useLogin();
+    const isAuthenticated = useSelector(({ auth }: any) => auth.isAuthenticated );
+    // To do: Add types for useWithDispatch
+    // const { login } = useLogin();
+    const dispatch = useDispatch();
     const { strings } = useLocalization();
   
-    const onChange = e => {
+    const onChange = (e: ChangeEvent<HTMLInputElement>) => {
       setState({ [e.target.name]: e.target.value });
     };
     const onLoginClick = () => {
@@ -198,7 +231,7 @@ export const loginFactory = ({
         email: state.email,
         password: state.password
       };
-      login(userData);
+      dispatch(login(userData));
     };
   
     if (isAuthenticated) {
@@ -213,7 +246,7 @@ export const loginFactory = ({
             <h1>Login</h1>
             <Form>
               <Form.Group className="mb-3" controlId='emailId'>
-                <Form.Label>{strings.your_email}</Form.Label>
+                <Form.Label>{strings.getString('your_email')}</Form.Label>
                 <Form.Control
                   type='text'
                   name='email'
@@ -224,22 +257,22 @@ export const loginFactory = ({
               </Form.Group>
   
               <Form.Group className="mb-3" controlId='passwordId'>
-                <Form.Label>{strings.your_password}</Form.Label>
+                <Form.Label>{strings.getString('your_password')}</Form.Label>
                 <Form.Control
                   type='password'
                   name='password'
-                  placeholder={strings.enter_password}
+                  placeholder={strings.getString('enter_password')}
                   value={state.password}
                   onChange={onChange}
                 />
               </Form.Group>
             </Form>
             <Button variant='primary' onClick={onLoginClick}>
-              {strings.login}
+              {strings.getString('login')}
             </Button>
             <p className='mt-2'>
-            {strings.forgot_password}{' '}
-              <a href={passwordResetUrl}>{strings.reset_password}</a>
+            {strings.getString('forgot_password')}{' '}
+              <a href={passwordResetUrl}>{strings.getString('reset_password')}</a>
             </p>
           </Col>
           <Col md='2'>
@@ -260,7 +293,7 @@ export const loginFactory = ({
     logout,
     authReducer,
     useAuth,
-    storeState: (state, action) => {
+    storeState: (state: any, action: Action) => {
       if (action.type === LOGIN_UNSET_CURRENT_USER) {
         localStorage.removeItem(localStorageState);
       } else {

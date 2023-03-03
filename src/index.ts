@@ -8,7 +8,7 @@ export * from './components/LoadingIndicator';
 export * from './components/CheckIndicator';
 export * from './components/SearchBox';
 
-export * from './utils/Hooks';
+export * from './utils/hooks';
 export * from './utils/TimeAndDate';
 export * from './utils/Utils';
 

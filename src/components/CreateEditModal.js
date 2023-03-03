@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Form, Modal, Button } from 'react-bootstrap';
 
 import { SmallSpinner } from './LoadingIndicator';
-import { usePrevious, useSetState } from '../utils/Hooks';
+import { usePrevious, useSetState } from '../utils/hooks';
 import { isEmpty } from '../utils/Utils';
 import { useLocalization } from '../localization/LocalizationContext';
 
