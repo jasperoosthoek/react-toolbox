@@ -6,7 +6,7 @@ import { Container, Button, Row, Col, Form } from 'react-bootstrap';
 
 import { useSetState, useWithDispatch } from '../utils/hooks';
 import { useLocalization } from '../localization/LocalizationContext';
-import { isEmpty } from '../utils/Utils';
+import { isEmpty } from '../utils/utils';
 
 export const LOGIN_SET_TOKEN = 'LOGIN_SET_TOKEN';
 export const LOGIN_SET_CURRENT_USER = 'LOGIN_SET_CURRENT_USER';

@@ -109,4 +109,4 @@
 - New optional `callback` function argument to `getCurrentUser`
 - New French translation
 - New `storeState` & `retrieveState` functions to store and retrieve state object from `localStorage`
-- Convert `Login` factory and `hooks` to Typescript
+- Convert `Login` factory and `hooks`, `timeAndDate` & `utils` to Typescript

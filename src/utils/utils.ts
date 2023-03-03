@@ -1,25 +1,25 @@
 
-export const isEmpty = value =>
+export const isEmpty = (value: unknown) =>
   value === undefined ||
   value === null ||
   (typeof value === 'object' && Object.keys(value).length === 0) ||
   (typeof value === 'string' && value.trim().length === 0);
 
 
-export const snakeToCamelCase = str => str.replace(
+export const snakeToCamelCase = (str: string) => str.replace(
   /([-_][a-z])/g,
   (group) => group
     .replace('-', '')
     .replace('_', '')
 );
 
-export const camelToSnakeCase = str => (str
-    .split(/(?=[A-Z])/)
-    .map(x => x.toUpperCase())
-    .join('_')
+export const camelToSnakeCase = (str: string) => (str
+  .split(/(?=[A-Z])/)
+  .map(x => x.toUpperCase())
+  .join('_')
 );
 
-export const pluralToSingle = str => {
+export const pluralToSingle = (str: string) => {
   if (str.slice(-1) !== 's') {
     // This string is not plural: keep it unaltered
     return str;
@@ -35,8 +35,8 @@ export const pluralToSingle = str => {
   }
 }
 
-export const arrayToObject = (array, byKey) => Object.fromEntries(array.map(obj => [obj[byKey], obj]));
+export const arrayToObject = <T extends any[]>(array: T, byKey: string) => Object.fromEntries(array.map(obj => [obj[byKey], obj]));
 
-export const roundFixed = (str, decimals) => parseFloat(str).toFixed(decimals);
-export const round = (str, decimals) => parseFloat(parseFloat(str).toFixed(decimals));
+export const roundFixed = (str: string, decimals: number) => parseFloat(str).toFixed(decimals);
+export const round = (str: string, decimals: number) => parseFloat(parseFloat(str).toFixed(decimals));
 

@@ -4,7 +4,7 @@ import { Form, Modal, Button } from 'react-bootstrap';
 
 import { SmallSpinner } from './LoadingIndicator';
 import { usePrevious, useSetState } from '../utils/hooks';
-import { isEmpty } from '../utils/Utils';
+import { isEmpty } from '../utils/utils';
 import { useLocalization } from '../localization/LocalizationContext';
 
 export const CreateEditModal = ({

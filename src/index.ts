@@ -9,8 +9,8 @@ export * from './components/CheckIndicator';
 export * from './components/SearchBox';
 
 export * from './utils/hooks';
-export * from './utils/TimeAndDate';
-export * from './utils/Utils';
+export * from './utils/timeAndDate';
+export * from './utils/utils';
 
 export * from './login/Login';
 
