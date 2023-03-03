@@ -1,8 +1,27 @@
-import React from 'react';
-import { Form, FormControl, InputGroup, Badge, Dropdown } from 'react-bootstrap';
+import React, { ReactElement } from 'react';
+import { Form, FormControl, InputGroup, Badge, Dropdown, FormControlProps, FormCheckProps } from 'react-bootstrap';
 import PropTypes from 'prop-types';
 import { useLocalization } from '../localization/LocalizationContext';
-import moment from 'moment';
+import moment, { Moment } from 'moment';
+
+export type FormType = {
+  state: any;
+  setState: (obj: any) => void;
+  initialState: any;
+  initialValue: any;
+  keyName: string;
+  pristine: boolean;
+}
+
+type ValueType = boolean | string | string[];
+
+export type FormInputProps = Omit<FormControlProps, 'onChange'> & FormType & {
+  onChange: (value: ValueType) => void;
+  controlId?: string;
+  label?: ReactElement;
+  onEnter?: () => void;
+  rows?: number;
+}
 
 export const FormInput = ({
   label,
@@ -18,12 +37,11 @@ export const FormInput = ({
   keyName,
   pristine,
   ...formProps
-}) =>
+}: FormInputProps) => (
   <Form.Group controlId={controlId}>
     {label && <Form.Label>{label}</Form.Label>}
     <Form.Control
       autoComplete="off"
-      as="input"
       {...formProps}
       value={value || ''}
       onChange={e => onChange(e.target.value)}
@@ -36,8 +54,13 @@ export const FormInput = ({
       }}
     />
   </Form.Group>
+);
 
-export const FormTextArea = ({ as = 'textarea', rows = 3, ...restProps }) => (
+// interface FormTextAreaProps extends FormInputProps {
+//   rows: number;
+// }
+
+export const FormTextArea = ({ as = 'textarea', rows = 3, ...restProps }: FormInputProps) => (
   <FormInput
     as={as}
     rows={rows}
@@ -45,28 +68,50 @@ export const FormTextArea = ({ as = 'textarea', rows = 3, ...restProps }) => (
   />
 );
 
-export const FormDate = props => (
+export const FormDate = (props: FormInputProps) => (
   <FormInput
     {...props}
     type='date'
   />
 )
 
-export const FormDateTime = ({ value, onChange, ...restProps }) => (
+export type FormDateTimeProps = Omit<FormInputProps, 'onChange' | 'value'> & {
+  value: string | Moment;
+  onChange: (value: string) => void;
+}
+
+export const FormDateTime = ({ value, onChange, ...restProps }: FormDateTimeProps) => (
   <FormInput
     {...restProps}
     value={
       typeof value === 'string'
-      ? moment(value).format('YYYY-MM-DDTHH:mm')
-      : value
+      ? value
+      : moment(value).format('YYYY-MM-DDTHH:mm')
     }
-    onChange={newValue => onChange(moment(newValue).utc().format())}
+    onChange={newValue => onChange(moment(newValue as string).utc().format())}
     type='datetime-local'
   />
 );
 
-export const FormCheckbox = ({ value, onChange, state, label, keyName, ...restProps }) =>
-  <Form.Group>
+
+export type FormCheckboxProps = Omit<FormCheckProps, 'onChange'> & FormType & {
+  onChange: (value: boolean) => void;
+  controlId?: string;
+  label?: ReactElement;
+  onEnter?: () => void;
+  rows?: number;
+}
+
+export const FormCheckbox = ({
+  value,
+  onChange,
+  state,
+  label,
+  keyName,
+  controlId,
+  ...restProps
+}: FormCheckboxProps) => (
+  <Form.Group controlId={controlId}>
     {label && <Form.Label onClick={() => onChange(!value)}>{label}</Form.Label>}
     <Form.Check
       type="checkbox"
@@ -76,26 +121,45 @@ export const FormCheckbox = ({ value, onChange, state, label, keyName, ...restPr
       {...restProps}
     />
   </Form.Group>
+);
 
-export const FormSwitch = ({ className = '', restProps }) =>
+export const FormSwitch = ({ className = '', ...restProps }: FormCheckboxProps) => (
   <FormCheckbox
     type="switch"
     {...restProps}
   />
+);
 
+export type DisabledProps = {
+
+  list: any[];
+  value: string | number;
+  state: any;
+  initialState: any;
+  initialValue: any;
+}
+
+export type FormSelectProps = Omit<FormInputProps, 'disabled'> & {
+  list: any[];
+  multiple?: boolean;
+  integer?: boolean;
+  formatTitle?: (item: any) => ReactElement;
+  idKey?: string;
+  disabled: boolean | ((props: DisabledProps) => boolean);
+}
 
 export const FormSelect = ({
   list,
-  id = 'id',
+  idKey = 'id',
+  integer = false,
   value,
   defaultValue,
   onChange,
   label,
   controlId,
-  size = '5',
-  integer = false,
+  htmlSize = 5,
   state,
-  formatTitle = null,
+  formatTitle,
   multiple,
   disabled,
   isInvalid,
@@ -103,48 +167,62 @@ export const FormSelect = ({
   initialValue,
   keyName,
   pristine,
-}) => {
+}: FormSelectProps) => {
   multiple = multiple || multiple === false ? multiple : value instanceof Array;
-  const parseInteger = id => integer ? parseInt(id) : id;
+  const parseInteger = (value: string | number) => integer ? parseInt(value.toString()).toString() : value;
 
   return <>
     <Form.Group controlId={controlId}>
       {label && <Form.Label>{label}</Form.Label>}
       <FormControl as="select"
-        htmlSize={size}
+        htmlSize={htmlSize}
         multiple={multiple}
-        value={multiple ? value.map(id => parseInteger(id)) : parseInteger(value) || ''}
+        // value={Array.isArray(value) ? value.map((val: string) => parseInteger(val) as string[]) : parseInteger(value) || ''}
+        // value={Array.isArray(value) ? value.map((v: number | string) => v.toString()) : parseInteger(value) || ''}
+        value={Array.isArray(value) ? value.map((v: number | string) => v.toString()) : value.toString() || ''}
         // Dummy onChange is used to suppress warning.
         onChange={() => {}}
-        disabled={disabled}
+        disabled={typeof disabled === 'boolean' ? disabled : false}
         isInvalid={isInvalid}
       >
         <option value='' disabled hidden />
         {Object.values(list).map((item, index) => {
-          const selected = multiple ? value.find(id => parseInteger(id) === parseInteger(item[id])) : value === item[id];
+          const selected = Array.isArray(value) ? value.find(id => parseInteger(id) === parseInteger(item[idKey])) : value === item[idKey];
           return (
             <option
               key={index}
-              value={parseInteger(item[id])}
-              disabled={typeof disabled === 'function' ? disabled({ list, value: parseInteger(item[id]), state, initialState, initialValue }) : disabled }
+              value={parseInteger(item[idKey])}
+              disabled={
+                typeof disabled === 'function'
+                  ? disabled({
+                      list,
+                      value: parseInteger(item[idKey]),
+                      state,
+                      initialState,
+                      initialValue,
+                    })
+                  : disabled
+              }
               onClick={() => {
                 // Use onClick here instead of onChange in Form.Select to be able to unset all the options which isn't possible otherwise
                 if (onChange === null) {
                   return;
                 }
-                if (multiple) {
+                if (Array.isArray(value)) {
                   if(selected) {
-                    onChange(value.filter(id => parseInteger(id) !== parseInteger(item[id])));
+                    onChange(value.filter(idKey => parseInteger(idKey) !== parseInteger(item[idKey])));
                   } else {
-                    onChange([...value, parseInteger(item[id])]);
+                    // onChange([...value, parseInteger(item[idKey])]);
+                    onChange([...value, item[idKey].toString()]);
                   }
                 } else {
-                  onChange(selected ? null : parseInteger(item[id]))
+                  // onChange(selected ? null : parseInteger(item[idKey]))
+                  onChange(selected ? null : item[idKey].toString())
                 }
               }}
               defaultValue={defaultValue}
             >
-                {formatTitle === null ? item.children : formatTitle(item)}
+                {formatTitle ? formatTitle(item) : item.children }
             </option>
           )}
         )}
@@ -169,7 +247,7 @@ export const BadgeSelection = ({ selected = true, cursor, style, ...restProps })
 )
 export const FormBadgesSelection = ({
   list=[],
-  id = 'id',
+  idKey = 'id',
   value,
   onChange,
   multiple,
