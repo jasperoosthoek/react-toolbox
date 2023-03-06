@@ -49,15 +49,14 @@ export const useWithDispatch = <T>(obj: T) => {
     return hook;
   }
   
-  return Object.entries(obj).reduce((o, [name, func]) => {
-    const hook = <G extends any[]>(...args: G) => dispatch(func(...args));
-    return (
-      {
-        ...o,
-        [name]: hook,
-      }
-    );
-  }, {});
+  return Object.fromEntries(
+    Object.entries(obj).map(([name, func]) =>
+      [
+        name,
+        <G extends any[]>(...args: G) => dispatch(func(...args)),
+      ]
+    )
+  );
 };
 
 // https://devtrium.com/posts/set-interval-react

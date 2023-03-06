@@ -1,5 +1,6 @@
 import React, { ReactElement } from 'react';
-import { Form, FormControl, InputGroup, Badge, Dropdown, FormControlProps, FormCheckProps } from 'react-bootstrap';
+import { Form, FormControl, Badge, Dropdown, BadgeProps, FormControlProps, FormCheckProps  } from 'react-bootstrap';
+import { Variant} from 'react-bootstrap/types';
 import PropTypes from 'prop-types';
 import { useLocalization } from '../localization/LocalizationContext';
 import moment, { Moment } from 'moment';
@@ -139,13 +140,14 @@ export type DisabledProps = {
   initialValue: any;
 }
 
-export type FormSelectProps = Omit<FormInputProps, 'disabled'> & {
+export type FormSelectProps = Omit<FormInputProps, 'disabled' | 'onChange'> & {
+  onChange: (value: number | string | number[] | string[] | null) => void;
   list: any[];
   multiple?: boolean;
   integer?: boolean;
   formatTitle?: (item: any) => ReactElement;
   idKey?: string;
-  disabled: boolean | ((props: DisabledProps) => boolean);
+  disabled?: boolean | ((props: DisabledProps) => boolean);
 }
 
 export const FormSelect = ({
@@ -169,7 +171,7 @@ export const FormSelect = ({
   pristine,
 }: FormSelectProps) => {
   multiple = multiple || multiple === false ? multiple : value instanceof Array;
-  const parseInteger = (value: string | number) => integer ? parseInt(value.toString()).toString() : value;
+  const parseInteger = (value: string | number): string | number => integer ? parseInt(`${value}`) : `${value}`;
 
   return <>
     <Form.Group controlId={controlId}>
@@ -179,7 +181,7 @@ export const FormSelect = ({
         multiple={multiple}
         // value={Array.isArray(value) ? value.map((val: string) => parseInteger(val) as string[]) : parseInteger(value) || ''}
         // value={Array.isArray(value) ? value.map((v: number | string) => v.toString()) : parseInteger(value) || ''}
-        value={Array.isArray(value) ? value.map((v: number | string) => v.toString()) : value.toString() || ''}
+        value={Array.isArray(value) ? value.map((v: number | string) => v.toString()) : value ? value.toString() : ''}
         // Dummy onChange is used to suppress warning.
         onChange={() => {}}
         disabled={typeof disabled === 'boolean' ? disabled : false}
@@ -191,7 +193,7 @@ export const FormSelect = ({
           return (
             <option
               key={index}
-              value={parseInteger(item[idKey])}
+              value={`${item[idKey]}`}
               disabled={
                 typeof disabled === 'function'
                   ? disabled({
@@ -210,14 +212,18 @@ export const FormSelect = ({
                 }
                 if (Array.isArray(value)) {
                   if(selected) {
-                    onChange(value.filter(idKey => parseInteger(idKey) !== parseInteger(item[idKey])));
+                    onChange(value.filter(id => parseInteger(id) !== parseInteger(item[idKey])));
                   } else {
                     // onChange([...value, parseInteger(item[idKey])]);
-                    onChange([...value, item[idKey].toString()]);
+                    onChange(
+                      integer
+                        ? [...value.map((v: string | number ) => parseInt(v as string)), parseInt(item[idKey])]
+                        : [...value.map((v: string | number ) => `${v}`), `${item[idKey]}`]
+                     );
                   }
                 } else {
                   // onChange(selected ? null : parseInteger(item[idKey]))
-                  onChange(selected ? null : item[idKey].toString())
+                  onChange(selected ? null : parseInteger(item[idKey]))
                 }
               }}
               defaultValue={defaultValue}
@@ -234,17 +240,27 @@ FormSelect.propTypes = {
   onChange: PropTypes.func.isRequired,
 }
 
-export const BadgeSelection = ({ selected = true, cursor, style, ...restProps }) => (
+export interface BadgeSelectionProps extends BadgeProps {
+  selected: boolean;
+  cursor: string;
+  disabled?: boolean;
+} 
+
+export const BadgeSelection = ({ selected = true, disabled, cursor, onClick, style, bg, ...restProps }: BadgeSelectionProps) => (
   <Badge
-    bg={selected ? 'primary' : 'secondary'}
+    bg={bg || (selected ? 'primary' : 'secondary')}
     style={{
       userSelect: 'none',
       ...cursor ? { cursor } : {},
       ...style || {},
     }}
+    {...disabled ? {} : { onClick }}
     {...restProps}
   />
 )
+
+export type FormBadgesSelectionProps = FormSelectProps;
+
 export const FormBadgesSelection = ({
   list=[],
   idKey = 'id',
@@ -252,6 +268,7 @@ export const FormBadgesSelection = ({
   onChange,
   multiple,
   label,
+  integer,
   controlId,
   isInvalid,
   state,
@@ -262,9 +279,9 @@ export const FormBadgesSelection = ({
   keyName,
   pristine,
   ...restProps
-}) => {
+}: FormBadgesSelectionProps) => {
   multiple = multiple || multiple === false ? multiple : value instanceof Array;
-  // return <div className="form-control-lg">
+  const parseInteger = (value: string | number): string | number => integer ? parseInt(`${value}`) : `${value}`;
   
   return (
     <Form.Group controlId={controlId}>
@@ -272,23 +289,37 @@ export const FormBadgesSelection = ({
       <div className={`form-control ${isInvalid ? 'is-invalid' : ''}`}>
         {list.map((item, key) => {
           const selected = multiple
-            ? !!value && value.includes(item[id])
-            : value === item[id];
+            ? !!value && Array.isArray(value) && value.includes(item[idKey])
+            : value === item[idKey];
           return (
             <BadgeSelection
               key={key}
-              disabled={typeof disabled === 'function' ? disabled({ list, value: item[id], state, initialState }) : disabled }
+              disabled={
+                typeof disabled === 'function'
+                  ? disabled({ initialValue, list, value: item[idKey], state, initialState })
+                  : disabled
+              }
               selected={selected}
               cursor='pointer'
               onClick={() => {
-                if (multiple) {
-                  if (selected) {
-                    onChange(value.filter(i => i !== item[id]));
+                if (Array.isArray(value)) {
+                  // if (selected) {
+                  //   onChange(value.filter((i: number | string) => i !== item[id]));
+                  // } else {
+                  //   onChange([...value || [], item[id]]);
+                  // }
+                  if(selected) {
+                    onChange(value.filter(id => parseInteger(id) !== parseInteger(item[idKey])));
                   } else {
-                    onChange([...value || [], item[id]]);
+                    // onChange([...value, parseInteger(item[idKey])]);
+                    onChange(
+                      integer
+                        ? [...value.map((v: string | number ) => parseInt(v as string)), parseInt(item[idKey])]
+                        : [...value.map((v: string | number ) => `${v}`), `${item[idKey]}`]
+                     );
                   }
                 } else {
-                  onChange(item[id])
+                  onChange(item[idKey])
                 }
               }}
               {...restProps}
@@ -302,38 +333,45 @@ export const FormBadgesSelection = ({
   );
 }
 
-export const FormSelectControl = ({
-  controlId,
-  label,
-  formProps,
-  onChange,
-  options,
-  defaultValue,
-  children,
-  ...restProps
-}) => (
-  <InputGroup controlId={controlId}>
-    {label && <Form.Label>{label}</Form.Label>}
-    <FormControl as='select'
-      onChange={e => onChange(e.target.value)}
-      {...formProps}
-      {...restProps}
-    >
-      {options.map(({ value, children, ...option }) =>
-        <option
-          key={value}
-          value={value}
-          defaultValue={defaultValue}
-          {...option}
-        >
-          {children}
-        </option>
-      )}
-    </FormControl>
-    {children}
-  </InputGroup>
-);
+// export const FormSelectControl = ({
+//   controlId,
+//   label,
+//   formProps,
+//   onChange,
+//   options,
+//   defaultValue,
+//   children,
+//   ...restProps
+// }) => (
+//   <InputGroup controlId={controlId}>
+//     {label && <Form.Label>{label}</Form.Label>}
+//     <FormControl as='select'
+//       onChange={e => onChange(e.target.value)}
+//       {...formProps}
+//       {...restProps}
+//     >
+//       {options.map(({ value, children, ...option }) =>
+//         <option
+//           key={value}
+//           value={value}
+//           defaultValue={defaultValue}
+//           {...option}
+//         >
+//           {children}
+//         </option>
+//       )}
+//     </FormControl>
+//     {children}
+//   </InputGroup>
+// );
 
+export type FormDropdownProps =  Omit<FormInputProps, 'disabled' | 'onChange'> & {
+  onChange: (value: number | string | number[] | string[] | null) => void;
+  list: any[];
+  idKey?: string;
+  disabled?: boolean | ((props: DisabledProps) => boolean);
+  variant?: Variant;
+}
 export const FormDropdown = ({  
   list=[],
   id = 'id',
@@ -351,7 +389,7 @@ export const FormDropdown = ({
   keyName,
   pristine,
   ...restProps
-}) => {
+}: FormDropdownProps) => {
   const { strings } = useLocalization();
   const selectedItem = list.find(({ [id]: itemId }) => itemId === value);
   return (
@@ -363,14 +401,18 @@ export const FormDropdown = ({
           <Dropdown.Toggle variant={variant}>
             {selectedItem
               ? selectedItem.name
-              : strings.choose_one
+              : strings.getString('choose_one')
             }
           </Dropdown.Toggle>
           <Dropdown.Menu>
             {list.map((item, key) =>
               <Dropdown.Item
                 key={key}
-                disabled={typeof disabled === 'function' ? disabled({ list, value: item[id], state, initialState }) : disabled }
+                disabled={
+                  typeof disabled === 'function'
+                    ? disabled({ initialValue, list, value: item[id], state, initialState })
+                    : disabled
+                }
                 selected={value === item[id]}
                 cursor='pointer'
                 onClick={() => onChange(item[id])}
