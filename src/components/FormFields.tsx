@@ -14,10 +14,10 @@ export type FormType = {
   pristine: boolean;
 }
 
-type ValueType = boolean | string | string[];
+type FormValue = boolean | string | string[];
 
 export type FormInputProps = Omit<FormControlProps, 'onChange'> & FormType & {
-  onChange: (value: ValueType) => void;
+  onChange: (value: FormValue) => void;
   controlId?: string;
   label?: ReactElement;
   onEnter?: () => void;

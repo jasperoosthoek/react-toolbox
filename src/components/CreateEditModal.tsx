@@ -7,15 +7,15 @@ import { usePrevious, useSetState } from '../utils/hooks';
 import { isEmpty } from '../utils/utils';
 import { useLocalization } from '../localization/LocalizationContext';
 
-type ValueType = boolean | string | string[] | number | number[];
+type FormValue = boolean | string | string[] | number | number[];
 
-export type FormOnChange = <T extends { [key: string]: ValueType }>(value: ValueType, formData: T) => Partial<T>;
+export type FormOnChange = <T extends { [key: string]: FormValue }>(value: FormValue, formData: T) => Partial<T>;
 
 export type FormComponentProps = {
   keyName?: string;
   pristine?: boolean;
   isInvalid?: boolean;
-  value: ValueType;
+  value: FormValue;
   state?: any;
   setState?: (newState: any) => void;
   onChange?: FormOnChange;
@@ -34,10 +34,12 @@ export type FormField = {
   label?: ReactElement;
 }
 
+export type FormFields = { [key: string]: FormField };
+
 export type CreateEditModalProps = {
   initialState: any;
   includeData: any;
-  formFields: { [key: string]: FormField };
+  formFields: FormFields;
   show?: boolean;
   onSave: (state: any, callback: () => void) => void;
   onHide: () => void;
