@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, ReactElement, ChangeEvent } from 'react';
 import PropTypes from 'prop-types';
 import { Form, Modal, Button } from 'react-bootstrap';
 
@@ -6,6 +6,47 @@ import { SmallSpinner } from './LoadingIndicator';
 import { usePrevious, useSetState } from '../utils/hooks';
 import { isEmpty } from '../utils/utils';
 import { useLocalization } from '../localization/LocalizationContext';
+
+type ValueType = boolean | string | string[] | number | number[];
+
+export type FormOnChange = <T>(value: ValueType, formData: T) => Partial<T>;
+
+export type FormComponentProps = {
+  keyName?: string;
+  pristine?: boolean;
+  isInvalid?: boolean;
+  value: ValueType;
+  state?: any;
+  setState?: (newState: any) => void;
+  onChange?: FormOnChange;
+  initialState?: any;
+  initialValue?: any;
+  label?: ReactElement;
+}
+
+export type FormField = {
+  initialValue?: any;
+  type?: 'string' | 'number';
+  required?: boolean;
+  formProps?: any;
+  component?: (props: FormComponentProps) => ReactElement;
+  onChange?: FormOnChange;
+  label?: ReactElement;
+}
+
+export type CreateEditModalProps = {
+  initialState: any;
+  includeData: any;
+  formFields: { [key: string]: FormField };
+  show?: boolean;
+  onSave: (state: any, callback: () => void) => void;
+  onHide: () => void;
+  validate?: (state: any) => any;
+  modalTitle?: ReactElement;
+  loading?: boolean;
+  dialogClassName?: string;
+  width?: 25 | 50 | 75 | 100;
+}
 
 export const CreateEditModal = ({
   initialState,
@@ -20,7 +61,7 @@ export const CreateEditModal = ({
   dialogClassName='',
   width,
   ...restProps
-}) => {
+}: CreateEditModalProps) => {
   if (Object.values(restProps).length !==0) {
     console.error(`Unrecognised props given to CreateEditModal:`, restProps);
   }
@@ -53,7 +94,7 @@ export const CreateEditModal = ({
   const { strings } = useLocalization();
 
   if (!formData) return null;
-  const getValue = key => {
+  const getValue = (key: string) => {
     return(
       formData[key]
       ? formData[key]
@@ -67,14 +108,14 @@ export const CreateEditModal = ({
     ...Object.keys(formData).reduce(
       (o, key) => {
         if (!formFields[key] || !formFields[key].required || !isEmpty(getValue(key))) return o;
-        return { ...o, [key]: strings.required_field };
+        return { ...o, [key]: strings.getString('required_field') };
       },
       {}
     ),
   }
   const validated = Object.values(validationErrors).length === 0;
 
-  const handleSave = e => {
+  const handleSave = () => {
     setState({ pristine: false })
     if (!validated) return;
     onSave(
@@ -90,7 +131,7 @@ export const CreateEditModal = ({
     <Modal
       show={show}
       onHide={onHide}
-      onClick={e => e.stopPropagation()}
+      onClick={(e: ChangeEvent<HTMLElement>) => e.stopPropagation()}
       centered
       dialogClassName={`${dialogClassName} ${width ? `mw-100 w-${width}` : ''}`}
     >
@@ -100,7 +141,10 @@ export const CreateEditModal = ({
 
       <Modal.Body>
         <Form>
-          {Object.entries(formFields).map(([key, { formProps = {}, label, component: Component, onChange, required }]) => {
+          {Object.entries(formFields).map(
+            ([key, { formProps = {}, label, component: Component, onChange, required }]:
+              [string, FormField]
+          ) => {
             const isInvalid = !pristine && !!(!validated && validationErrors[key]);
             const value = getValue(key);
             return (
@@ -153,13 +197,13 @@ export const CreateEditModal = ({
           variant="secondary"
           onClick={onHide}
         >
-          {strings.close}
+          {strings.getString('close')}
         </Button>
         <Button
           variant="primary"
           onClick={handleSave}
         >
-          {strings.save}
+          {strings.getString('save')}
         </Button>
       </Modal.Footer>
     </Modal>
@@ -183,7 +227,7 @@ CreateEditModal.defaultProps = {
   initialState: null,
 }
 
-export const DisabledFormField = ({ value }) =>
+export const DisabledFormField = ({ value }: any) =>
   <Form.Control
     as="input"
     disabled
