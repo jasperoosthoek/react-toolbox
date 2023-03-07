@@ -110,3 +110,4 @@
 - New French translation
 - New `storeState` & `retrieveState` functions to store and retrieve state object from `localStorage`
 - Convert `Login` factory and `hooks`, `FormFields`, `timeAndDate`, `CreateEditModal` & `utils` to Typescript
+- `CreateEditModal` component uses `onKeyPress` instead of deprecated `onKeyPress` handler

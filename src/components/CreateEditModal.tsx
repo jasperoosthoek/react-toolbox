@@ -1,4 +1,4 @@
-import React, { useEffect, useState, ReactElement, ChangeEvent } from 'react';
+import React, { useEffect, useState, ReactElement, ChangeEvent, KeyboardEvent } from 'react';
 import PropTypes from 'prop-types';
 import { Form, Modal, Button } from 'react-bootstrap';
 
@@ -9,7 +9,7 @@ import { useLocalization } from '../localization/LocalizationContext';
 
 type ValueType = boolean | string | string[] | number | number[];
 
-export type FormOnChange = <T>(value: ValueType, formData: T) => Partial<T>;
+export type FormOnChange = <T extends { [key: string]: ValueType }>(value: ValueType, formData: T) => Partial<T>;
 
 export type FormComponentProps = {
   keyName?: string;
@@ -135,9 +135,11 @@ export const CreateEditModal = ({
       centered
       dialogClassName={`${dialogClassName} ${width ? `mw-100 w-${width}` : ''}`}
     >
-      <Modal.Header closeButton>
-        <Modal.Title>{modalTitle}</Modal.Title>
-      </Modal.Header>
+      {modalTitle && (
+        <Modal.Header closeButton>
+          <Modal.Title>{modalTitle}</Modal.Title>
+        </Modal.Header>
+      )}
 
       <Modal.Body>
         <Form>
@@ -176,8 +178,8 @@ export const CreateEditModal = ({
                             ? { ...formData, ...onChange(e.target.value, formData) }
                             : { ...formData, [key]: e.target.value }
                       })}
-                      onKeyPress={e => {
-                        if (e.charCode === 13 && formProps.as !== 'textarea') {
+                      onKeyDown={(e: KeyboardEvent<HTMLInputElement>) => {
+                        if (e.key === 'Enter' && formProps.as !== 'textarea') {
                           // Pressing the enter key will save data unless it is a multi line text area
                           e.preventDefault();
                           handleSave();
@@ -216,7 +218,7 @@ CreateEditModal.propTypes = {
   formFields: PropTypes.object.isRequired,
   show: PropTypes.bool,
   loading: PropTypes.bool,
-  modalTitle: PropTypes.node.isRequired,
+  modalTitle: PropTypes.node,
   validate: PropTypes.func,
 }
 CreateEditModal.defaultProps = {
@@ -225,6 +227,7 @@ CreateEditModal.defaultProps = {
   includeData: {},
   validate: null,
   initialState: null,
+  modalTitle: null,
 }
 
 export const DisabledFormField = ({ value }: any) =>
