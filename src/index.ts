@@ -1,12 +1,15 @@
-export * from './components/CreateEditModal';
-export * from './components/DataTable';
-export * from './components/DragAndDropList';
-export * from './components/Errors';
-export * from './components/FormFields';
-export * from './components/IconButtons';
-export * from './components/LoadingIndicator';
-export * from './components/CheckIndicator';
-export * from './components/SearchBox';
+export * from './components/buttons/IconButtons';
+
+export * from './components/forms/CreateEditModal';
+export * from './components/forms/FormFields';
+
+export * from './components/indicators/Errors';
+export * from './components/indicators/LoadingIndicator';
+export * from './components/indicators/CheckIndicator';
+
+export * from './components/tables/DataTable';
+export * from './components/tables/DragAndDropList';
+export * from './components/tables/SearchBox';
 
 export * from './utils/hooks';
 export * from './utils/timeAndDate';

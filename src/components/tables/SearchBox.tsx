@@ -1,8 +1,8 @@
 import React, { ChangeEvent } from 'react';
 import { InputGroup, Form, FormControlProps } from 'react-bootstrap';
 
-import { useLocalization } from '../localization/LocalizationContext';
-import { UnCheckButton, SearchButton } from './IconButtons';
+import { useLocalization } from '../../localization/LocalizationContext';
+import { UnCheckButton, SearchButton } from '../buttons/IconButtons';
 
 export type SearchBoxProps = {
   className?: string;

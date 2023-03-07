@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button, Spinner, Container, Row, Col } from 'react-bootstrap';
-import { useLocalization } from '../localization/LocalizationContext';
+import { useLocalization } from '../../localization/LocalizationContext';
 
 export const LoadingIndicator = ({ style = {}}) => {
   const { strings } = useLocalization();

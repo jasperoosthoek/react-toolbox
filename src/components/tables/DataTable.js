@@ -2,9 +2,9 @@ import React, { useEffect, useState, forwardRef, useReducer } from 'react';
 import { FaSort, FaSortUp, FaSortDown } from 'react-icons/fa';
 import { Table, Col, Row, InputGroup, Form, Button, ButtonGroup } from 'react-bootstrap';
 
-import { CloseButton } from './IconButtons';
+import { CloseButton } from '../buttons/IconButtons';
 import { DragAndDropList } from './DragAndDropList';
-import { useLocalization } from '../localization/LocalizationContext';
+import { useLocalization } from '../../localization/LocalizationContext';
 
 const PaginationButton = props => <Button variant="outline-secondary" size="" {...props} />
 

@@ -25,8 +25,8 @@ import { HiOutlineCog, HiOutlineLink } from 'react-icons/hi';
 import { VscMenu } from 'react-icons/vsc';
 import { RiQuestionnaireLine } from 'react-icons/ri';
 
-import { SmallSpinner } from './LoadingIndicator';
-import { LocalizationContext } from '../localization/LocalizationContext';
+import { SmallSpinner } from '../indicators/LoadingIndicator';
+import { LocalizationContext } from '../../localization/LocalizationContext';
 
 export interface ButtonProps extends ReactBootstrapButtonProps {
   loading?: boolean,

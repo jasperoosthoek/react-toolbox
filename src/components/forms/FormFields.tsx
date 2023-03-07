@@ -2,7 +2,7 @@ import React, { ReactElement } from 'react';
 import { Form, FormControl, Badge, Dropdown, BadgeProps, FormControlProps, FormCheckProps  } from 'react-bootstrap';
 import { Variant} from 'react-bootstrap/types';
 import PropTypes from 'prop-types';
-import { useLocalization } from '../localization/LocalizationContext';
+import { useLocalization } from '../../localization/LocalizationContext';
 import moment, { Moment } from 'moment';
 
 export type FormType = {

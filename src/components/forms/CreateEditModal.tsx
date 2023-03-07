@@ -2,10 +2,10 @@ import React, { useEffect, useState, ReactElement, ChangeEvent, KeyboardEvent } 
 import PropTypes from 'prop-types';
 import { Form, Modal, Button } from 'react-bootstrap';
 
-import { SmallSpinner } from './LoadingIndicator';
-import { usePrevious, useSetState } from '../utils/hooks';
-import { isEmpty } from '../utils/utils';
-import { useLocalization } from '../localization/LocalizationContext';
+import { SmallSpinner } from '../indicators/LoadingIndicator';
+import { usePrevious, useSetState } from '../../utils/hooks';
+import { isEmpty } from '../../utils/utils';
+import { useLocalization } from '../../localization/LocalizationContext';
 
 type FormValue = boolean | string | string[] | number | number[];
 
