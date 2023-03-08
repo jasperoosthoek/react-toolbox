@@ -129,7 +129,7 @@ export type DragAndDropListProps<A extends any[]> = {
   propsArray: A; 
   component: DragAndDropListComponent;
 }
-export const DragAndDropList = <A extends any[]>({ onDrop, propsArray, component: Component }: DragAndDropListProps<A>) => {
+export const DragAndDropList = <A extends any[]>({ onDrop, propsArray, component }: DragAndDropListProps<A>) => {
   const [listMap, setListMap] = useState<number[] | null>(null);
   const [droppedIndex, setDroppedIndex] = useState<number | null>(null);
   const propsArrayPrev = usePrevious(propsArray);
@@ -162,14 +162,14 @@ export const DragAndDropList = <A extends any[]>({ onDrop, propsArray, component
     [listMap]
   );
 
-  const component = Component && forwardRef<HTMLElement, DragAndDropListComponentProps>(
-    (props: DragAndDropListComponentProps, ref) =>
-      <Component
-        ref={ref}
-        {...props}
-      />
-  );
-  if (!Component || !component) return null;
+  // const component = Component && forwardRef<HTMLElement, DragAndDropListComponentProps>(
+  //   (props: DragAndDropListComponentProps, ref) =>
+  //     <Component
+  //       ref={ref}
+  //       {...props}
+  //     />
+  // );
+  if (!component) return null;
 
   return (
     <>

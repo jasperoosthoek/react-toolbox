@@ -1,4 +1,4 @@
-import React, { useEffect, useState, forwardRef, useReducer, ReactElement, ChangeEvent } from 'react';
+import React, { useEffect, useState, forwardRef, useReducer, ReactElement, ChangeEvent, Ref } from 'react';
 import { FaSort, FaSortUp, FaSortDown } from 'react-icons/fa';
 import { Table, Col, Row, InputGroup, Form, Button, ButtonProps, ButtonGroup } from 'react-bootstrap';
 
@@ -121,7 +121,10 @@ export const DataTable = <D extends any[]>({
     data = data.slice(page * rowsPerPage, (page + 1) * rowsPerPage);
   }
 
-  /* const Component = forwardRef<HTMLTableRowElement, { row: R } & DragAndDropListComponentProps>(({ row }: R, ref) =>
+  const Component = forwardRef<
+    HTMLTableRowElement,
+    { row: R } & DragAndDropListComponentProps
+  >(({ row }: R, ref: Ref<HTMLTableRowElement> | null) =>
     <tr
       ref={ref}
       {
@@ -134,24 +137,6 @@ export const DataTable = <D extends any[]>({
       {...{ ...typeof onClickRow === 'function' ? { onClick: () => onClickRow(row)} : {}}}
     >
       {columns.map(({ selector, className }, index) =>
-        <td key={index} className={className}>
-          {typeof selector === 'function' ? selector(row) : row[selector]}
-        </td>
-      )}
-    </tr>
-  ); */
-  const Component = ({ row }: { row?: R } & DragAndDropListComponentProps) => (
-    <tr
-      {
-        ...typeof rowClassName === 'string'
-        ? { className: rowClassName }
-        : typeof rowClassName === 'function' && row
-        ? { className: rowClassName(row) }
-        : {}
-      }
-      {...{ ...typeof onClickRow === 'function' && row? { onClick: () => onClickRow(row)} : {}}}
-    >
-      {row && columns.map(({ selector, className }, index) =>
         <td key={index} className={className}>
           {typeof selector === 'function' ? selector(row) : row[selector]}
         </td>
@@ -309,7 +294,7 @@ export const DataTable = <D extends any[]>({
           }
           {dragAndDrop
             ? <DragAndDropList
-                component={Component}
+                component={Component as DragAndDropListComponent}
                 propsArray={(data && data 
                   .map(row => ({
                     row,
@@ -326,7 +311,6 @@ export const DataTable = <D extends any[]>({
                   }
                   onMove({ item, target, reset });
                 }}
-                // onComponentDidMount={forceUpdate}
               />
             : data.map((row, index) => <Component row={row} key={index} />)
           }

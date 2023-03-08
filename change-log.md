@@ -109,5 +109,5 @@
 - New optional `callback` function argument to `getCurrentUser`
 - New French translation
 - New `storeState` & `retrieveState` functions to store and retrieve state object from `localStorage`
-- Convert `Login` factory and `hooks`, `FormFields`, `timeAndDate`, `CreateEditModal`, `DataTable` & `utils` to Typescript
+- Convert everything to Typescript
 - `CreateEditModal` component uses `onKeyPress` instead of deprecated `onKeyPress` handler
