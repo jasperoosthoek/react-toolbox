@@ -1,6 +1,6 @@
 
 import PropTypes from 'prop-types';
-import React, { useCallback, useEffect, useState, useRef } from 'react';
+import React, { useCallback, useEffect, useState, useRef, ReactElement, forwardRef } from 'react';
 import { useDrag, useDrop } from 'react-dnd';
 
 import { usePrevious, useForceUpdate } from '../../utils/hooks';
@@ -9,10 +9,37 @@ const ItemTypes = {
   OBJECT: 'object',
 }
 
-const DragAndDropItem = ({ droppedIndex, setDroppedIndex, propsArray, onDrop, reset, index, movedIndex, moveNext, component: Component, componentProps }) => {
+export type DragAndDropListOnDrop = (movedIndex: number, index: number, reset: () => void) => void;
+
+export type DragAndDropListComponentProps = { dropped?: boolean; [prop: string]: any };
+
+export type DragAndDropListComponent = (props: DragAndDropListComponentProps) => ReactElement;
+
+type DragAndDropItemProps = {
+  droppedIndex: number | null;
+  setDroppedIndex: (index: number | null) => void;
+  onDrop: DragAndDropListOnDrop;
+  reset: () => void;
+  index: number;
+  movedIndex: number;
+  moveNext: (dragIndex: number, hoverIndex: number) => void;
+  component: any;
+  componentProps: any;
+}
+const DragAndDropItem = ({
+  droppedIndex,
+  setDroppedIndex,
+  onDrop,
+  reset,
+  index,
+  movedIndex,
+  moveNext,
+  component: Component,
+  componentProps
+}: DragAndDropItemProps) => {
   // Drag and drop code was inspired by this example:
   // https://codesandbox.io/s/old-flower-5bigy?file=/src/index.js:70-167
-  const ref = useRef(null);
+  const ref = useRef<HTMLElement>(null);
   const [{ handlerId }, drop] = useDrop({
     accept: ItemTypes.OBJECT,
     collect(monitor) {
@@ -20,7 +47,7 @@ const DragAndDropItem = ({ droppedIndex, setDroppedIndex, propsArray, onDrop, re
         handlerId: monitor.getHandlerId(),
       };
     },
-    hover(item, monitor) {
+    hover(item: any, monitor) {
       if (!ref.current) {
         return;
       }
@@ -32,10 +59,12 @@ const DragAndDropItem = ({ droppedIndex, setDroppedIndex, propsArray, onDrop, re
       }
       // Determine rectangle on screen
       const hoverBoundingRect = ref.current?.getBoundingClientRect();
+      if (!hoverBoundingRect) return;
       // Get vertical middle
       const hoverMiddleY = (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
       // Determine mouse position
       const clientOffset = monitor.getClientOffset();
+      if (!clientOffset) return;
       // Get pixels to the top
       const hoverClientY = clientOffset.y - hoverBoundingRect.top;
       // Only perform the move when the mouse has crossed half of the items height
@@ -75,29 +104,36 @@ const DragAndDropItem = ({ droppedIndex, setDroppedIndex, propsArray, onDrop, re
     },
   });
   const opacity = isDragging ? 0 : 1;
+  if (!Component) return null;
   drag(drop(ref));
-  return (<>
-    <Component
-      {...componentProps}
-      ref={ref}
-      dropped={droppedIndex === movedIndex}
-      
-      style={{ 
-        ...componentProps.style || {},
-        cursor: 'move',
-        opacity,
-      }}
-      data-handler-id={handlerId}
-    />
+  return (
+    <>
+      <Component
+        {...componentProps}
+        ref={ref}
+        dropped={droppedIndex === movedIndex}
+        
+        style={{ 
+          ...componentProps.style || {},
+          cursor: 'move',
+          opacity,
+        }}
+        data-handler-id={handlerId}
+      />
     </>
   );
 };
 
-export const DragAndDropList = ({ onDrop, propsArray, component }) => {
-  const [listMap, setListMap] = useState(null);
-  const [droppedIndex, setDroppedIndex] = useState(null);
+export type DragAndDropListProps<A extends any[]> = {
+  onDrop: DragAndDropListOnDrop;
+  propsArray: A; 
+  component: DragAndDropListComponent;
+}
+export const DragAndDropList = <A extends any[]>({ onDrop, propsArray, component: Component }: DragAndDropListProps<A>) => {
+  const [listMap, setListMap] = useState<number[] | null>(null);
+  const [droppedIndex, setDroppedIndex] = useState<number | null>(null);
   const propsArrayPrev = usePrevious(propsArray);
-  const reset = useCallback(() => setListMap(propsArray.map((obj, index) => index)), [propsArray]);
+  const reset = useCallback(() => setListMap(propsArray.map((obj: A[number], index: number) => index)), [propsArray]);
   
   const forceUpdate = useForceUpdate();
   useEffect(() => {
@@ -111,7 +147,9 @@ export const DragAndDropList = ({ onDrop, propsArray, component }) => {
   }, [propsArrayPrev, propsArray]);
 
   const moveNext = useCallback(
-    (dragIndex, hoverIndex) => {
+    (dragIndex: number, hoverIndex: number) => {
+      if (!listMap) return;
+      
       setListMap(listMap.map((obj, i) => listMap[
         // Swap two adjacent objects when dragged a single step
         i === dragIndex
@@ -124,23 +162,35 @@ export const DragAndDropList = ({ onDrop, propsArray, component }) => {
     [listMap]
   );
 
+  const component = Component && forwardRef<HTMLElement, DragAndDropListComponentProps>(
+    (props: DragAndDropListComponentProps, ref) =>
+      <Component
+        ref={ref}
+        {...props}
+      />
+  );
+  if (!Component || !component) return null;
+
   return (
-    listMap && listMap.map((movedIndex, index) =>
-      propsArray[movedIndex] &&
-        <DragAndDropItem
-          key={movedIndex}
-          movedIndex={movedIndex}
-          index={index}
-          moveNext={moveNext}
-          onDrop={onDrop}
-          reset={() => reset()}
-          component={component}
-          componentProps={propsArray[movedIndex]}
-          droppedIndex={droppedIndex}
-          setDroppedIndex={setDroppedIndex}
-          propsArray={propsArray}
-        />
-    )
+    <>
+      {
+        listMap && listMap.map((movedIndex, index) =>
+          propsArray[movedIndex] &&
+            <DragAndDropItem
+              key={movedIndex}
+              movedIndex={movedIndex}
+              index={index}
+              moveNext={moveNext}
+              onDrop={onDrop}
+              reset={() => reset()}
+              component={component}
+              componentProps={propsArray[movedIndex]}
+              droppedIndex={droppedIndex}
+              setDroppedIndex={setDroppedIndex}
+            />
+        )
+      }
+    </>
   );
 };
 DragAndDropList.propTypes = {

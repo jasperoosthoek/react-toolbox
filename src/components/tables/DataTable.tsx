@@ -3,7 +3,7 @@ import { FaSort, FaSortUp, FaSortDown } from 'react-icons/fa';
 import { Table, Col, Row, InputGroup, Form, Button, ButtonProps, ButtonGroup } from 'react-bootstrap';
 
 import { CloseButton } from '../buttons/IconButtons';
-import { DragAndDropList } from './DragAndDropList';
+import { DragAndDropList, DragAndDropListComponent, DragAndDropListComponentProps } from './DragAndDropList';
 import { useLocalization } from '../../localization/LocalizationContext';
 
 const PaginationButton = (props: ButtonProps) => (
@@ -121,7 +121,7 @@ export const DataTable = <D extends any[]>({
     data = data.slice(page * rowsPerPage, (page + 1) * rowsPerPage);
   }
 
-  const Component = forwardRef<HTMLTableRowElement, { row: R }>(({ row }: R, ref) =>
+  /* const Component = forwardRef<HTMLTableRowElement, { row: R } & DragAndDropListComponentProps>(({ row }: R, ref) =>
     <tr
       ref={ref}
       {
@@ -139,177 +139,199 @@ export const DataTable = <D extends any[]>({
         </td>
       )}
     </tr>
+  ); */
+  const Component = ({ row }: { row?: R } & DragAndDropListComponentProps) => (
+    <tr
+      {
+        ...typeof rowClassName === 'string'
+        ? { className: rowClassName }
+        : typeof rowClassName === 'function' && row
+        ? { className: rowClassName(row) }
+        : {}
+      }
+      {...{ ...typeof onClickRow === 'function' && row? { onClick: () => onClickRow(row)} : {}}}
+    >
+      {row && columns.map(({ selector, className }, index) =>
+        <td key={index} className={className}>
+          {typeof selector === 'function' ? selector(row) : row[selector]}
+        </td>
+      )}
+    </tr>
   );
   
-  return <div style={style} className={className}>
-    {showHeader &&
-      <Row className="mb-4">
-        <Col
-          xs={12}
-          lg={4}
-          className="d-flex flex-col justify-content-end align-items-end"
-        >
-          <InputGroup>
-            <Form.Control
-              type="text"
-              name="table-filter"
-              value={filterText}
-              placeholder={strings.getString('search')}
-              onChange={e => setFilterText(e.target.value)}
-            />
-            <CloseButton
-              variant="outline-secondary"
-              size="sm"
-              onClick={() => setFilterText('')}
-            />
-          </InputGroup>
-        </Col>
-        <Col
-          xs={12}
-          sm={6}
-          lg={4}
-          className="d-flex flex-col justify-content-lg-center align-items-center justify-content-sm-start mb-2 mb-sm-0"
-        >
-          <Form.Group>
-            <Form.Label>
-              {strings.getString('number_of_rows')}
-            </Form.Label>
-            <Form.Select
-              name="table-pagination-options"
-              value={rowsPerPage === null ? 'everything' : `${rowsPerPage}`}
-              as="select"
-              placeholder={strings.getString('select')}
-              onChange={(e: ChangeEvent<HTMLSelectElement>) =>
-                setRowsPerPage(e.target.value === 'everything' ? null : parseInt(e.target.value))
-              }
-            >
-              {rowsPerPageOptions.map((option, index) => (
-                <option key={index} value={option === null ? 'everything' : option}>
-                  {option === null ? strings.getString('everything') : option}
-                </option>
-              ))}
-            </Form.Select>
-          </Form.Group>
-        </Col>
-        <Col
-          xs={12}
-          sm={6}
-          lg={4}
-          className="d-flex flex-col justify-content-end align-items-end"
-        >
-          <ButtonGroup>
-            <PaginationButton
-              disabled={!pagesCount || page === 0}
-              onClick={() => setPage(0)}
-            >
-              {'<<'}
-            </PaginationButton>
-            <PaginationButton
-              disabled={!pagesCount || page === 0}
-              onClick={() => setPage(page - 1)}
-            >
-              {'<'}
-            </PaginationButton>
-            <PaginationButton>{pagesCount ? page + 1 : 1}</PaginationButton>
-            <PaginationButton
-              disabled={!pagesCount || page >= pagesCount - 1}
-              onClick={() => setPage(page + 1)}
-            >
-              {'>'}
-            </PaginationButton>
-            <PaginationButton
-              disabled={!pagesCount || page >= pagesCount - 1}
-              onClick={() => setPage(typeof pagesCount === 'number' ? pagesCount - 1 : 0)}
-            >
-              {'>>'}
-            </PaginationButton>
-          </ButtonGroup>
-        </Col>
-      </Row>
-    }
+  if (!Component) return null;
 
-    <Table
-      striped={data.length !== 0}
-      bordered
-      hover
-      responsive
-    >
-      <thead>
-        <tr>
-          {columns.map(({ name, orderBy: orderByColumn, className }, index) =>
-            orderByColumn 
-              ? (
-                  !orderBy || orderBy.column !== orderByColumn
-                  ? <th
-                      key={index}
-                      className={className}
-                      style={{ cursor: 'pointer' }}
-                      onClick={() => setOrderBy({ order: 'asc', column: orderByColumn })}
-                    >
-                      {name}
-                      <FaSort />
-                    </th>
-                  : orderBy.order === 'asc'
-                  ? <th
-                      key={index}
-                      className={className}
-                      style={{ cursor: 'pointer' }}
-                      onClick={() => setOrderBy({ order: 'desc', column: orderByColumn })}
-                    >
-                      {name}
-                      <FaSortUp />
-                    </th>
-                  : <th
-                      key={index}
-                      className={className}
-                      style={{ cursor: 'pointer' }}
-                      onClick={() => setOrderBy(null)}
-                    >
-                      {name}
-                      <FaSortDown />
-                    </th>
-                )
-              : <th key={index} className={className}>
-                  {name}
-                </th>
-          )}
-        </tr>
-      </thead>
-      <tbody {...dragAndDrop ? { style: { cursor: 'move' } } : {}}>
-        {data.length === 0 &&
-          <tr>
-            <td
-              colSpan={columns.length}
-              style={{ textAlign: 'center', margin: '15px' }}
-            >
-              <i>{textOnEmpty || strings.getString('no_information_to_display')}</i>
-            </td>
-          </tr>
-        }
-        {dragAndDrop
-          ? <DragAndDropList
-              component={Component}
-              propsArray={(data && data 
-                .map(row => ({
-                  row,
-                  // The line below fixes a nasty bug: Drag and drop won't work the first time and
-                  // the mouse cursor only selects text
-                  onClick: () => {},
-                }))) || []
-              }
-              onDrop={(index, targetIndex, reset ) => {
-                const item = data[index];
-                const target = data[targetIndex];
-                if (item[moveId] === target[moveId] || moveIsLoading) {
-                  return;
+  return (
+    <div style={style} className={className}>
+      {showHeader &&
+        <Row className="mb-4">
+          <Col
+            xs={12}
+            lg={4}
+            className="d-flex flex-col justify-content-end align-items-end"
+          >
+            <InputGroup>
+              <Form.Control
+                type="text"
+                name="table-filter"
+                value={filterText}
+                placeholder={strings.getString('search')}
+                onChange={e => setFilterText(e.target.value)}
+              />
+              <CloseButton
+                variant="outline-secondary"
+                size="sm"
+                onClick={() => setFilterText('')}
+              />
+            </InputGroup>
+          </Col>
+          <Col
+            xs={12}
+            sm={6}
+            lg={4}
+            className="d-flex flex-col justify-content-lg-center align-items-center justify-content-sm-start mb-2 mb-sm-0"
+          >
+            <Form.Group>
+              <Form.Label>
+                {strings.getString('number_of_rows')}
+              </Form.Label>
+              <Form.Select
+                name="table-pagination-options"
+                value={rowsPerPage === null ? 'everything' : `${rowsPerPage}`}
+                as="select"
+                placeholder={strings.getString('select')}
+                onChange={(e: ChangeEvent<HTMLSelectElement>) =>
+                  setRowsPerPage(e.target.value === 'everything' ? null : parseInt(e.target.value))
                 }
-                onMove({ item, target, reset });
-              }}
-              // onComponentDidMount={forceUpdate}
-            />
-          : data.map((row, index) => <Component row={row} key={index} />)
-        }
-      </tbody>
-    </Table>
-  </div>
+              >
+                {rowsPerPageOptions.map((option, index) => (
+                  <option key={index} value={option === null ? 'everything' : option}>
+                    {option === null ? strings.getString('everything') : option}
+                  </option>
+                ))}
+              </Form.Select>
+            </Form.Group>
+          </Col>
+          <Col
+            xs={12}
+            sm={6}
+            lg={4}
+            className="d-flex flex-col justify-content-end align-items-end"
+          >
+            <ButtonGroup>
+              <PaginationButton
+                disabled={!pagesCount || page === 0}
+                onClick={() => setPage(0)}
+              >
+                {'<<'}
+              </PaginationButton>
+              <PaginationButton
+                disabled={!pagesCount || page === 0}
+                onClick={() => setPage(page - 1)}
+              >
+                {'<'}
+              </PaginationButton>
+              <PaginationButton>{pagesCount ? page + 1 : 1}</PaginationButton>
+              <PaginationButton
+                disabled={!pagesCount || page >= pagesCount - 1}
+                onClick={() => setPage(page + 1)}
+              >
+                {'>'}
+              </PaginationButton>
+              <PaginationButton
+                disabled={!pagesCount || page >= pagesCount - 1}
+                onClick={() => setPage(typeof pagesCount === 'number' ? pagesCount - 1 : 0)}
+              >
+                {'>>'}
+              </PaginationButton>
+            </ButtonGroup>
+          </Col>
+        </Row>
+      }
+
+      <Table
+        striped={data.length !== 0}
+        bordered
+        hover
+        responsive
+      >
+        <thead>
+          <tr>
+            {columns.map(({ name, orderBy: orderByColumn, className }, index) =>
+              orderByColumn 
+                ? (
+                    !orderBy || orderBy.column !== orderByColumn
+                    ? <th
+                        key={index}
+                        className={className}
+                        style={{ cursor: 'pointer' }}
+                        onClick={() => setOrderBy({ order: 'asc', column: orderByColumn })}
+                      >
+                        {name}
+                        <FaSort />
+                      </th>
+                    : orderBy.order === 'asc'
+                    ? <th
+                        key={index}
+                        className={className}
+                        style={{ cursor: 'pointer' }}
+                        onClick={() => setOrderBy({ order: 'desc', column: orderByColumn })}
+                      >
+                        {name}
+                        <FaSortUp />
+                      </th>
+                    : <th
+                        key={index}
+                        className={className}
+                        style={{ cursor: 'pointer' }}
+                        onClick={() => setOrderBy(null)}
+                      >
+                        {name}
+                        <FaSortDown />
+                      </th>
+                  )
+                : <th key={index} className={className}>
+                    {name}
+                  </th>
+            )}
+          </tr>
+        </thead>
+        <tbody {...dragAndDrop ? { style: { cursor: 'move' } } : {}}>
+          {data.length === 0 &&
+            <tr>
+              <td
+                colSpan={columns.length}
+                style={{ textAlign: 'center', margin: '15px' }}
+              >
+                <i>{textOnEmpty || strings.getString('no_information_to_display')}</i>
+              </td>
+            </tr>
+          }
+          {dragAndDrop
+            ? <DragAndDropList
+                component={Component}
+                propsArray={(data && data 
+                  .map(row => ({
+                    row,
+                    // The line below fixes a nasty bug: Drag and drop won't work the first time and
+                    // the mouse cursor only selects text
+                    onClick: () => {},
+                  }))) || []
+                }
+                onDrop={(index: number, targetIndex: number, reset: () => void ) => {
+                  const item = data[index];
+                  const target = data[targetIndex];
+                  if (item[moveId] === target[moveId] || moveIsLoading) {
+                    return;
+                  }
+                  onMove({ item, target, reset });
+                }}
+                // onComponentDidMount={forceUpdate}
+              />
+            : data.map((row, index) => <Component row={row} key={index} />)
+          }
+        </tbody>
+      </Table>
+    </div>
+  )
 }
