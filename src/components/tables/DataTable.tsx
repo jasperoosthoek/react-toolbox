@@ -1,47 +1,98 @@
-import React, { useEffect, useState, forwardRef, useReducer } from 'react';
+import React, { useEffect, useState, forwardRef, useReducer, ReactElement, ChangeEvent } from 'react';
 import { FaSort, FaSortUp, FaSortDown } from 'react-icons/fa';
-import { Table, Col, Row, InputGroup, Form, Button, ButtonGroup } from 'react-bootstrap';
+import { Table, Col, Row, InputGroup, Form, Button, ButtonProps, ButtonGroup } from 'react-bootstrap';
 
 import { CloseButton } from '../buttons/IconButtons';
 import { DragAndDropList } from './DragAndDropList';
 import { useLocalization } from '../../localization/LocalizationContext';
 
-const PaginationButton = props => <Button variant="outline-secondary" size="" {...props} />
+const PaginationButton = (props: ButtonProps) => (
+  <Button variant='outline-secondary' size='sm' {...props} />
+)
 
-export const DataTable = ({
+export type OrderByColumn = ((row: any) => string) | string;
+
+export type DataTableColumn = {
+  name: string;
+  orderBy?: OrderByColumn;
+  className?: string;
+  selector: number | string | ((row: any) => ReactElement);
+}
+
+export type RowsPerPageOptions = number[] | [...number[], null];
+
+export type OrderByDirection = 'asc' | 'desc';
+
+export type OnMoveProps = {
+  item: any;
+  target: number;
+  reset: () => void;
+}
+
+export type OnMove = ({ item, target, reset }: OnMoveProps) => void;
+
+export type OnClickRow = (row: any) => ReactElement;
+
+export type DataTableProps<D extends any[]> = {
+  data: D;
+  columns: DataTableColumn[];
+  rowsPerPage?: number | null;
+  rowsPerPageOptions?: RowsPerPageOptions;
+  filterColumn?: ((row: D[number]) => boolean) | string;
+  orderByDefault?: ((row: D[number]) => number) |string | null;
+  orderByDefaultDirection?: OrderByDirection;
+  onMove?: OnMove;
+  moveId?: string;
+  moveIsLoading?: boolean;
+  showHeader?: boolean;
+  onClickRow?: OnClickRow;
+  textOnEmpty?: ReactElement;
+  className?: string;
+  rowClassName?: string | ((row: D[number]) => string);
+  style?: any;
+}
+
+export const DataTable = <D extends any[]>({
   data: allData,
-  columns = null,
+  columns,
   rowsPerPage: rowsPerPageDefault = 10,
   rowsPerPageOptions = [10,25, 50, 100, null],
-  filterColumn = null,
+  filterColumn,
   orderByDefault,
   orderByDefaultDirection='asc',
-  onMove = null,
+  onMove,
   moveId = 'id',
-  moveIsLoading = false,
+  moveIsLoading,
   showHeader = true,
-  onClickRow = null,
-  textOnEmpty = null,
+  onClickRow,
+  textOnEmpty,
   className,
-  rowClassName = null,
+  rowClassName,
   style,
   ...restProps
-}) => {
+}: DataTableProps<D>) => {
+  type R = D[number];
+
   if (Object.keys(restProps).length !== 0) console.error('Unrecognised props:', restProps);
   
   const [filterText, setFilterText] = useState('');
   const [, forceUpdate] = useReducer(x => x + 1, 0);
-  const [orderBy, setOrderBy] = useState(null);
+  const [orderBy, setOrderBy] = useState<{ order: OrderByDirection; column: OrderByColumn } | null>(null);
   const [rowsPerPage, setRowsPerPage] = useState(rowsPerPageDefault);
   const [page, setPage] = useState(0);
   let data = allData && (
     Object.values(allData)
       .filter(
         row => filterColumn && filterText
-        ? (typeof filterColumn === 'function' ? filterColumn(row) : row[filterColumn]).match(new RegExp(`${filterText}`, 'i'))
-        : true)
+          ? (
+              typeof filterColumn === 'function' 
+                ? filterColumn(row)
+                : row[filterColumn]
+            ).match(new RegExp(`${filterText}`, 'i'))
+          : true
+        )
     );
-  const pagesCount = data && parseInt(rowsPerPage) && parseInt((data.length - 1) / parseInt(rowsPerPage)) + 1;
+  const pagesCount = data && rowsPerPage && ((data.length - 1) / rowsPerPage) + 1;
   useEffect(
     () => { if (pagesCount && page >= pagesCount) setPage(pagesCount - 1) },
     [setPage, pagesCount, page]
@@ -52,32 +103,33 @@ export const DataTable = ({
   if (!data || !columns) return null;
 
   if (orderBy) {
-    if (typeof orderBy.column === 'function') {
-      data.sort((r1, r2) => orderBy.column(r1) > orderBy.column(r2) ^ orderBy.order === 'asc' ? -1 : 1);
+    const { column } = orderBy;
+    if (typeof column === 'function') {
+      data.sort((r1: R, r2: R) => (column(r1) > column(r2)) !== (orderBy.order === 'asc') ? -1 : 1);
     } else {
-      data.sort((r1, r2) => r1[orderBy.column] > r2[orderBy.column] ^ orderBy.order === 'asc' ? -1 : 1);
+      data.sort((r1: R, r2: R) => (r1[column] > r2[column]) !== (orderBy.order === 'asc') ? -1 : 1);
     }
   } else if (orderByDefault) {
     const directionInt = orderByDefaultDirection === 'asc' ? 1 : -1;
     if (typeof orderByDefault === 'function') {
-      data.sort((r1, r2) => orderByDefault(r1) > orderByDefault(r2) ? directionInt : -directionInt);
+      data.sort((r1: R, r2: R) => orderByDefault(r1) > orderByDefault(r2) ? directionInt : -directionInt);
     } else {
-      data.sort((r1, r2) => r1[orderByDefault] > r2[orderByDefault] ? directionInt : -directionInt);
+      data.sort((r1: R, r2: R) => r1[orderByDefault] > r2[orderByDefault] ? directionInt : -directionInt);
     }
   }
   if (pagesCount) {
     data = data.slice(page * rowsPerPage, (page + 1) * rowsPerPage);
   }
 
-  const Component = forwardRef(({ row }, ref) =>
+  const Component = forwardRef<HTMLTableRowElement, { row: R }>(({ row }: R, ref) =>
     <tr
       ref={ref}
-      className={
-        typeof rowClassName === 'string'
-        ? rowClassName
+      {
+        ...typeof rowClassName === 'string'
+        ? { className: rowClassName }
         : typeof rowClassName === 'function'
-        ? rowClassName(row)
-        : null
+        ? { className: rowClassName(row) }
+        : {}
       }
       {...{ ...typeof onClickRow === 'function' ? { onClick: () => onClickRow(row)} : {}}}
     >
@@ -102,12 +154,12 @@ export const DataTable = ({
               type="text"
               name="table-filter"
               value={filterText}
-              placeholder={strings.search}
+              placeholder={strings.getString('search')}
               onChange={e => setFilterText(e.target.value)}
             />
             <CloseButton
               variant="outline-secondary"
-              size=""
+              size="sm"
               onClick={() => setFilterText('')}
             />
           </InputGroup>
@@ -120,18 +172,20 @@ export const DataTable = ({
         >
           <Form.Group>
             <Form.Label>
-              {strings.number_of_rows}
+              {strings.getString('number_of_rows')}
             </Form.Label>
             <Form.Select
               name="table-pagination-options"
-              value={rowsPerPage === null ? 'everything' : rowsPerPage}
+              value={rowsPerPage === null ? 'everything' : `${rowsPerPage}`}
               as="select"
-              placeholder={strings.select}
-              onChange={e => setRowsPerPage(e.target.value)}
+              placeholder={strings.getString('select')}
+              onChange={(e: ChangeEvent<HTMLSelectElement>) =>
+                setRowsPerPage(e.target.value === 'everything' ? null : parseInt(e.target.value))
+              }
             >
               {rowsPerPageOptions.map((option, index) => (
                 <option key={index} value={option === null ? 'everything' : option}>
-                  {option === null ? strings.everything : option}
+                  {option === null ? strings.getString('everything') : option}
                 </option>
               ))}
             </Form.Select>
@@ -165,7 +219,7 @@ export const DataTable = ({
             </PaginationButton>
             <PaginationButton
               disabled={!pagesCount || page >= pagesCount - 1}
-              onClick={() => setPage(pagesCount - 1)}
+              onClick={() => setPage(typeof pagesCount === 'number' ? pagesCount - 1 : 0)}
             >
               {'>>'}
             </PaginationButton>
@@ -221,13 +275,14 @@ export const DataTable = ({
           )}
         </tr>
       </thead>
-      <tbody style={dragAndDrop ? { cursor: 'move' } : null}>
+      <tbody {...dragAndDrop ? { style: { cursor: 'move' } } : {}}>
         {data.length === 0 &&
           <tr>
-            <td colSpan={columns.length}>
-              <center style={{ margin: '15px' }}>
-                <i>{textOnEmpty || strings.no_information_to_display}</i>
-              </center>
+            <td
+              colSpan={columns.length}
+              style={{ textAlign: 'center', margin: '15px' }}
+            >
+              <i>{textOnEmpty || strings.getString('no_information_to_display')}</i>
             </td>
           </tr>
         }
@@ -250,7 +305,7 @@ export const DataTable = ({
                 }
                 onMove({ item, target, reset });
               }}
-              onComponentDidMount={forceUpdate}
+              // onComponentDidMount={forceUpdate}
             />
           : data.map((row, index) => <Component row={row} key={index} />)
         }

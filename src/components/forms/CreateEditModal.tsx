@@ -36,12 +36,15 @@ export type FormField = {
 
 export type FormFields = { [key: string]: FormField };
 
-export type CreateEditModalProps = {
-  initialState: any;
-  includeData: any;
-  formFields: FormFields;
+export type CreateEditModalProps<
+  T extends FormFields,
+  K extends { [key in Exclude<string, keyof T>]: any }
+> = {
+  initialState: Partial<{ [key in keyof T]: FormValue }>;
+  includeData: K;
+  formFields: T;
   show?: boolean;
-  onSave: (state: any, callback: () => void) => void;
+  onSave: (state: { [key in keyof T]: FormValue } & K, callback: () => void) => void;
   onHide: () => void;
   validate?: (state: any) => any;
   modalTitle?: ReactElement;
@@ -50,7 +53,10 @@ export type CreateEditModalProps = {
   width?: 25 | 50 | 75 | 100;
 }
 
-export const CreateEditModal = ({
+export const CreateEditModal = <
+  T extends FormFields,
+  K extends { [key in Exclude<string, keyof T>]: any }
+>({
   initialState,
   formFields,
   includeData,
@@ -63,7 +69,7 @@ export const CreateEditModal = ({
   dialogClassName='',
   width,
   ...restProps
-}: CreateEditModalProps) => {
+}: CreateEditModalProps<T, K>) => {
   if (Object.values(restProps).length !==0) {
     console.error(`Unrecognised props given to CreateEditModal:`, restProps);
   }
@@ -71,8 +77,9 @@ export const CreateEditModal = ({
   const getInitialFormData = () => ({
     ...Object.entries(formFields).reduce((o, [key, { initialValue }]) => ({ ...o, [key]: initialValue || '' }), {}),
     ...initialState || {},
-  })
-  const [initialFormData, setInitialFormData] = useState(getInitialFormData());
+  }) as { [key in keyof T]: FormValue };
+
+  const [initialFormData, setInitialFormData] = useState<{ [key in keyof T]: FormValue } | null>(getInitialFormData());
 
   const [{ pristine, formData }, setState] = useSetState({
     pristine: true,
@@ -95,7 +102,7 @@ export const CreateEditModal = ({
   }, [show, prevShow])
   const { strings } = useLocalization();
 
-  if (!formData) return null;
+  if (!formData || !initialFormData) return null;
   const getValue = (key: string) => {
     return(
       formData[key]
@@ -232,9 +239,10 @@ CreateEditModal.defaultProps = {
   modalTitle: null,
 }
 
-export const DisabledFormField = ({ value }: any) =>
+export const DisabledFormField = ({ value }: any) => (
   <Form.Control
     as="input"
     disabled
-    value={value ||''}
-  />;
+    value={value || ''}
+  />
+);
