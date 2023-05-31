@@ -14,11 +14,12 @@ export const LocalizationContext = React.createContext({
   lang: 'en',
   languages: Object.keys(defaultLanguages),
   setLanguage: (lang: string) => console.error(out_of_context_error),
-  text: (str: TemplateStringsArray, name: string) => {
+  text: (str: TemplateStringsArray, ...values: (string | number)[]) => {
     console.error(out_of_context_error);
     return str[0];
   },
   strings: new LocalizedStrings({ en: {} }),
+  setLocalization: (localization: AdditionalLocalization) => {},
 });
 
 export type RestProps = {
@@ -34,11 +35,12 @@ export interface LocalizationProviderProps extends RestProps {
 
 export const LocalizationProvider = ({
   lang: initialLanguage = 'en',
-  localization: additionalLocalization = {},
+  localization: additionalLocalizationInitial = {},
   languages: languagesOverride,
   children,
   ...restProps
  }: LocalizationProviderProps) => {
+  const [additionalLocalization, setLocalization] = useState(additionalLocalizationInitial);
   const [lang, setLanguage] = useState(initialLanguage);
   const languages = languagesOverride || Array.from(new Set([...Object.keys(defaultLocalization), ...Object.keys(additionalLocalization)]));
   const localizationStrings = languages.reduce(
@@ -89,6 +91,7 @@ export const LocalizationProvider = ({
         },
         strings,
         text,
+        setLocalization,
         ...restProps,
       }}
     >

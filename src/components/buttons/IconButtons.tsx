@@ -14,6 +14,7 @@ import {
   AiOutlineCheck,
   AiOutlineClose,
   AiOutlineSearch,
+  AiOutlineSave,
 } from 'react-icons/ai';
 import { IconType } from 'react-icons';
 import { FiCopy } from 'react-icons/fi';
@@ -90,6 +91,7 @@ export const MoveButton = makeIconButton(BsArrowsMove);
 export const NotesButton = makeIconButton(CgNotes);
 export const PencilButton = makeIconButton(BsPencil);
 export const PlayButton = makeIconButton(BiRightArrow);
+export const SaveButton = makeIconButton(AiOutlineSave);
 export const SearchButton = makeIconButton(AiOutlineSearch);
 export const ShowButton = makeIconButton(BiShow);
 export const SortButton = makeIconButton(FaSort);

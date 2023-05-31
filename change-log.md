@@ -111,3 +111,8 @@
 - New `storeState` & `retrieveState` functions to store and retrieve state object from `localStorage`
 - Convert everything to Typescript
 - `CreateEditModal` component uses `onKeyPress` instead of deprecated `onKeyPress` handler
+
+##### Version 0.3.5
+- New `SaveButton` component
+- New `setLocalization` function supplied by `useLocalization` to reset localization
+- Fix bug in `text` function parameter types supplied by `useLocalization`
