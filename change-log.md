@@ -116,3 +116,6 @@
 - New `SaveButton` component
 - New `setLocalization` function supplied by `useLocalization` to reset localization
 - Fix bug in `text` function parameter types supplied by `useLocalization`
+
+##### Version 0.3.6
+- New `ErrorBoundary` provider that can supply custom error events

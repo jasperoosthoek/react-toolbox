@@ -8,7 +8,7 @@ import {
   Languages,
 } from './localization';
 
-const out_of_context_error = 'This component should be used as a child of LocalizationProvider.';
+const out_of_context_error = 'This component should only be used as a child of LocalizationProvider.';
 
 export const LocalizationContext = React.createContext({
   lang: 'en',
