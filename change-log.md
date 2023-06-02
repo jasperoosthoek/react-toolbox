@@ -119,3 +119,6 @@
 
 ##### Version 0.3.6
 - New `ErrorBoundary` provider that can supply custom error events
+
+##### Version 0.3.7
+- Improve out of context error in `ErrorBoundary` and remove debug console.log 

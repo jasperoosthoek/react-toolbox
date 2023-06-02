@@ -10,10 +10,10 @@ interface ErrorContextType {
   clearError: () => void;
 }
 
-const out_of_context_error = 'This component should only be used as a child of ErrorBoundary.';
+const out_of_context_error = 'The useError hook should only be used in a child of the ErrorBoundary component.';
 
 const defaultErrorState: ErrorContextType = {
-  error: null,
+  error: out_of_context_error,
   clearError: () => console.error(out_of_context_error),
 };
 
@@ -34,8 +34,6 @@ export const ErrorBoundary: React.FC<ErrorBoundaryProps> = ({ children }) => {
       const error = customEvent.detail;
       setError(error);
     };
-
-    console.log('addEventListener')
     window.addEventListener('customError', handleError);
 
     return () => window.removeEventListener('customError', handleError);
