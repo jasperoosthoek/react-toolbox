@@ -243,7 +243,7 @@ export const FormSelect = ({
               }}
               defaultValue={defaultValue}
             >
-                {formatTitle ? formatTitle(item) : item.children }
+              {formatTitle ? formatTitle(item) : item.children }
             </option>
           )}
         )}
