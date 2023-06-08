@@ -37,12 +37,14 @@ export const FormInput = ({
   initialValue,
   keyName,
   pristine,
+  id,
   ...formProps
 }: FormInputProps) => (
   <Form.Group controlId={controlId}>
-    {label && <Form.Label>{label}</Form.Label>}
+    {label && <Form.Label htmlFor={id || keyName}>{label}</Form.Label>}
     <Form.Control
       autoComplete="off"
+      id={id || (label && keyName)}
       {...formProps}
       value={value || ''}
       onChange={e => onChange(e.target.value)}
@@ -110,15 +112,28 @@ export const FormCheckbox = ({
   label,
   keyName,
   controlId,
+  initialState,
+  initialValue,  
+  setState,
+  pristine,
+  id,
   ...restProps
 }: FormCheckboxProps) => (
   <Form.Group controlId={controlId}>
-    {label && <Form.Label onClick={() => onChange(!value)}>{label}</Form.Label>}
+    {label && (
+      <Form.Label
+        onClick={() => onChange(!value)}
+        htmlFor={id || keyName}
+      >
+        {label}
+      </Form.Label>
+    )}
     <Form.Check
       type="checkbox"
       checked={!!value}
       onClick={e => e.stopPropagation()}
       onChange={e => onChange(e.target.checked)}
+      id={id || (label && keyName)}
       {...restProps}
     />
   </Form.Group>

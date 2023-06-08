@@ -122,3 +122,8 @@
 
 ##### Version 0.3.7
 - Improve out of context error in `ErrorBoundary` and remove debug console.log 
+
+##### Version 0.4.0
+- Upgrade to `react@18.2.0`
+- Install `jest` and related packages for testing
+- Write tests for `FormFields` components
