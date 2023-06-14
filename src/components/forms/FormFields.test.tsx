@@ -11,7 +11,6 @@ afterEach(() => {
   jest.clearAllMocks();
 });
 
-// Test for FormInput
 const mockFields = {
   initialState: {},
   initialValue: 'myval',
@@ -36,7 +35,6 @@ test('FormInput component handles input correctly', () => {
   expect(mockOnChange).toBeCalledWith('new value');
 });
 
-// Test for FormCheckbox
 test('FormCheckbox component handles input correctly', () => {
   const mockOnChange = jest.fn();
   const { getByRole } = render(
@@ -52,7 +50,6 @@ test('FormCheckbox component handles input correctly', () => {
   expect(mockOnChange).toBeCalledWith(true);
 });
 
-// Test for FormSelect
 test('FormSelect component handles input correctly', () => {
   const mockOnChange = jest.fn();
   const list = [
@@ -78,15 +75,16 @@ test('FormSelect component handles input correctly', () => {
   const select = getByRole('listbox') as HTMLSelectElement;
 
   fireEvent.change(select, { target: { value: '2' } });
-  // Asserting the onChange callback was not called
+  
+  // Asserting the onChange callback was not called by the onChange event of the select
   expect(mockOnChange).not.toBeCalled();
   const option = getByText('Item 2') as HTMLOptionElement;
-
+  
+  // Asserting the onChange callback is called by the onClick event of the option
   fireEvent.click(option);//, { target: { value: '2' } });
   expect(mockOnChange).toBeCalledWith('2');
 });
 
-// // Test for FormDropdown
 // test('FormDropdown component handles input correctly', () => {
 //   const mockOnChange = jest.fn();
 //   const list = [{ id: '1', name: 'item1' }, { id: '2', name: 'item2' }];
@@ -97,7 +95,6 @@ test('FormSelect component handles input correctly', () => {
 //   expect(mockOnChange).toBeCalledWith('1');
 // });
 
-// // Test for FormBadgesSelection
 // test('FormBadgesSelection component handles input correctly', () => {
 //   const mockOnChange = jest.fn();
 //   const list = [{ id: '1', name: 'item1' }, { id: '2', name: 'item2' }];
