@@ -127,3 +127,6 @@
 - Upgrade to `react@18.2.0`
 - Install `jest` and related packages for testing
 - Write tests for `FormFields` components
+
+##### Version 0.4.1
+- Upgrade dependencies
