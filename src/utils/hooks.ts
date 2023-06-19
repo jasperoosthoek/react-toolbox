@@ -41,7 +41,7 @@ export const useSetState = <T>(initialState: T): [T, (subState: Partial<T>) => v
   return [state, setSubState];
 }
 
-export const useWithDispatch = <T>(obj: T) => {
+export const useWithDispatch = <T extends any>(obj: T) => {
   const dispatch = useDispatch();
 
   if (typeof obj === 'function') {
@@ -50,10 +50,14 @@ export const useWithDispatch = <T>(obj: T) => {
   }
   
   return Object.fromEntries(
-    Object.entries(obj).map(([name, func]) =>
+    Object.entries(obj as any).map(([name, func]) =>
       [
         name,
-        <G extends any[]>(...args: G) => dispatch(func(...args)),
+        <G extends any[]>(...args: G) => {
+          if (typeof func === 'function') {
+            dispatch(func(...args));
+          }
+        },
       ]
     )
   );
