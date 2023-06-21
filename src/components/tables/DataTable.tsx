@@ -77,7 +77,7 @@ export const DataTable = <D extends any[]>({
   
   const [filterText, setFilterText] = useState('');
   const [, forceUpdate] = useReducer(x => x + 1, 0);
-  const [orderBy, setOrderBy] = useState<{ order: OrderByDirection; column: OrderByColumn } | null>(null);
+  const [orderBy, setOrderBy] = useState<{ order: OrderByDirection; column: OrderByColumn<R> } | null>(null);
   const [rowsPerPage, setRowsPerPage] = useState(rowsPerPageDefault);
   const [page, setPage] = useState(0);
   let data = allData && (
