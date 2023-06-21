@@ -136,3 +136,6 @@
 
 ##### Version 0.4.3
 - Fix incorrect `onMove` type of `DataTable` component prop
+
+##### Version 0.4.4
+- Improve types of `DataTableProps`

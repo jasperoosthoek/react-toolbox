@@ -10,42 +10,42 @@ const PaginationButton = (props: ButtonProps) => (
   <Button variant='outline-secondary' size='sm' {...props} />
 )
 
-export type OrderByColumn = ((row: any) => string) | string;
+export type OrderByColumn<R> = ((row: R) => string) | string;
 
-export type DataTableColumn = {
+export type DataTableColumn<R> = {
   name: string;
-  orderBy?: OrderByColumn;
+  orderBy?: OrderByColumn<R>;
   className?: string;
-  selector: number | string | ((row: any) => ReactElement);
+  selector: number | string | ((row: R) => ReactElement);
 }
 
 export type RowsPerPageOptions = number[] | [...number[], null];
 
 export type OrderByDirection = 'asc' | 'desc';
 
-export type OnMoveProps<D> = {
-  item: D;
-  target: D;
+export type OnMoveProps<R> = {
+  item: R;
+  target: R;
   reset: () => void;
 }
 
-export type OnMove<D> = ({ item, target, reset }: OnMoveProps<D>) => void;
+export type OnMove<R> = ({ item, target, reset }: OnMoveProps<R>) => void;
 
-export type OnClickRow = (row: any) => ReactElement;
+export type OnClickRow<R> = (row: R) => ReactElement;
 
 export type DataTableProps<D extends any[]> = {
   data: D;
-  columns: DataTableColumn[];
+  columns: DataTableColumn<D[number]>[];
   rowsPerPage?: number | null;
   rowsPerPageOptions?: RowsPerPageOptions;
   filterColumn?: ((row: D[number]) => string) | string;
   orderByDefault?: ((row: D[number]) => number) | string | null;
   orderByDefaultDirection?: OrderByDirection;
-  onMove?: OnMove<D>;
+  onMove?: OnMove<D[number]>;
   moveId?: string;
   moveIsLoading?: boolean;
   showHeader?: boolean;
-  onClickRow?: OnClickRow;
+  onClickRow?: OnClickRow<D[number]>;
   textOnEmpty?: ReactElement;
   className?: string;
   rowClassName?: string | ((row: D[number]) => string);
