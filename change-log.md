@@ -143,3 +143,8 @@
 ##### Version 0.4.5
 - Fix pagination not working correctly in `DataTable` component
 - Improve types of `CreateEditModalProps`
+
+##### Version 0.4.6
+- Allow `modalTitle` prop in `CreateEditModal` component to be `ReactElement` and string
+- Allow props in `ConfirmButton` and `DeleteConfirmButton` component to be `ReactElement` and string
+- Fix: loading spinner visible in modal of `DeleteConfirmButton`

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useContext, ChangeEvent, MouseEvent } from 'react';
+import React, { useState, useRef, useContext, ChangeEvent, MouseEvent, ReactElement } from 'react';
 import { Button, ButtonProps as ReactBootstrapButtonProps, Modal, Form } from 'react-bootstrap';
 import {
   AiFillCaretDown,
@@ -140,9 +140,9 @@ export const UploadTextButton = ({ accept, onLoadFile, ...restProps }: UploadTex
 }
 
 export interface ConfirmButtonProps extends ButtonProps {
-  modalTitle: string;
-  modalBody: string;
-  confirmText: string;
+  modalTitle: ReactElement | string;
+  modalBody?: ReactElement | string;
+  confirmText: ReactElement | string;
   onConfirm: () => void;
   buttonComponent: typeof Button,
 }
@@ -203,9 +203,9 @@ export const ConfirmButton = ({
 };
 
 export interface DeleteConfirmButtonProps extends ButtonProps {
-  modalTitle: string;
-  modalBody: string;
-  confirmText: string;
+  modalTitle?: ReactElement | string;
+  modalBody?: ReactElement | string;
+  confirmText?: ReactElement | string;
   onDelete: () => void;
 }
 export const DeleteConfirmButton = ({
@@ -213,16 +213,14 @@ export const DeleteConfirmButton = ({
   modalBody,
   confirmText,
   onDelete,
-  loading,
   ...props
 }: DeleteConfirmButtonProps) => {
   const { strings } = useContext(LocalizationContext);
-  
   return (
     <ConfirmButton
       {...props}
       modalTitle={modalTitle || strings.getString('delete') }
-      modalBody={modalBody}
+      modalBody={modalBody || strings.getString('are_you_sure')}
       confirmText={confirmText || strings.getString('delete')}
       onConfirm={onDelete}
       buttonComponent={DeleteButton}

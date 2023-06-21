@@ -47,7 +47,7 @@ export type CreateEditModalProps<
   onSave: (state: { [key in keyof T]: FormValue } & K, callback: () => void) => void;
   onHide: () => void;
   validate?: (state: any) => any;
-  modalTitle?: ReactElement;
+  modalTitle?: ReactElement | string;
   loading?: boolean;
   dialogClassName?: string;
   width?: 25 | 50 | 75 | 100;
