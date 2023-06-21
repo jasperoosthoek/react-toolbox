@@ -21,7 +21,7 @@ export type FormComponentProps = {
   onChange?: FormOnChange;
   initialState?: any;
   initialValue?: any;
-  label?: ReactElement;
+  label?: ReactElement | string;
 }
 
 export type FormField = {
@@ -31,7 +31,7 @@ export type FormField = {
   formProps?: any;
   component?: (props: FormComponentProps) => ReactElement;
   onChange?: FormOnChange;
-  label?: ReactElement;
+  label?: ReactElement | string;
 }
 
 export type FormFields = { [key: string]: FormField };

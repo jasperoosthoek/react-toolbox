@@ -139,3 +139,7 @@
 
 ##### Version 0.4.4
 - Improve types of `DataTableProps`
+
+##### Version 0.4.5
+- Fix pagination not working correctly in `DataTable` component
+- Improve types of `CreateEditModalProps`

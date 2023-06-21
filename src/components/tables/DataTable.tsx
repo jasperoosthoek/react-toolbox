@@ -91,8 +91,9 @@ export const DataTable = <D extends any[]>({
             ).match(new RegExp(`${filterText}`, 'i'))
           : true
         )
-    );
-  const pagesCount = data && rowsPerPage && ((data.length - 1) / rowsPerPage) + 1;
+  );
+
+  const pagesCount = (data && rowsPerPage && Math.ceil((data.length - 1) / rowsPerPage));
   useEffect(
     () => { if (pagesCount && page >= pagesCount) setPage(pagesCount - 1) },
     [setPage, pagesCount, page]
