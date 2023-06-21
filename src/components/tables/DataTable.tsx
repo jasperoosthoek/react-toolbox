@@ -23,13 +23,13 @@ export type RowsPerPageOptions = number[] | [...number[], null];
 
 export type OrderByDirection = 'asc' | 'desc';
 
-export type OnMoveProps = {
-  item: any;
-  target: number;
+export type OnMoveProps<D> = {
+  item: D;
+  target: D;
   reset: () => void;
 }
 
-export type OnMove = ({ item, target, reset }: OnMoveProps) => void;
+export type OnMove<D> = ({ item, target, reset }: OnMoveProps<D>) => void;
 
 export type OnClickRow = (row: any) => ReactElement;
 
@@ -41,7 +41,7 @@ export type DataTableProps<D extends any[]> = {
   filterColumn?: ((row: D[number]) => string) | string;
   orderByDefault?: ((row: D[number]) => number) | string | null;
   orderByDefaultDirection?: OrderByDirection;
-  onMove?: OnMove;
+  onMove?: OnMove<D>;
   moveId?: string;
   moveIsLoading?: boolean;
   showHeader?: boolean;
