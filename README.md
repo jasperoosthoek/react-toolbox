@@ -1,8 +1,8 @@
-#React Toolbox
+# React Toolbox
 
 A library of useful [React](https://react.dev/) components for building user interfaces.
 
-###Dependencies
+### Dependencies
 - [React 18](https://react.dev/)
 - [Bootstrap 5](https://getbootstrap.com/docs/5.1/getting-started/introduction/)
 - [`react-bootstrap`](https://react-bootstrap.netlify.app/)

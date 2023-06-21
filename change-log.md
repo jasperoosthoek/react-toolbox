@@ -130,3 +130,6 @@
 
 ##### Version 0.4.1
 - Upgrade dependencies
+
+##### Version 0.4.2
+- Fix incorrect props types in `DataTable` component

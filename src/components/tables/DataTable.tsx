@@ -38,8 +38,8 @@ export type DataTableProps<D extends any[]> = {
   columns: DataTableColumn[];
   rowsPerPage?: number | null;
   rowsPerPageOptions?: RowsPerPageOptions;
-  filterColumn?: ((row: D[number]) => boolean) | string;
-  orderByDefault?: ((row: D[number]) => number) |string | null;
+  filterColumn?: ((row: D[number]) => string) | string;
+  orderByDefault?: ((row: D[number]) => number) | string | null;
   orderByDefaultDirection?: OrderByDirection;
   onMove?: OnMove;
   moveId?: string;
