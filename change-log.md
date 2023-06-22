@@ -154,3 +154,10 @@
 
 ##### Version 0.4.8
 - Improvements of `CreateEditModal` types
+
+##### Version 0.4.9
+- Fix: Allow `component` prop of `SmallSpinner` to be string
+- Fix: Allow `axios` prop of `loginFactory` to be of type `AxiosInstance`
+- Fix: Not including languages from `additionalLocalization` in `LocalizationProvider`
+- Hook `useWithDispatch` only takes function as an argument to fix broken return type
+- Fix: `useLogin` output has types 

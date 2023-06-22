@@ -8,7 +8,7 @@ import {
   Languages,
 } from './localization';
 
-const out_of_context_error = 'This component should only be used as a child of LocalizationProvider.';
+const out_of_context_error = 'This function should only be used in a child of LocalizationProvider.';
 
 export const LocalizationContext = React.createContext({
   lang: 'en',
@@ -19,7 +19,7 @@ export const LocalizationContext = React.createContext({
     return str[0];
   },
   strings: new LocalizedStrings({ en: {} }),
-  setLocalization: (localization: AdditionalLocalization) => {},
+  setLocalization: (localization: AdditionalLocalization) => console.error(out_of_context_error),
 });
 
 export type RestProps = {
@@ -42,7 +42,10 @@ export const LocalizationProvider = ({
  }: LocalizationProviderProps) => {
   const [additionalLocalization, setLocalization] = useState(additionalLocalizationInitial);
   const [lang, setLanguage] = useState(initialLanguage);
-  const languages = languagesOverride || Array.from(new Set([...Object.keys(defaultLocalization), ...Object.keys(additionalLocalization)]));
+  const languages = Array.from(new Set([
+    ...languagesOverride || Object.keys(defaultLocalization),
+    ...Object.keys(additionalLocalization),
+  ]));
   const localizationStrings = languages.reduce(
     (o, lang) => ({
       ...o,

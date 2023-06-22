@@ -28,7 +28,7 @@ export const LoadingIndicator = ({ style = {}}) => {
 
 export type SmallSpinnerProps = {
   style?: any;
-  component?: (props: any) => React.ReactElement | null;
+  component?: ((props: any) => React.ReactElement | null) | string;
   className?: string;
 }
 

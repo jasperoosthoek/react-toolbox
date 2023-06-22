@@ -1,7 +1,7 @@
-import React, { useContext, ReactElement, ChangeEvent } from 'react';
+import React, { ReactElement, ChangeEvent } from 'react';
 import { useSelector, useDispatch, useStore } from 'react-redux';
 import { ThunkDispatch } from 'redux-thunk';
-import Axios, { AxiosResponse } from 'axios';
+import Axios, { AxiosResponse, AxiosInstance } from 'axios';
 import { Container, Button, Row, Col, Form } from 'react-bootstrap';
 
 import { useSetState, useWithDispatch } from '../utils/hooks';
@@ -31,7 +31,7 @@ type Action = {
 export type LoginFactoryProps = {
   authenticatedComponent: (props: any) => ReactElement;
   passwordResetUrl: string;
-  axios: typeof Axios;
+  axios: typeof Axios | AxiosInstance;
   onError: (error: any) => void;
   onLogout: () => void;
   loginUrl: string;
@@ -57,7 +57,6 @@ export const loginFactory = ({
   logoutUrl,
   localStoragePrefix,
 }: LoginFactoryProps) => {
-  // type State = ReturnType<typeof store.getState>
 
   const localStorageUser = localStoragePrefix ? `${localStoragePrefix}-user` : 'user';
   const localStorageToken = localStoragePrefix ? `${localStoragePrefix}-token` : 'token';
@@ -105,17 +104,7 @@ export const loginFactory = ({
 
     } catch(error) {
       dispatch(unsetCurrentUser());
-      // if (error.response) {
-      //   if (
-      //     error.response.status === 401 &&
-      //     error.response.hasOwnProperty('data') &&
-      //     error.response.data.hasOwnProperty('detail') &&
-      //     error.response.data['detail'] === 'User inactive or deleted.'
-      //   ) {
-      //   }
-      // } else {
       onError(error);
-      // }
     };
   };
   
@@ -157,14 +146,18 @@ export const loginFactory = ({
     };
   };
   
-  const useLogin = () => useWithDispatch({
-    login,
-    getCurrentUser,
-    setCurrentUser,
-    setToken,
-    unsetCurrentUser,
-    logout,
-  })
+  const useLogin = () => {
+    return (
+      {
+        login: useWithDispatch(login),
+        getCurrentUser: useWithDispatch(getCurrentUser),
+        setCurrentUser: useWithDispatch(setCurrentUser),
+        setToken: useWithDispatch(setToken),
+        unsetCurrentUser: useWithDispatch(unsetCurrentUser),
+        logout: useWithDispatch(logout),
+      }
+    );
+  }
 
   const token = localStorage.getItem(localStorageToken);
   const user = localStorage.getItem(localStorageUser);

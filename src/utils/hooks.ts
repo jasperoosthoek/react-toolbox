@@ -41,26 +41,10 @@ export const useSetState = <T>(initialState: T): [T, (subState: Partial<T>) => v
   return [state, setSubState];
 }
 
-export const useWithDispatch = <T extends any>(obj: T) => {
+export const useWithDispatch = <G extends any[]>(obj: (...args: G) => any) => {
   const dispatch = useDispatch();
-
-  if (typeof obj === 'function') {
-    const hook = <G extends any[]>(...args: G) => dispatch(obj(...args));
-    return hook;
-  }
   
-  return Object.fromEntries(
-    Object.entries(obj as any).map(([name, func]) =>
-      [
-        name,
-        <G extends any[]>(...args: G) => {
-          if (typeof func === 'function') {
-            dispatch(func(...args));
-          }
-        },
-      ]
-    )
-  );
+  return (...args: G) => dispatch(obj(...args));
 };
 
 // https://devtrium.com/posts/set-interval-react
