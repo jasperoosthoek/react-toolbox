@@ -151,3 +151,6 @@
 
 ##### Version 0.4.7
 - Fix: Incorrect return type of `OnClickRow` type
+
+##### Version 0.4.8
+- Improvements of `CreateEditModal` types

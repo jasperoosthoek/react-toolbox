@@ -5,6 +5,27 @@ import PropTypes from 'prop-types';
 import { useLocalization } from '../../localization/LocalizationContext';
 import moment, { Moment } from 'moment';
 
+export type FormValue = boolean | string | string[] | number | number[];
+
+// export type FormOnChange = <T extends { [key: string]: FormValue }>(value: FormValue, formData: T) => Partial<T>;
+export type FormOnChange = (
+  ((value: FormValue) => void)
+  | ((value: FormValue, formData: any) => any)
+);
+
+export type FormComponentProps = {
+  keyName?: string;
+  pristine?: boolean;
+  isInvalid?: boolean;
+  value: FormValue;
+  state?: any;
+  setState?: (newState: any) => void;
+  onChange?: FormOnChange;
+  initialState?: any;
+  initialValue?: any;
+  label?: ReactElement | string;
+}
+
 export type FormType = {
   state: any;
   setState: (obj: any) => void;
@@ -13,8 +34,6 @@ export type FormType = {
   keyName: string;
   pristine: boolean;
 }
-
-type FormValue = boolean | string | string[];
 
 export type FormInputProps = Omit<FormControlProps, 'onChange'> & FormType & {
   onChange: (value: FormValue) => void;
@@ -194,8 +213,6 @@ export const FormSelect = ({
       <FormControl as="select"
         htmlSize={htmlSize}
         multiple={multiple}
-        // value={Array.isArray(value) ? value.map((val: string) => parseInteger(val) as string[]) : parseInteger(value) || ''}
-        // value={Array.isArray(value) ? value.map((v: number | string) => v.toString()) : parseInteger(value) || ''}
         value={Array.isArray(value) ? value.map((v: number | string) => v.toString()) : value ? value.toString() : ''}
         // Dummy onChange is used to suppress warning.
         onChange={() => {}}

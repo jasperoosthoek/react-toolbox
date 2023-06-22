@@ -6,41 +6,31 @@ import { SmallSpinner } from '../indicators/LoadingIndicator';
 import { usePrevious, useSetState } from '../../utils/hooks';
 import { isEmpty } from '../../utils/utils';
 import { useLocalization } from '../../localization/LocalizationContext';
-
-type FormValue = boolean | string | string[] | number | number[];
-
-export type FormOnChange = <T extends { [key: string]: FormValue }>(value: FormValue, formData: T) => Partial<T>;
-
-export type FormComponentProps = {
-  keyName?: string;
-  pristine?: boolean;
-  isInvalid?: boolean;
-  value: FormValue;
-  state?: any;
-  setState?: (newState: any) => void;
-  onChange?: FormOnChange;
-  initialState?: any;
-  initialValue?: any;
-  label?: ReactElement | string;
-}
+import { FormComponentProps, FormSelectProps, FormOnChange, FormValue } from './FormFields';
 
 export type FormField = {
   initialValue?: any;
   type?: 'string' | 'number';
   required?: boolean;
   formProps?: any;
-  component?: (props: FormComponentProps) => ReactElement;
+  component?: (props: FormComponentProps | FormSelectProps) => ReactElement;
   onChange?: FormOnChange;
   label?: ReactElement | string;
 }
 
+export type IncludeData<T> = {
+  [key in Exclude<string, keyof T>]: any;
+}
+export type InitialState<T> = Partial<{
+  [key in keyof T]: FormValue;
+}>
 export type FormFields = { [key: string]: FormField };
 
 export type CreateEditModalProps<
   T extends FormFields,
-  K extends { [key in Exclude<string, keyof T>]: any }
+  K extends IncludeData<T>
 > = {
-  initialState: Partial<{ [key in keyof T]: FormValue }>;
+  initialState: InitialState<T> | K;
   includeData: K;
   formFields: T;
   show?: boolean;
@@ -170,7 +160,7 @@ export const CreateEditModal = <
                       value={formData[key]}
                       state={formData}
                       setState={(newState = {}) => setState({ formData: { ...formData, ...newState} })}
-                      onChange={value => setState({ formData: { ...formData, [key]: value } })}
+                      onChange={(value: FormValue) => setState({ formData: { ...formData, [key]: value } })}
                       initialState={initialFormData}
                       initialValue={initialFormData[key]}
                       {...formProps}

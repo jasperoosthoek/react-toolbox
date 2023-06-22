@@ -39,4 +39,3 @@ export const arrayToObject = <T extends any[]>(array: T, byKey: string) => Objec
 
 export const roundFixed = (str: string, decimals: number) => parseFloat(str).toFixed(decimals);
 export const round = (str: string, decimals: number) => parseFloat(parseFloat(str).toFixed(decimals));
-
