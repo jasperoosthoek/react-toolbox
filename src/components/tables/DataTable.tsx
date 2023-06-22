@@ -31,7 +31,7 @@ export type OnMoveProps<R> = {
 
 export type OnMove<R> = ({ item, target, reset }: OnMoveProps<R>) => void;
 
-export type OnClickRow<R> = (row: R) => ReactElement;
+export type OnClickRow<R> = (row: R) => void;
 
 export type DataTableProps<D extends any[]> = {
   data: D;

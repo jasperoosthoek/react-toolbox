@@ -148,3 +148,6 @@
 - Allow `modalTitle` prop in `CreateEditModal` component to be `ReactElement` and string
 - Allow props in `ConfirmButton` and `DeleteConfirmButton` component to be `ReactElement` and string
 - Fix: loading spinner visible in modal of `DeleteConfirmButton`
+
+##### Version 0.4.7
+- Fix: Incorrect return type of `OnClickRow` type
