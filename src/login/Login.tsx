@@ -1,4 +1,4 @@
-import React, { ReactElement, ChangeEvent } from 'react';
+import React, { ReactElement, ChangeEvent, KeyboardEvent } from 'react';
 import { useSelector, useDispatch, useStore } from 'react-redux';
 import { ThunkDispatch } from 'redux-thunk';
 import Axios, { AxiosResponse, AxiosInstance } from 'axios';
@@ -246,6 +246,12 @@ export const loginFactory = ({
                   placeholder='Enter email'
                   value={state.email}
                   onChange={onChange}
+                  onKeyPress={(e: KeyboardEvent<HTMLInputElement>) => {
+                    if (e.charCode === 13) {
+                      e.preventDefault();
+                      onLoginClick();
+                    }
+                  }}
                 />
               </Form.Group>
   
@@ -257,6 +263,12 @@ export const loginFactory = ({
                   placeholder={strings.getString('enter_password')}
                   value={state.password}
                   onChange={onChange}
+                  onKeyPress={(e: KeyboardEvent<HTMLInputElement>) => {
+                    if (e.charCode === 13) {
+                      e.preventDefault();
+                      onLoginClick();
+                    }
+                  }}
                 />
               </Form.Group>
             </Form>
@@ -264,7 +276,7 @@ export const loginFactory = ({
               {strings.getString('login')}
             </Button>
             <p className='mt-2'>
-            {strings.getString('forgot_password')}{' '}
+              {strings.getString('forgot_password')}{' '}
               <a href={passwordResetUrl}>{strings.getString('reset_password')}</a>
             </p>
           </Col>

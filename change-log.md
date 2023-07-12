@@ -161,3 +161,7 @@
 - Fix: Not including languages from `additionalLocalization` in `LocalizationProvider`
 - Hook `useWithDispatch` only takes function as an argument to fix broken return type
 - Fix: `useLogin` output has types 
+
+
+##### Version 0.4.10
+- Add type to input argument of `onChange` and `onKeyPress` functions

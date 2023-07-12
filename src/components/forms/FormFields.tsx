@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react';
+import React, { ReactElement, ChangeEvent, KeyboardEvent } from 'react';
 import { Form, FormControl, Badge, Dropdown, BadgeProps, FormControlProps, FormCheckProps  } from 'react-bootstrap';
 import { Variant} from 'react-bootstrap/types';
 import PropTypes from 'prop-types';
@@ -66,9 +66,9 @@ export const FormInput = ({
       id={id || (label && keyName)}
       {...formProps}
       value={value || ''}
-      onChange={e => onChange(e.target.value)}
+      onChange={(e: ChangeEvent<HTMLInputElement>) => onChange(e.target.value)}
       placeholder={placeholder}
-      onKeyPress={e => {
+      onKeyPress={(e: KeyboardEvent<HTMLInputElement>) => {
         if (e.charCode === 13 && typeof onEnter === 'function') {
           e.preventDefault();
           onEnter();
