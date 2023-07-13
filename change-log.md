@@ -162,6 +162,10 @@
 - Hook `useWithDispatch` only takes function as an argument to fix broken return type
 - Fix: `useLogin` output has types 
 
-
 ##### Version 0.4.10
 - Add type to input argument of `onChange` and `onKeyPress` functions
+- Login when press enter key on email and password field on `Login` component
+
+##### Version 0.4.1
+- Make `onLogout` parameter optional in loginFactory
+- Add `axios` as a dependency

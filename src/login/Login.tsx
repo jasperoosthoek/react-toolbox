@@ -33,7 +33,7 @@ export type LoginFactoryProps = {
   passwordResetUrl: string;
   axios: typeof Axios | AxiosInstance;
   onError: (error: any) => void;
-  onLogout: () => void;
+  onLogout?: () => void;
   loginUrl: string;
   getUserUrl: string;
   logoutUrl: string;
@@ -51,7 +51,7 @@ export const loginFactory = ({
   passwordResetUrl,
   axios,
   onError = () => {},
-  onLogout = () => {},
+  onLogout,
   loginUrl,
   getUserUrl,
   logoutUrl,
@@ -139,7 +139,7 @@ export const loginFactory = ({
     try {
       await axios.post(logoutUrl);
       dispatch(unsetCurrentUser());
-      onLogout();
+      if (typeof onLogout === 'function') onLogout();
     } catch(error) {
       dispatch(unsetCurrentUser());
       onError(error);
