@@ -38,13 +38,17 @@ export type LoginFactoryProps = {
   getUserUrl: string;
   logoutUrl: string;
   localStoragePrefix: string;
-}
+};
+
+export type LoginProps = {
+  label?: string | ReactElement;
+};
 const errorIfUndefined = (obj: Partial<LoginFactoryProps>) => Object.entries(obj).reduce((error, [param, value]) => {
   if (typeof value === 'undefined') {
     console.error(`Parameter ${param} of loginFactory cannot be undefined`);
   }
   return error;
-}, false)
+}, false);
 
 export const loginFactory = ({
   authenticatedComponent,
@@ -205,7 +209,7 @@ export const loginFactory = ({
   const useAuth = () => {
     return useSelector((state: any) => state.auth);
   }
-  const Login = () => {
+  const Login = ({ label }: LoginProps) => {
     const [state, setState] = useSetState({
       email: '',
       password: ''
@@ -217,7 +221,9 @@ export const loginFactory = ({
     const onChange = (e: ChangeEvent<HTMLInputElement>) => {
       setState({ [e.target.name]: e.target.value });
     };
+    const submitDisabled = !state.email || !state.password;
     const onLoginClick = () => {
+      if (submitDisabled) return;
       const userData = {
         email: state.email,
         password: state.password
@@ -234,7 +240,7 @@ export const loginFactory = ({
           <Col md='2'>
           </Col>
           <Col md='8'>
-            <h1>Login</h1>
+            {label || <h1>{strings.getString('login')}</h1>}
             <Form>
               <Form.Group className="mb-3">
                 <Form.Label>{strings.getString('your_email')}</Form.Label>
@@ -247,7 +253,7 @@ export const loginFactory = ({
                   onKeyPress={(e: KeyboardEvent<HTMLInputElement>) => {
                     if (e.charCode === 13) {
                       e.preventDefault();
-                      onLoginClick();
+                      if (!submitDisabled) onLoginClick();
                     }
                   }}
                 />
@@ -264,13 +270,17 @@ export const loginFactory = ({
                   onKeyPress={(e: KeyboardEvent<HTMLInputElement>) => {
                     if (e.charCode === 13) {
                       e.preventDefault();
-                      onLoginClick();
+                      if (!submitDisabled) onLoginClick();
                     }
                   }}
                 />
               </Form.Group>
             </Form>
-            <Button variant='primary' onClick={onLoginClick}>
+            <Button
+              variant='primary'
+              onClick={onLoginClick}
+              disabled={submitDisabled}
+            >
               {strings.getString('login')}
             </Button>
             <p className='mt-2'>

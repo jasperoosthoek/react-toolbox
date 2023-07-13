@@ -172,3 +172,7 @@
 
 ##### Version 0.4.12
 - Add missing localization for enter_email
+
+##### Version 0.4.13
+- Prevent login when either email address of password field is empty
+- New optional `label` prop `Login` component 
