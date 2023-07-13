@@ -166,6 +166,9 @@
 - Add type to input argument of `onChange` and `onKeyPress` functions
 - Login when press enter key on email and password field on `Login` component
 
-##### Version 0.4.1
+##### Version 0.4.11
 - Make `onLogout` parameter optional in loginFactory
 - Add `axios` as a dependency
+
+##### Version 0.4.12
+- Add missing localization for enter_email

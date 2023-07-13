@@ -211,8 +211,6 @@ export const loginFactory = ({
       password: ''
     });
     const isAuthenticated = useSelector(({ auth }: any) => auth.isAuthenticated );
-    // To do: Add types for useWithDispatch
-    // const { login } = useLogin();
     const dispatch = useDispatch();
     const { strings } = useLocalization();
   
@@ -238,12 +236,12 @@ export const loginFactory = ({
           <Col md='8'>
             <h1>Login</h1>
             <Form>
-              <Form.Group className="mb-3" controlId='emailId'>
+              <Form.Group className="mb-3">
                 <Form.Label>{strings.getString('your_email')}</Form.Label>
                 <Form.Control
                   type='text'
                   name='email'
-                  placeholder='Enter email'
+                  placeholder={strings.getString('enter_email')}
                   value={state.email}
                   onChange={onChange}
                   onKeyPress={(e: KeyboardEvent<HTMLInputElement>) => {
@@ -255,7 +253,7 @@ export const loginFactory = ({
                 />
               </Form.Group>
   
-              <Form.Group className="mb-3" controlId='passwordId'>
+              <Form.Group className="mb-3">
                 <Form.Label>{strings.getString('your_password')}</Form.Label>
                 <Form.Control
                   type='password'
