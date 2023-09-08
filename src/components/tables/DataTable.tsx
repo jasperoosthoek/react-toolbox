@@ -1,4 +1,13 @@
-import React, { useEffect, useState, forwardRef, useReducer, ReactElement, ChangeEvent, Ref } from 'react';
+import React, {
+  useEffect,
+  useState,
+  forwardRef,
+  useReducer,
+  ReactElement,
+  ReactNode,
+  ChangeEvent,
+  Ref,
+} from 'react';
 import { FaSort, FaSortUp, FaSortDown } from 'react-icons/fa';
 import { Table, Col, Row, InputGroup, Form, Button, ButtonProps, ButtonGroup } from 'react-bootstrap';
 
@@ -13,7 +22,7 @@ const PaginationButton = (props: ButtonProps) => (
 export type OrderByColumn<R> = ((row: R) => string) | string;
 
 export type DataTableColumn<R> = {
-  name: string;
+  name: string | ReactNode;
   orderBy?: OrderByColumn<R>;
   className?: string;
   selector: number | string | ((row: R) => ReactElement);

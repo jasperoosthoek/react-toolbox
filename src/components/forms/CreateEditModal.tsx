@@ -171,7 +171,7 @@ export const CreateEditModal = <
                       {...formProps}
                       value={value}
                       isInvalid={isInvalid}
-                      onChange={e => setState({
+                      onChange={(e: ChangeEvent<HTMLInputElement>) => setState({
                         formData:
                           typeof onChange === 'function'
                             ? { ...formData, ...onChange(e.target.value, formData) }

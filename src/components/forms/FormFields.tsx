@@ -68,8 +68,8 @@ export const FormInput = ({
       value={value || ''}
       onChange={(e: ChangeEvent<HTMLInputElement>) => onChange(e.target.value)}
       placeholder={placeholder}
-      onKeyPress={(e: KeyboardEvent<HTMLInputElement>) => {
-        if (e.charCode === 13 && typeof onEnter === 'function') {
+      onKeyDown={(e: KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Enter' && typeof onEnter === 'function') {
           e.preventDefault();
           onEnter();
         }
@@ -77,10 +77,6 @@ export const FormInput = ({
     />
   </Form.Group>
 );
-
-// interface FormTextAreaProps extends FormInputProps {
-//   rows: number;
-// }
 
 export const FormTextArea = ({ as = 'textarea', rows = 3, ...restProps }: FormInputProps) => (
   <FormInput

@@ -175,4 +175,8 @@
 
 ##### Version 0.4.13
 - Prevent login when either email address of password field is empty
-- New optional `label` prop `Login` component 
+- New optional `label` prop `Login` component
+
+##### Version 0.4.14
+- Replace deprecated `onKeyPress` props with `onKeyDown`
+- Allow column name of `DataTable` to be `ReactNode`

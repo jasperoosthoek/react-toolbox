@@ -250,8 +250,8 @@ export const loginFactory = ({
                   placeholder={strings.getString('enter_email')}
                   value={state.email}
                   onChange={onChange}
-                  onKeyPress={(e: KeyboardEvent<HTMLInputElement>) => {
-                    if (e.charCode === 13) {
+                  onKeyDown={(e: KeyboardEvent<HTMLInputElement>) => {
+                    if (e.key === 'Enter') {
                       e.preventDefault();
                       if (!submitDisabled) onLoginClick();
                     }
@@ -267,8 +267,8 @@ export const loginFactory = ({
                   placeholder={strings.getString('enter_password')}
                   value={state.password}
                   onChange={onChange}
-                  onKeyPress={(e: KeyboardEvent<HTMLInputElement>) => {
-                    if (e.charCode === 13) {
+                  onKeyDown={(e: KeyboardEvent<HTMLInputElement>) => {
+                    if (e.key === 'Enter') {
                       e.preventDefault();
                       if (!submitDisabled) onLoginClick();
                     }
