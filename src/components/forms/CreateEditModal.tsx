@@ -26,26 +26,33 @@ export type InitialState<T> = Partial<{
 }>
 export type FormFields = { [key: string]: FormField };
 
+export type OnSave<T, K> = (state: ({ [key in keyof T]: FormValue }), callback: () => void) => void;
+
+export type Validate = (state: any) => any
+
+export type ModalTitle = ReactElement | string;
+
+export type Width = 25 | 50 | 75 | 100;
 export type CreateEditModalProps<
   T extends FormFields,
   K extends IncludeData<T>
 > = {
   initialState: InitialState<T> | K;
-  includeData: K;
+  includeData?: K;
   formFields: T;
   show?: boolean;
-  onSave: (state: { [key in keyof T]: FormValue } & K, callback: () => void) => void;
+  onSave: OnSave<T, K>;
   onHide: () => void;
-  validate?: (state: any) => any;
-  modalTitle?: ReactElement | string;
+  validate?: Validate;
+  modalTitle?: ModalTitle;
   loading?: boolean;
   dialogClassName?: string;
-  width?: 25 | 50 | 75 | 100;
+  width?: Width;
 }
 
 export const CreateEditModal = <
   T extends FormFields,
-  K extends { [key in Exclude<string, keyof T>]: any }
+  K extends IncludeData<T>
 >({
   initialState,
   formFields,

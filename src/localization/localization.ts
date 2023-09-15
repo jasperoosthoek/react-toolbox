@@ -30,6 +30,8 @@ export interface LocalizationStrings {
   choose_one: string;
   everything: string;
   number_of_rows: string;
+  modal_create: string;
+  modal_edit: string;
 }
 
 export type Localization = {
@@ -69,6 +71,8 @@ export const defaultLocalization: Localization = {
     choose_one: "Choose one",
     everything: "Everything",
     number_of_rows: "Number of rows",
+    modal_create: 'New',
+    modal_edit: 'Edit',
   },
   fr: {
     no_information_to_display: "Sélectionner",
@@ -93,6 +97,8 @@ export const defaultLocalization: Localization = {
     choose_one: "Choisissez-en un",
     number_of_rows: "Tout",
     everything: "Nombre de rangées",
+    modal_create: 'Nouveau',
+    modal_edit: 'Éditer',
   },
   nl: {
     no_information_to_display: "Geen informatie om weer te geven.",
@@ -117,6 +123,8 @@ export const defaultLocalization: Localization = {
     choose_one: "Maak een keuze",
     number_of_rows: "Aantal rijen",
     everything: "Alles",
+    modal_create: 'Nieuw',
+    modal_edit: 'Bewerken',
   },
 } as const;
 

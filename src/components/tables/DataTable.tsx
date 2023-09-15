@@ -14,6 +14,7 @@ import { Table, Col, Row, InputGroup, Form, Button, ButtonProps, ButtonGroup } f
 import { CloseButton } from '../buttons/IconButtons';
 import { DragAndDropList, DragAndDropListComponent, DragAndDropListComponentProps } from './DragAndDropList';
 import { useLocalization } from '../../localization/LocalizationContext';
+import { useCreateEditModal } from '../forms/CreateEditModalProvider';
 
 const PaginationButton = (props: ButtonProps) => (
   <Button variant='outline-secondary' size='sm' {...props} />
@@ -55,6 +56,7 @@ export type DataTableProps<D extends any[]> = {
   moveIsLoading?: boolean;
   showHeader?: boolean;
   onClickRow?: OnClickRow<D[number]>;
+  showEditModalOnClickRow?: boolean;
   textOnEmpty?: ReactElement;
   className?: string;
   rowClassName?: string | ((row: D[number]) => string);
@@ -74,12 +76,14 @@ export const DataTable = <D extends any[]>({
   moveIsLoading,
   showHeader = true,
   onClickRow,
+  showEditModalOnClickRow,
   textOnEmpty,
   className,
   rowClassName,
   style,
   ...restProps
 }: DataTableProps<D>) => {
+  const { showEditModal } = useCreateEditModal()
   type R = D[number];
 
   if (Object.keys(restProps).length !== 0) console.error('Unrecognised props:', restProps);
@@ -144,7 +148,13 @@ export const DataTable = <D extends any[]>({
         ? { className: rowClassName(row) }
         : {}
       }
-      {...{ ...typeof onClickRow === 'function' ? { onClick: () => onClickRow(row)} : {}}}
+      {...{ ...(typeof onClickRow === 'function' || showEditModal)
+        ? { onClick: () => {
+            if (onClickRow) onClickRow(row);
+            if (showEditModal) showEditModal(row);
+          } }
+        : {}
+      }}
     >
       {columns.map(({ selector, className }, index) =>
         <td key={index} className={className}>

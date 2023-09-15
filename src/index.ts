@@ -1,6 +1,7 @@
 export * from './components/buttons/IconButtons';
 
 export * from './components/forms/CreateEditModal';
+export * from './components/forms/CreateEditModalProvider';
 export * from './components/forms/FormFields';
 
 export * from './components/indicators/LoadingIndicator';
