@@ -114,7 +114,7 @@ export const CreateEditModalProvider: React.FC<CreateEditModalProviderProps<T, K
 					initialState={initialState}
 					formFields={formFields}
 					loading={loading}
-          // @ts-ignore
+          // @ts-ignore Ignore as Typescript does not recognize that this is allowed
 					onSave={onCreate || onSave}
 				/>
 			)}

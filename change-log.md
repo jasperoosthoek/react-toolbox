@@ -180,3 +180,6 @@
 ##### Version 0.4.14
 - Replace deprecated `onKeyPress` props with `onKeyDown`
 - Allow column name of `DataTable` to be `ReactNode`
+
+##### Version 0.4.15
+- New `CreateEditModalProvider` component

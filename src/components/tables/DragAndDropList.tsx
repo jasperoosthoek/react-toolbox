@@ -162,15 +162,7 @@ export const DragAndDropList = <A extends any[]>({ onDrop, propsArray, component
     [listMap]
   );
 
-  // const component = Component && forwardRef<HTMLElement, DragAndDropListComponentProps>(
-  //   (props: DragAndDropListComponentProps, ref) =>
-  //     <Component
-  //       ref={ref}
-  //       {...props}
-  //     />
-  // );
   if (!component) return null;
-
   return (
     <>
       {
