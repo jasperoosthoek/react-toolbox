@@ -183,3 +183,6 @@
 
 ##### Version 0.4.15
 - New `CreateEditModalProvider` component
+
+##### Version 0.4.16
+- Selectively show components in header of `DataTable` component

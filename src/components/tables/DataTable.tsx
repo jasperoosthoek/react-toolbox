@@ -43,6 +43,12 @@ export type OnMove<R> = ({ item, target, reset }: OnMoveProps<R>) => void;
 
 export type OnClickRow<R> = (row: R) => void;
 
+export type DataTableHeader = {
+  search?: boolean,
+  numberOfRows?: boolean,
+  pagination?: boolean,
+};
+
 export type DataTableProps<D extends any[]> = {
   data: D;
   columns: DataTableColumn<D[number]>[];
@@ -54,7 +60,7 @@ export type DataTableProps<D extends any[]> = {
   onMove?: OnMove<D[number]>;
   moveId?: string;
   moveIsLoading?: boolean;
-  showHeader?: boolean;
+  showHeader?: boolean | DataTableHeader;
   onClickRow?: OnClickRow<D[number]>;
   showEditModalOnClickRow?: boolean;
   textOnEmpty?: ReactElement;
@@ -165,92 +171,97 @@ export const DataTable = <D extends any[]>({
   );
   
   if (!Component) return null;
-
   return (
     <div style={style} className={className}>
       {showHeader &&
         <Row className="mb-4">
-          <Col
-            xs={12}
-            lg={4}
-            className="d-flex flex-col justify-content-end align-items-end"
-          >
-            <InputGroup>
-              <Form.Control
-                type="text"
-                name="table-filter"
-                value={filterText}
-                placeholder={strings.getString('search')}
-                onChange={e => setFilterText(e.target.value)}
-              />
-              <CloseButton
-                variant="outline-secondary"
-                size="sm"
-                onClick={() => setFilterText('')}
-              />
-            </InputGroup>
-          </Col>
-          <Col
-            xs={12}
-            sm={6}
-            lg={4}
-            className="d-flex flex-col justify-content-lg-center align-items-center justify-content-sm-start mb-2 mb-sm-0"
-          >
-            <Form.Group>
-              <Form.Label>
-                {strings.getString('number_of_rows')}
-              </Form.Label>
-              <Form.Select
-                name="table-pagination-options"
-                value={rowsPerPage === null ? 'everything' : `${rowsPerPage}`}
-                as="select"
-                placeholder={strings.getString('select')}
-                onChange={(e: ChangeEvent<HTMLSelectElement>) =>
-                  setRowsPerPage(e.target.value === 'everything' ? null : parseInt(e.target.value))
-                }
-              >
-                {rowsPerPageOptions.map((option, index) => (
-                  <option key={index} value={option === null ? 'everything' : option}>
-                    {option === null ? strings.getString('everything') : option}
-                  </option>
-                ))}
-              </Form.Select>
-            </Form.Group>
-          </Col>
-          <Col
-            xs={12}
-            sm={6}
-            lg={4}
-            className="d-flex flex-col justify-content-end align-items-end"
-          >
-            <ButtonGroup>
-              <PaginationButton
-                disabled={!pagesCount || page === 0}
-                onClick={() => setPage(0)}
-              >
-                {'<<'}
-              </PaginationButton>
-              <PaginationButton
-                disabled={!pagesCount || page === 0}
-                onClick={() => setPage(page - 1)}
-              >
-                {'<'}
-              </PaginationButton>
-              <PaginationButton>{pagesCount ? page + 1 : 1}</PaginationButton>
-              <PaginationButton
-                disabled={!pagesCount || page >= pagesCount - 1}
-                onClick={() => setPage(page + 1)}
-              >
-                {'>'}
-              </PaginationButton>
-              <PaginationButton
-                disabled={!pagesCount || page >= pagesCount - 1}
-                onClick={() => setPage(typeof pagesCount === 'number' ? pagesCount - 1 : 0)}
-              >
-                {'>>'}
-              </PaginationButton>
-            </ButtonGroup>
-          </Col>
+          {(showHeader === true || showHeader.search) && (
+            <Col
+              xs={12}
+              lg={4}
+              className="d-flex flex-col justify-content-end align-items-end"
+            >
+              <InputGroup>
+                <Form.Control
+                  type="text"
+                  name="table-filter"
+                  value={filterText}
+                  placeholder={strings.getString('search')}
+                  onChange={e => setFilterText(e.target.value)}
+                />
+                <CloseButton
+                  variant="outline-secondary"
+                  size="sm"
+                  onClick={() => setFilterText('')}
+                />
+              </InputGroup>
+            </Col>
+          )}
+          {(showHeader === true || showHeader.numberOfRows) && (
+            <Col
+              xs={12}
+              sm={6}
+              lg={4}
+              className="d-flex flex-col justify-content-lg-center align-items-center justify-content-sm-start mb-2 mb-sm-0"
+            >
+              <Form.Group>
+                <Form.Label>
+                  {strings.getString('number_of_rows')}
+                </Form.Label>
+                <Form.Select
+                  name="table-pagination-options"
+                  value={rowsPerPage === null ? 'everything' : `${rowsPerPage}`}
+                  as="select"
+                  placeholder={strings.getString('select')}
+                  onChange={(e: ChangeEvent<HTMLSelectElement>) =>
+                    setRowsPerPage(e.target.value === 'everything' ? null : parseInt(e.target.value))
+                  }
+                >
+                  {rowsPerPageOptions.map((option, index) => (
+                    <option key={index} value={option === null ? 'everything' : option}>
+                      {option === null ? strings.getString('everything') : option}
+                    </option>
+                  ))}
+                </Form.Select>
+              </Form.Group>
+            </Col>
+          )}
+          {(showHeader === true || showHeader.pagination) && (
+            <Col
+              xs={12}
+              sm={6}
+              lg={4}
+              className="d-flex flex-col justify-content-end align-items-end"
+            >
+              <ButtonGroup>
+                <PaginationButton
+                  disabled={!pagesCount || page === 0}
+                  onClick={() => setPage(0)}
+                >
+                  {'<<'}
+                </PaginationButton>
+                <PaginationButton
+                  disabled={!pagesCount || page === 0}
+                  onClick={() => setPage(page - 1)}
+                >
+                  {'<'}
+                </PaginationButton>
+                <PaginationButton>{pagesCount ? page + 1 : 1}</PaginationButton>
+                <PaginationButton
+                  disabled={!pagesCount || page >= pagesCount - 1}
+                  onClick={() => setPage(page + 1)}
+                >
+                  {'>'}
+                </PaginationButton>
+                <PaginationButton
+                  disabled={!pagesCount || page >= pagesCount - 1}
+                  onClick={() => setPage(typeof pagesCount === 'number' ? pagesCount - 1 : 0)}
+                >
+                  {'>>'}
+                </PaginationButton>
+              </ButtonGroup>
+            </Col>
+          )}
         </Row>
       }
 

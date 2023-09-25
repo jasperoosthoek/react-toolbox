@@ -91,12 +91,12 @@ export const CreateEditModalProvider: React.FC<CreateEditModalProviderProps<T, K
 	onCreate,
 	onUpdate,
   onSave,
+  dialogClassName,
 	children,
 }) => {
   const [createModalActive, showCreateModal] = useState(false);
   const [instanceInEditModal, showEditModal] = useState<({ [key in keyof T]: FormValue } & K) | null>(null);
   const { strings } = useLocalization();
-
   return (
     <CreateEditModalContext.Provider
       value={{
@@ -105,7 +105,6 @@ export const CreateEditModalProvider: React.FC<CreateEditModalProviderProps<T, K
 				showEditModal,
 			}}>
       {children}
-
 			
       {createModalActive && (onCreate || onSave) && (
 				<CreateEditModal
@@ -116,6 +115,7 @@ export const CreateEditModalProvider: React.FC<CreateEditModalProviderProps<T, K
 					loading={loading}
           // @ts-ignore Ignore as Typescript does not recognize that this is allowed
 					onSave={onCreate || onSave}
+          dialogClassName={dialogClassName}
 				/>
 			)}
       {instanceInEditModal && (onUpdate || onSave) && (
@@ -128,6 +128,7 @@ export const CreateEditModalProvider: React.FC<CreateEditModalProviderProps<T, K
           loading={loading}
           // @ts-ignore
           onSave={onUpdate || onSave}
+          dialogClassName={dialogClassName}
         />
       )}
     </CreateEditModalContext.Provider>

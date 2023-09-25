@@ -156,7 +156,7 @@ export const CreateEditModal = <
             const isInvalid = !pristine && !!(!validated && validationErrors[key]);
             const value = getValue(key);
             return (
-              <Form.Group controlId="name" key={key}>
+              <Form.Group controlId={key} key={key}>
                 {label && <Form.Label>{label}{required && ' *'}</Form.Label>}
                 {isInvalid && ` (${validationErrors[key]})`}
                 {Component
