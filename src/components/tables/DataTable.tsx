@@ -63,7 +63,7 @@ export type DataTableProps<D extends any[]> = {
   showHeader?: boolean | DataTableHeader;
   onClickRow?: OnClickRow<D[number]>;
   showEditModalOnClickRow?: boolean;
-  textOnEmpty?: ReactElement;
+  textOnEmpty?: ReactElement | string;
   className?: string;
   rowClassName?: string | ((row: D[number]) => string);
   style?: any;

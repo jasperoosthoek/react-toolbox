@@ -186,3 +186,8 @@
 
 ##### Version 0.4.16
 - Selectively show components in header of `DataTable` component
+
+##### Version 0.4.17
+- Allow `textOnEmpty` of `DataTable` to be string
+- New `cancelText` prop and make `confirmText` prop optional in `ConfirmButton` component
+- Move `ConfirmButton` and `DeleteConfirmButton` to separate files

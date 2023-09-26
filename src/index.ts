@@ -1,4 +1,8 @@
 export * from './components/buttons/IconButtons';
+export * from './components/buttons/ConfirmButton';
+export { default as ConfirmButton } from './components/buttons/ConfirmButton';
+export { default as DeleteConfirmButton } from './components/buttons/DeleteConfirmButton';
+export * from './components/buttons/DeleteConfirmButton';
 
 export * from './components/forms/CreateEditModal';
 export * from './components/forms/CreateEditModalProvider';
