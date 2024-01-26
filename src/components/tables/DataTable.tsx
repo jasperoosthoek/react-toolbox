@@ -23,10 +23,10 @@ const PaginationButton = (props: ButtonProps) => (
 export type OrderByColumn<R> = ((row: R) => string) | string;
 
 export type DataTableColumn<R> = {
-  name: string | ReactNode;
+  name: ReactNode | string | number;
   orderBy?: OrderByColumn<R>;
   className?: string;
-  selector: number | string | ((row: R) => ReactElement);
+  selector: number | string | ((row: R) => ReactElement | string | number);
 }
 
 export type RowsPerPageOptions = number[] | [...number[], null];

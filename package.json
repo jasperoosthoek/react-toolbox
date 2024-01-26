@@ -1,6 +1,6 @@
 {
   "name": "@jasperoosthoek/react-toolbox",
-  "version": "0.4.17",
+  "version": "0.4.18",
   "author": "jasperoosthoek",
   "license": "MIT",
   "repository": {
@@ -10,7 +10,8 @@
   "description": "Functional factory to create Redux actions and reducers that interface with a backend",
   "files": [
     "src/",
-    "dist/"
+    "dist/",
+    "change-log.md"
   ],
   "types": "dist/index.d.ts",
   "devDependencies": {

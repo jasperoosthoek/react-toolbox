@@ -62,3 +62,19 @@ export const useInterval = (func: () => void, value: number) => useEffect(() => 
 
   return () => clearInterval(interval);
 }, []);
+
+export const useLocalStorage = <T,>(key: string, initialValue: T): [T, (value: T) => void] => {
+  const initialLocalStorageValue = localStorage.getItem(key);
+  const [state, setState] = useState<T>(
+    initialLocalStorageValue
+      ? JSON.parse(initialLocalStorageValue) as T
+      : initialValue
+  );
+
+  const setLocalStorage = (value: T) => {
+    setState(value);
+    localStorage.setItem(key, JSON.stringify(value));
+  };
+
+  return [state, setLocalStorage];
+};

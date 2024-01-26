@@ -191,3 +191,8 @@
 - Allow `textOnEmpty` of `DataTable` to be string
 - New `cancelText` prop and make `confirmText` prop optional in `ConfirmButton` component
 - Move `ConfirmButton` and `DeleteConfirmButton` to separate files
+
+##### Version 0.4.18
+- New `useLocalStorage` hook that functions like `useState`
+- The `round` and `roundFixed`
+- The `DataTable` `selector` function can output `string` and `number` as well
