@@ -25,8 +25,7 @@ export const useForceUpdate = () => {
   const [, updateState] = useState<any>(null);
   return useCallback(() => updateState({}), []);
 }
-  
-// export const useSetState = <T>(initialState: T): [T, (subState: Partial<T>) => void]) => {
+
 export const useSetState = <T>(initialState: T): [T, (subState: Partial<T>) => void] => {
   const [state, setState] = useState(initialState);
   const [callback, setCallback] = useState<() => void | undefined>();
@@ -71,9 +70,30 @@ export const useLocalStorage = <T,>(key: string, initialValue: T): [T, (value: T
       : initialValue
   );
 
+  useEffect(() => {
+    const handleStorageChange = (event: StorageEvent) => {
+      if (event.key === key && event.newValue) {
+        setState(JSON.parse(event.newValue) as T);
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, [key]);
+
   const setLocalStorage = (value: T) => {
     setState(value);
     localStorage.setItem(key, JSON.stringify(value));
+
+    // Manually dispatch an event to update components in the same document
+    window.dispatchEvent(new StorageEvent('storage', {
+      key,
+      newValue: JSON.stringify(value),
+      oldValue: localStorage.getItem(key),
+    }));
   };
 
   return [state, setLocalStorage];

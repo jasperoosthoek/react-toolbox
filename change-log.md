@@ -196,3 +196,6 @@
 - New `useLocalStorage` hook that functions like `useState`
 - The `round` and `roundFixed`
 - The `DataTable` `selector` function can output `string` and `number` as well
+
+##### Version 0.4.19
+- Improve `useLocalStorage` hook so it updates other components using it
