@@ -19,6 +19,7 @@ export const LocalizationContext = React.createContext({
     return str[0];
   },
   strings: new LocalizedStrings({ en: {} }),
+  localizationStrings: {} as AdditionalLocalization,
   setLocalization: (localization: AdditionalLocalization) => console.error(out_of_context_error),
 });
 
@@ -94,6 +95,7 @@ export const LocalizationProvider = ({
         },
         strings,
         text,
+        localizationStrings,
         setLocalization,
         ...restProps,
       }}

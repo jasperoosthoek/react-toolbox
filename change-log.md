@@ -199,3 +199,6 @@
 
 ##### Version 0.4.19
 - Improve `useLocalStorage` hook so it updates other components using it
+
+##### Version 0.4.20
+- New `PasteButton` component

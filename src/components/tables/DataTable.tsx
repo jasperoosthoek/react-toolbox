@@ -26,7 +26,7 @@ export type DataTableColumn<R> = {
   name: ReactNode | string | number;
   orderBy?: OrderByColumn<R>;
   className?: string;
-  selector: number | string | ((row: R) => ReactElement | string | number);
+  selector: number | string | ((row: R) => ReactElement | string | number | (ReactElement | string | number)[]);
 }
 
 export type RowsPerPageOptions = number[] | [...number[], null];

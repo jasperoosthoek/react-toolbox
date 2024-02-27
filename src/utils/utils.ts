@@ -37,5 +37,5 @@ export const pluralToSingle = (str: string) => {
 
 export const arrayToObject = <T extends any[]>(array: T, byKey: string) => Object.fromEntries(array.map(obj => [obj[byKey], obj]));
 
-export const roundFixed = (str: string | number, decimals: number) => parseFloat(`${str}`).toFixed(decimals);
-export const round = (str: string | number, decimals: number) => parseFloat(parseFloat(`${str}`).toFixed(decimals));
+export const roundFixed = (str: string | number, decimals: number = 0) => parseFloat(`${str}`).toFixed(decimals);
+export const round = (str: string | number, decimals: number = 0) => parseFloat(parseFloat(`${str}`).toFixed(decimals));

@@ -25,9 +25,7 @@ import { BiRightArrow, BiSquare, BiHide, BiShow } from 'react-icons/bi';
 import { HiOutlineCog, HiOutlineLink } from 'react-icons/hi';
 import { VscMenu } from 'react-icons/vsc';
 import { RiQuestionnaireLine } from 'react-icons/ri';
-
-import { SmallSpinner } from '../indicators/LoadingIndicator';
-import { LocalizationContext } from '../../localization/LocalizationContext';
+import { LuClipboardPaste } from "react-icons/lu";
 
 export interface ButtonProps extends ReactBootstrapButtonProps {
   loading?: boolean,
@@ -72,6 +70,7 @@ export const ButtonBase = ({
 export const makeIconButton = (icon: IconType) => (props: ButtonProps) => <ButtonBase {...props} icon={icon} />;
 export const CheckButton = makeIconButton(AiOutlineCheck);
 export const CopyButton = makeIconButton(FiCopy);
+export const PasteButton = makeIconButton(LuClipboardPaste);
 export const CloseButton = makeIconButton(FaTimes);
 export const CogButton = makeIconButton(HiOutlineCog);
 export const CreateButton = makeIconButton(AiOutlinePlus);
