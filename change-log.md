@@ -203,5 +203,4 @@
 - New `PasteButton` component
 
 ##### Version 0.4.21
-- New `PasteButton` component
 - Make `decimal` argument of `round` and `roundFixed` optional
