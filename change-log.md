@@ -194,7 +194,6 @@
 
 ##### Version 0.4.18
 - New `useLocalStorage` hook that functions like `useState`
-- The `round` and `roundFixed`
 - The `DataTable` `selector` function can output `string` and `number` as well
 
 ##### Version 0.4.19
@@ -202,3 +201,7 @@
 
 ##### Version 0.4.20
 - New `PasteButton` component
+
+##### Version 0.4.21
+- New `PasteButton` component
+- Make `decimal` argument of `round` and `roundFixed` optional
