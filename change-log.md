@@ -204,3 +204,6 @@
 
 ##### Version 0.4.21
 - Make `decimal` argument of `round` and `roundFixed` optional
+
+##### Version 0.4.22
+- Add `onClick` to column of `DataTable`

@@ -27,6 +27,7 @@ export type DataTableColumn<R> = {
   orderBy?: OrderByColumn<R>;
   className?: string;
   selector: number | string | ((row: R) => ReactElement | string | number | (ReactElement | string | number)[]);
+  onClick?: OnClickRow<R>;
 }
 
 export type RowsPerPageOptions = number[] | [...number[], null];
@@ -162,8 +163,17 @@ export const DataTable = <D extends any[]>({
         : {}
       }}
     >
-      {columns.map(({ selector, className }, index) =>
-        <td key={index} className={className}>
+      {columns.map(({ selector, className, onClick }, index) =>
+        <td
+        	key={index}
+          className={className}
+          {...(typeof onClick === 'function')
+            ? { onClick: () => {
+                if (onClick) onClick(row);
+              } }
+            : {}
+          }
+        >
           {typeof selector === 'function' ? selector(row) : row[selector]}
         </td>
       )}
