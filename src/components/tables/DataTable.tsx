@@ -9,7 +9,17 @@ import React, {
   Ref,
 } from 'react';
 import { FaSort, FaSortUp, FaSortDown } from 'react-icons/fa';
-import { Table, Col, Row, InputGroup, Form, Button, ButtonProps, ButtonGroup } from 'react-bootstrap';
+import {
+  Table,
+  Col,
+  Row,
+  InputGroup,
+  Form,
+  Button,
+  ButtonProps,
+  ButtonGroup,
+  Dropdown,
+} from 'react-bootstrap';
 
 import { CloseButton } from '../buttons/IconButtons';
 import { DragAndDropList, DragAndDropListComponent, DragAndDropListComponentProps } from './DragAndDropList';
@@ -20,11 +30,20 @@ const PaginationButton = (props: ButtonProps) => (
   <Button variant='outline-secondary' size='sm' {...props} />
 )
 
-export type OrderByColumn<R> = ((row: R) => string) | string;
+export type OrderByColumn<R> = string | ((row: R) => string);
+
+export type OptionsDropdown = {
+  onSelect: (key: string | null) => void;
+  selected: string | null;
+  options: {
+    [key: string]: ReactNode | string | number;
+  }
+}
 
 export type DataTableColumn<R> = {
   name: ReactNode | string | number;
   orderBy?: OrderByColumn<R>;
+  optionsDropdown?: OptionsDropdown;
   className?: string;
   selector: number | string | ((row: R) => ReactElement | string | number | (ReactElement | string | number)[]);
   onClick?: OnClickRow<R>;
@@ -222,11 +241,17 @@ export const DataTable = <D extends any[]>({
                   name="table-pagination-options"
                   value={rowsPerPage === null ? 'everything' : `${rowsPerPage}`}
                   as="select"
-                  placeholder={strings.getString('select')}
                   onChange={(e: ChangeEvent<HTMLSelectElement>) =>
                     setRowsPerPage(e.target.value === 'everything' ? null : parseInt(e.target.value))
                   }
                 >
+                  <option
+                    value=""
+                    disabled={rowsPerPage !== null}
+                    selected={rowsPerPage === null}
+                  >
+                    {strings.getString('select')}
+                  </option>
                   {rowsPerPageOptions.map((option, index) => (
                     <option key={index} value={option === null ? 'everything' : option}>
                       {option === null ? strings.getString('everything') : option}
@@ -283,8 +308,41 @@ export const DataTable = <D extends any[]>({
       >
         <thead>
           <tr>
-            {columns.map(({ name, orderBy: orderByColumn, className }, index) =>
-              orderByColumn 
+            {columns.map(({ name, orderBy: orderByColumn, optionsDropdown, className }, index) =>
+              optionsDropdown
+              ? (
+                <th
+                  key={index}
+                  className={className}
+                  style={{ cursor: 'pointer' }}
+                >
+                  <Dropdown>
+                    <Dropdown.Toggle as="span">
+                      {optionsDropdown.selected
+                        ? optionsDropdown.options[optionsDropdown.selected]
+                        : name
+                      }
+                    </Dropdown.Toggle>
+
+                    <Dropdown.Menu>
+                      {Object.entries(optionsDropdown.options)
+                        .map(([key, text]) => 
+                          <Dropdown.Item
+                            eventKey={key}
+                            key={key}
+                            onClick={() => optionsDropdown.onSelect(
+                              optionsDropdown.selected !== key ? key : null
+                            )}
+                            active={key === optionsDropdown.selected}
+                          >
+                            {text}
+                          </Dropdown.Item>
+                        )
+                      }
+                    </Dropdown.Menu>
+                  </Dropdown>
+                </th>
+              ) : orderByColumn 
                 ? (
                     !orderBy || orderBy.column !== orderByColumn
                     ? <th

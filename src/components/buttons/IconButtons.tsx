@@ -24,9 +24,8 @@ import { BsArrowsMove, BsCardList, BsPencil } from 'react-icons/bs';
 import { BiRightArrow, BiSquare, BiHide, BiShow } from 'react-icons/bi';
 import { HiOutlineCog, HiOutlineLink } from 'react-icons/hi';
 import { VscMenu } from 'react-icons/vsc';
-import { RiQuestionnaireLine } from 'react-icons/ri';
+import { RiQuestionnaireLine, RiDropdownList } from 'react-icons/ri';
 import { LuClipboardPaste } from "react-icons/lu";
-
 export interface ButtonProps extends ReactBootstrapButtonProps {
   loading?: boolean,
   iconSize?: string,
@@ -103,6 +102,7 @@ export const UnlockButton = makeIconButton(AiOutlineUnlock);
 export const UpButton = makeIconButton(AiFillCaretUp);
 export const UploadButton = makeIconButton(AiOutlineUpload);
 export const QuestionnaireButton = makeIconButton(RiQuestionnaireLine);
+export const DropdownButton = makeIconButton(RiDropdownList);
 
 export interface UploadTextButtonProps extends ButtonProps {
   accept?: string;

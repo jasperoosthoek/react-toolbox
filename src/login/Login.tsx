@@ -1,7 +1,7 @@
 import React, { ReactElement, ChangeEvent, KeyboardEvent } from 'react';
 import { useSelector, useDispatch, useStore } from 'react-redux';
 import { ThunkDispatch } from 'redux-thunk';
-import Axios, { AxiosResponse, AxiosInstance } from 'axios';
+import axios, { AxiosResponse, AxiosInstance } from 'axios';
 import { Container, Button, Row, Col, Form } from 'react-bootstrap';
 
 import { useSetState, useWithDispatch } from '../utils/hooks';
@@ -31,7 +31,7 @@ type Action = {
 export type LoginFactoryProps = {
   authenticatedComponent: (props: any) => ReactElement;
   passwordResetUrl: string;
-  axios: typeof Axios | AxiosInstance;
+  axios: typeof axios | AxiosInstance;
   onError: (error: any) => void;
   onLogout?: () => void;
   loginUrl: string;

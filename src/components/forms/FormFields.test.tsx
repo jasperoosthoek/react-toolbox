@@ -67,6 +67,7 @@ test('FormSelect component handles input correctly', () => {
   const { getByText, getByRole } = render(
     <FormSelect
       {...mockFields}
+      // @ts-ignore
       list={list}
       label={<>test</>}
       onChange={mockOnChange}

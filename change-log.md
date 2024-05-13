@@ -207,3 +207,6 @@
 
 ##### Version 0.4.22
 - Add `onClick` to column of `DataTable`
+
+##### Version 0.4.23
+- New `optionsDropdown` parameter and Dropdown menu in  column of `DataTable`

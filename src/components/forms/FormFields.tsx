@@ -290,7 +290,7 @@ export const BadgeSelection = ({ selected = true, disabled, cursor, onClick, sty
 export type FormBadgesSelectionProps = FormSelectProps;
 
 export const FormBadgesSelection = ({
-  list=[],
+  list,
   idKey = 'id',
   value,
   onChange,
@@ -401,7 +401,7 @@ export type FormDropdownProps =  Omit<FormInputProps, 'disabled' | 'onChange'> &
   variant?: Variant;
 }
 export const FormDropdown = ({  
-  list=[],
+  list,
   id = 'id',
   value,
   onChange,
