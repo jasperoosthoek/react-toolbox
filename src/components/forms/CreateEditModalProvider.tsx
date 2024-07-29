@@ -20,26 +20,32 @@ export type ShowCreateModal = (show?: boolean) => void;
 export type ShowEditModal<T, K> = (state: { [key in keyof T]: FormValue } & K) => void;
 
 export type ShowCreateModalButton = ButtonProps;
-export const ShowCreateModalButton = (props: ButtonProps) => {
+export const ShowCreateModalButton = ({ onClick, ...props }: ButtonProps) => {
   const { showCreateModal } = useCreateEditModal();
 
   return (
     <CreateButton
       {...props}
-      onClick={() => showCreateModal()}
+      onClick={(e) => { 
+        if (onClick) onClick(e);
+        showCreateModal();
+      }}
     />
   )
 }
 export interface ShowEditModalButtonProps<T, K> extends ButtonProps {
   state: { [key in keyof T]: FormValue } & K;
 }
-export const ShowEditModalButton = ({ state, ... props }: ShowEditModalButtonProps<T, K>) => {
+export const ShowEditModalButton = ({ state, onClick, ... props }: ShowEditModalButtonProps<T, K>) => {
   const { showEditModal } = useCreateEditModal();
 
   return (
     <EditButton
       {...props}
-      onClick={() => showEditModal(state)}
+      onClick={(e) => {
+        if (onClick) onClick(e);
+        showEditModal(state);
+      }}
     />
   )
 }

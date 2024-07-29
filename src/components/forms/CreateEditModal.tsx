@@ -110,7 +110,17 @@ export const CreateEditModal = <
     )
   }
   const validationErrors = {
-    ...validate ? validate(formData) : {},
+    ...validate
+      ? Object.entries(validate(formData) || {})
+        .reduce(
+          (o, [key, val]) => {
+            // Remove all empty elements
+            if (isEmpty(val)) return o;
+            return { ...o, [key]: val };
+          },
+          {}
+        )
+      : {},
     ...Object.keys(formData).reduce(
       (o, key) => {
         if (!formFields[key] || !formFields[key].required || !isEmpty(getValue(key))) return o;
@@ -118,7 +128,7 @@ export const CreateEditModal = <
       },
       {}
     ),
-  }
+  } as { [key: string]: any}
   const validated = Object.values(validationErrors).length === 0;
 
   const handleSave = () => {

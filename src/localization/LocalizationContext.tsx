@@ -7,7 +7,6 @@ import {
   defaultLanguages,
   Languages,
 } from './localization';
-console.log({ useState, useContext })
 
 const out_of_context_error = 'This function should only be used in a child of LocalizationProvider.';
 
@@ -42,7 +41,6 @@ export const LocalizationProvider = ({
   children,
   ...restProps
  }: LocalizationProviderProps) => {
-  console.log({ useState, additionalLocalizationInitial })
   const [additionalLocalization, setLocalization] = useState(additionalLocalizationInitial);
   const [lang, setLanguage] = useState(initialLanguage);
   const languages = Array.from(new Set([

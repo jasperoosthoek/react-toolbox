@@ -210,3 +210,9 @@
 
 ##### Version 0.4.23
 - New `optionsDropdown` parameter and Dropdown menu in  column of `DataTable`
+
+##### Version 0.4.24
+- Allow `validate` function in `CreateEditModal` to allow objects with empty values
+
+##### Version 0.4.25
+- Usable `onClick` handler in  `ShowCreateModalButton` and `ShowEditModalButton`
