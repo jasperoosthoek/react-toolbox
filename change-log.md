@@ -216,3 +216,6 @@
 
 ##### Version 0.4.25
 - Usable `onClick` handler in  `ShowCreateModalButton` and `ShowEditModalButton`
+
+##### Version 0.4.26
+- Prop `orderByColumn` of `DataTable` can be a function that yields a number

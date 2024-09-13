@@ -30,13 +30,12 @@ export interface ButtonProps extends ReactBootstrapButtonProps {
   loading?: boolean,
   iconSize?: string,
 }
-export type IconButton = (props: ButtonProps) => typeof Button;
 
-export interface ButtonBaseProps extends ButtonProps {
+export interface IconButtonProps extends ButtonProps {
   icon: IconType;
 }
 
-export const ButtonBase = ({
+export const IconButton = ({
   onClick,
   loading,
   icon: Icon,
@@ -45,7 +44,7 @@ export const ButtonBase = ({
   size = 'sm',
   className,
   ...restProps
-}: ButtonBaseProps) => (
+}: IconButtonProps ) => (
   <Button
     variant='light'
     size={size}
@@ -66,7 +65,7 @@ export const ButtonBase = ({
   </Button>
 );
 
-export const makeIconButton = (icon: IconType) => (props: ButtonProps) => <ButtonBase {...props} icon={icon} />;
+export const makeIconButton = (icon: IconType) => (props: ButtonProps) => <IconButton {...props} icon={icon} />;
 export const CheckButton = makeIconButton(AiOutlineCheck);
 export const CopyButton = makeIconButton(FiCopy);
 export const PasteButton = makeIconButton(LuClipboardPaste);

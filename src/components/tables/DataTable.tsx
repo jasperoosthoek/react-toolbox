@@ -30,7 +30,7 @@ const PaginationButton = (props: ButtonProps) => (
   <Button variant='outline-secondary' size='sm' {...props} />
 )
 
-export type OrderByColumn<R> = string | ((row: R) => string);
+export type OrderByColumn<R> = string | ((row: R) => string | number);
 
 export type OptionsDropdown = {
   onSelect: (key: string | null) => void;

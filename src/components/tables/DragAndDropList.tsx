@@ -1,6 +1,6 @@
 
 import PropTypes from 'prop-types';
-import React, { useCallback, useEffect, useState, useRef, ReactElement, forwardRef } from 'react';
+import React, { useCallback, useEffect, useState, useRef, ReactElement } from 'react';
 import { useDrag, useDrop } from 'react-dnd';
 
 import { usePrevious, useForceUpdate } from '../../utils/hooks';
@@ -109,6 +109,7 @@ const DragAndDropItem = ({
   return (
     <>
       <Component
+        onClick={() => {}}
         {...componentProps}
         ref={ref}
         dropped={droppedIndex === movedIndex}
