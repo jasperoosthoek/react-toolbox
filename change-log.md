@@ -219,3 +219,6 @@
 
 ##### Version 0.4.26
 - Prop `orderByColumn` of `DataTable` can be a function that yields a number
+
+##### Version 0.5.0
+- Upgrade to `React` 18.3.1
