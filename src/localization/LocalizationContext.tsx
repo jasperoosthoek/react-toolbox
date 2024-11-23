@@ -27,10 +27,10 @@ export type RestProps = {
   [prop: string]: any;
 }
 export interface LocalizationProviderProps extends RestProps {
-  lang: string;
+  lang?: string;
   localization?: AdditionalLocalization;
   languages?: string[];
-  children: any;
+  children?: any;
   [prop: string]: any;
 }
 

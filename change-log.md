@@ -222,3 +222,7 @@
 
 ##### Version 0.5.0
 - Upgrade to `React` 18.3.1
+
+##### Version 0.5.1
+- Upgrade `react-redux` & `redux-thunk` to versions compatible with `redux` 5.0.1
+- Update `Login` component to use `LoginActions` type.

@@ -1,6 +1,7 @@
 import React, { ReactElement, ChangeEvent, KeyboardEvent } from 'react';
-import { useSelector, useDispatch, useStore } from 'react-redux';
-import { ThunkDispatch } from 'redux-thunk';
+import { useSelector, useStore, useDispatch } from 'react-redux';
+import { ThunkAction, ThunkDispatch } from 'redux-thunk';
+
 import axios, { AxiosResponse, AxiosInstance } from 'axios';
 import { Container, Button, Row, Col, Form } from 'react-bootstrap';
 
@@ -12,9 +13,15 @@ export const LOGIN_SET_TOKEN = 'LOGIN_SET_TOKEN';
 export const LOGIN_SET_CURRENT_USER = 'LOGIN_SET_CURRENT_USER';
 export const LOGIN_UNSET_CURRENT_USER = 'LOGIN_UNSET_CURRENT_USER';
 
+export type LoginActions =
+  | { type: 'LOGIN_SET_TOKEN'; payload: string }
+  | { type: 'LOGIN_SET_CURRENT_USER'; payload: any }
+  | { type: 'LOGIN_UNSET_CURRENT_USER' };
+
 const useThunkDispatch = () => {
   const store = useStore();
-  const dispatch = useDispatch<typeof store.dispatch>();
+  const dispatch = useDispatch() as ThunkDispatch<any, undefined, LoginActions>;
+
   return dispatch;
 }
 
@@ -77,16 +84,21 @@ export const loginFactory = ({
 
   const AuthenticatedComponent = authenticatedComponent;
 
-  const login = (userData: any, callback?: () => void) => async (dispatch: ThunkDispatch<any, undefined, any>) => {
-    try {
-      const response = await axios.post(loginUrl, userData);
-      const { auth_token } = response.data;
-      dispatch(setToken(auth_token));
-      dispatch(getCurrentUser());
-      if (typeof callback === 'function') callback();
-    } catch(error) {
-      dispatch(unsetCurrentUser());
-      onError(error);
+  const login = (
+    userData: any,
+    callback?: () => void
+  ): ThunkAction<Promise<void>, any, unknown, LoginActions> => {
+    return async (dispatch: ThunkDispatch<any, unknown, LoginActions>) => {
+      try {
+        const response = await axios.post(loginUrl, userData);
+        const { auth_token } = response.data;
+        dispatch(setToken(auth_token));
+        dispatch(getCurrentUser());
+        if (typeof callback === 'function') callback();
+      } catch (error) {
+        dispatch(unsetCurrentUser());
+        onError(error);
+      }
     };
   };
 
@@ -215,7 +227,7 @@ export const loginFactory = ({
       password: ''
     });
     const isAuthenticated = useSelector(({ auth }: any) => auth.isAuthenticated );
-    const dispatch = useDispatch();
+    const dispatch = useThunkDispatch();
     const { strings } = useLocalization();
   
     const onChange = (e: ChangeEvent<HTMLInputElement>) => {
