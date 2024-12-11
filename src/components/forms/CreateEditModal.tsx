@@ -1,5 +1,4 @@
 import React, { useEffect, useState, ReactElement, ChangeEvent, KeyboardEvent } from 'react';
-import PropTypes from 'prop-types';
 import { Form, Modal, Button } from 'react-bootstrap';
 
 import { SmallSpinner } from '../indicators/LoadingIndicator';
@@ -54,15 +53,15 @@ export const CreateEditModal = <
   T extends FormFields,
   K extends IncludeData<T>
 >({
-  initialState,
+  initialState = null,
   formFields,
-  includeData,
-  show,
+  includeData = {} as K,
+  show = true,
   onSave,
   onHide,
-  validate,
-  modalTitle,
-  loading,
+  validate = null,
+  modalTitle = null,
+  loading = false,
   dialogClassName='',
   width,
   ...restProps
@@ -226,24 +225,6 @@ export const CreateEditModal = <
       </Modal.Footer>
     </Modal>
   );
-}
-CreateEditModal.propTypes = {
-  onSave: PropTypes.func.isRequired,
-  includeData: PropTypes.object.isRequired,
-  initialState: PropTypes.object,
-  formFields: PropTypes.object.isRequired,
-  show: PropTypes.bool,
-  loading: PropTypes.bool,
-  modalTitle: PropTypes.node,
-  validate: PropTypes.func,
-}
-CreateEditModal.defaultProps = {
-  show: true,
-  loading: false,
-  includeData: {},
-  validate: null,
-  initialState: null,
-  modalTitle: null,
 }
 
 export const DisabledFormField = ({ value }: any) => (

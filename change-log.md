@@ -226,3 +226,7 @@
 ##### Version 0.5.1
 - Upgrade `react-redux` & `redux-thunk` to versions compatible with `redux` 5.0.1
 - Update `Login` component to use `LoginActions` type.
+
+##### Version 0.5.2
+- Remove `prop-types` module and replace deprecated `defaultProps` with built in default properties
+- Remove dependencies and only keep peerDependencies

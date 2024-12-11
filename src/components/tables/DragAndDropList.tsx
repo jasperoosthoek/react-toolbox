@@ -1,5 +1,4 @@
 
-import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState, useRef, ReactElement } from 'react';
 import { useDrag, useDrop } from 'react-dnd';
 
@@ -185,9 +184,4 @@ export const DragAndDropList = <A extends any[]>({ onDrop, propsArray, component
       }
     </>
   );
-};
-DragAndDropList.propTypes = {
-  component: PropTypes.object.isRequired,
-  propsArray: PropTypes.array.isRequired,
-  onDrop: PropTypes.func.isRequired,
 };
