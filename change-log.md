@@ -230,3 +230,6 @@
 ##### Version 0.5.2
 - Remove `prop-types` module and replace deprecated `defaultProps` with built in default properties
 - Remove dependencies and only keep peerDependencies
+
+##### Version 0.5.3
+- Use `react` & `react-redux` as external modules in webpack config

@@ -5,7 +5,6 @@ import {
   AdditionalLocalization,
   LocalizationFunction,
   defaultLanguages,
-  Languages,
 } from './localization';
 
 const out_of_context_error = 'This function should only be used in a child of LocalizationProvider.';
