@@ -236,3 +236,6 @@
 
 ##### Version 0.5.4
 - Use `redux`, `redux-thunk`, `react-dom` & `react-dnd` as external modules in webpack config
+
+##### Version 0.5.5
+- Remove unnecessary packages from devDependencies

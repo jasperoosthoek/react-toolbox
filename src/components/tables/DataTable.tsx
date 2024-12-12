@@ -1,3 +1,4 @@
+import { useDragDropManager } from 'react-dnd';
 import React, {
   useEffect,
   useState,
@@ -26,9 +27,14 @@ import { DragAndDropList, DragAndDropListComponent, DragAndDropListComponentProp
 import { useLocalization } from '../../localization/LocalizationContext';
 import { useCreateEditModal } from '../forms/CreateEditModalProvider';
 
-const PaginationButton = (props: ButtonProps) => (
+const PaginationButton = (props: ButtonProps) => {
+  
+  const manager = useDragDropManager();
+  console.log({ manager })
+  return (
   <Button variant='outline-secondary' size='sm' {...props} />
 )
+}
 
 export type OrderByColumn<R> = string | ((row: R) => string | number);
 
@@ -111,6 +117,9 @@ export const DataTable = <D extends any[]>({
 }: DataTableProps<D>) => {
   const { showEditModal } = useCreateEditModal()
   type R = D[number];
+  
+  const manager = useDragDropManager();
+  console.log({ manager })
 
   if (Object.keys(restProps).length !== 0) console.error('Unrecognised props:', restProps);
   
