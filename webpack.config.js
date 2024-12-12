@@ -45,7 +45,11 @@ module.exports = {
   },
   target: 'node',
   externals: {
-    react: 'react',
+    'react': 'react',
     'react-redux': 'react-redux',
+    'redux': 'redux',
+    'redux-thunk': 'redux-thunk',
+    'react-dom': 'react-dom',
+    'react-dnd': 'react-dnd',
   },
 };

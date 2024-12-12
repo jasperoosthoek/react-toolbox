@@ -233,3 +233,6 @@
 
 ##### Version 0.5.3
 - Use `react` & `react-redux` as external modules in webpack config
+
+##### Version 0.5.4
+- Use `redux`, `redux-thunk`, `react-dom` & `react-dnd` as external modules in webpack config
