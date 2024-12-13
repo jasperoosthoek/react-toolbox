@@ -24,7 +24,7 @@ import {
 import { CloseButton } from '../buttons/IconButtons';
 import { DragAndDropList, DragAndDropListComponent, DragAndDropListComponentProps } from './DragAndDropList';
 import { useLocalization } from '../../localization/LocalizationContext';
-import { useCreateEditModal } from '../forms/CreateEditModalProvider';
+import { useFormModal } from '../forms/FormModalProvider';
 
 const PaginationButton = (props: ButtonProps) => (
   <Button variant='outline-secondary' size='sm' {...props} />
@@ -109,7 +109,7 @@ export const DataTable = <D extends any[]>({
   style,
   ...restProps
 }: DataTableProps<D>) => {
-  const { showEditModal, hasProvider } = useCreateEditModal();
+  const { showEditModal, hasProvider } = useFormModal();
   type R = D[number];
 
   if (Object.keys(restProps).length !== 0) console.error('Unrecognised props:', restProps);

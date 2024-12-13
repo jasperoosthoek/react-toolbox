@@ -6,7 +6,6 @@ import { usePrevious, useSetState } from '../../utils/hooks';
 import { isEmpty } from '../../utils/utils';
 import { useLocalization } from '../../localization/LocalizationContext';
 import { FormComponentProps, FormSelectProps, FormOnChange, FormValue } from './FormFields';
-import { useCreateEditModal } from './CreateEditModalProvider';
 
 export type FormField = {
   initialValue?: any;
@@ -33,7 +32,7 @@ export type Validate = (state: any) => any
 export type ModalTitle = ReactElement | string;
 
 export type Width = 25 | 50 | 75 | 100;
-export type CreateEditModalProps<
+export type FormModalProps<
   T extends FormFields,
   K extends IncludeData<T>
 > = {
@@ -50,7 +49,7 @@ export type CreateEditModalProps<
   width?: Width;
 }
 
-export const CreateEditModal = <
+export const FormModal = <
   T extends FormFields,
   K extends IncludeData<T>
 >({
@@ -66,10 +65,10 @@ export const CreateEditModal = <
   dialogClassName='',
   width,
   ...restProps
-}: CreateEditModalProps<T, K>) => {
+}: FormModalProps<T, K>) => {
   
   if (Object.values(restProps).length !==0) {
-    console.error(`Unrecognised props given to CreateEditModal:`, restProps);
+    console.error(`Unrecognised props given to FormModal:`, restProps);
   }
 
   const getInitialFormData = () => ({

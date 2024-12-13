@@ -9,9 +9,9 @@ import {
     Validate,
     ModalTitle,
     Width,
-		CreateEditModal,
+		FormModal,
     
-} from './CreateEditModal';
+} from './FormModal';
 import { FormValue } from './FormFields';
 import { ButtonProps, CreateButton, EditButton } from '../buttons/IconButtons';
 
@@ -20,7 +20,7 @@ export type ShowEditModal<T, K> = (state: { [key in keyof T]: FormValue } & K) =
 
 export type ShowCreateModalButton = ButtonProps;
 export const ShowCreateModalButton = ({ onClick, ...props }: ButtonProps) => {
-  const { showCreateModal, hasProvider } = useCreateEditModal();
+  const { showCreateModal, hasProvider } = useFormModal();
 
   return (
     <CreateButton
@@ -39,7 +39,7 @@ export interface ShowEditModalButtonProps<T, K> extends ButtonProps {
   state: { [key in keyof T]: FormValue } & K;
 }
 export const ShowEditModalButton = ({ state, onClick, ... props }: ShowEditModalButtonProps<T, K>) => {
-  const { showEditModal, hasProvider } = useCreateEditModal();
+  const { showEditModal, hasProvider } = useFormModal();
 
   return (
     <EditButton
@@ -55,7 +55,7 @@ export const ShowEditModalButton = ({ state, onClick, ... props }: ShowEditModal
   )
 }
 
-type CreateEditModalContextType<T, K> = {
+type FormModalContextType<T, K> = {
 	showCreateModal: ShowCreateModal;
 	showEditModal: ShowEditModal<T, K>;
   hasProvider: boolean;
@@ -63,21 +63,21 @@ type CreateEditModalContextType<T, K> = {
 
 type T = any;
 type K = any;
-const defaultErrorState: CreateEditModalContextType<T, K> = {
+const defaultErrorState: FormModalContextType<T, K> = {
   showCreateModal: () => {
-		console.error('The showCreateModal function should only be used in a child of the CreateEditModalProvider component.');
+		console.error('The showCreateModal function should only be used in a child of the FormModalProvider component.');
 	},
   showEditModal: (state: { [key in keyof T]: FormValue } & K) => {
-		console.error('The showEditModal function should only be used in a child of the CreateEditModalProvider component.');
+		console.error('The showEditModal function should only be used in a child of the FormModalProvider component.');
 	},
   hasProvider: false,
 };
-export const CreateEditModalContext = React.createContext(defaultErrorState);
+export const FormModalContext = React.createContext(defaultErrorState);
 
-export const useCreateEditModal = () => useContext(CreateEditModalContext);
+export const useFormModal = () => useContext(FormModalContext);
 
 
-export type CreateEditModalProviderProps<
+export type FormModalProviderProps<
   T extends FormFields,
   K extends IncludeData<T>
 > = {
@@ -95,7 +95,7 @@ export type CreateEditModalProviderProps<
   width?: Width;
   children: ReactNode;
 }
-export const CreateEditModalProvider: React.FC<CreateEditModalProviderProps<T, K>> = ({
+export const FormModalProvider: React.FC<FormModalProviderProps<T, K>> = ({
 	createModalTitle,
 	editModalTitle,
 	formFields,
@@ -111,7 +111,7 @@ export const CreateEditModalProvider: React.FC<CreateEditModalProviderProps<T, K
   const [instanceInEditModal, showEditModal] = useState<({ [key in keyof T]: FormValue } & K) | null>(null);
   const { strings } = useLocalization();
   return (
-    <CreateEditModalContext.Provider
+    <FormModalContext.Provider
       value={{
 				showCreateModal: (show?: boolean) =>
 					showCreateModal(typeof show === 'undefined' ? true : show),
@@ -121,7 +121,7 @@ export const CreateEditModalProvider: React.FC<CreateEditModalProviderProps<T, K
       {children}
 			
       {createModalActive && (onCreate || onSave) && (
-				<CreateEditModal
+				<FormModal
 					modalTitle={createModalTitle || strings.getString('modal_create')}
 					onHide={() => showCreateModal(false)}
 					initialState={initialState}
@@ -133,7 +133,7 @@ export const CreateEditModalProvider: React.FC<CreateEditModalProviderProps<T, K
 				/>
 			)}
       {instanceInEditModal && (onUpdate || onSave) && (
-        <CreateEditModal
+        <FormModal
           show={!!instanceInEditModal}
           modalTitle={editModalTitle || strings.getString('modal_edit')}
           onHide={() => showEditModal(null)}
@@ -145,6 +145,6 @@ export const CreateEditModalProvider: React.FC<CreateEditModalProviderProps<T, K
           dialogClassName={dialogClassName}
         />
       )}
-    </CreateEditModalContext.Provider>
+    </FormModalContext.Provider>
   );
 };
