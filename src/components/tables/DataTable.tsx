@@ -109,7 +109,7 @@ export const DataTable = <D extends any[]>({
   style,
   ...restProps
 }: DataTableProps<D>) => {
-  const { showEditModal } = useCreateEditModal()
+  const { showEditModal, hasProvider } = useCreateEditModal();
   type R = D[number];
 
   if (Object.keys(restProps).length !== 0) console.error('Unrecognised props:', restProps);
@@ -177,7 +177,7 @@ export const DataTable = <D extends any[]>({
       {...{ ...(typeof onClickRow === 'function' || showEditModal)
         ? { onClick: () => {
             if (onClickRow) onClickRow(row);
-            if (showEditModal) showEditModal(row);
+            if (hasProvider) showEditModal(row);
           } }
         : {}
       }}

@@ -6,6 +6,7 @@ import { usePrevious, useSetState } from '../../utils/hooks';
 import { isEmpty } from '../../utils/utils';
 import { useLocalization } from '../../localization/LocalizationContext';
 import { FormComponentProps, FormSelectProps, FormOnChange, FormValue } from './FormFields';
+import { useCreateEditModal } from './CreateEditModalProvider';
 
 export type FormField = {
   initialValue?: any;
@@ -66,6 +67,7 @@ export const CreateEditModal = <
   width,
   ...restProps
 }: CreateEditModalProps<T, K>) => {
+  
   if (Object.values(restProps).length !==0) {
     console.error(`Unrecognised props given to CreateEditModal:`, restProps);
   }

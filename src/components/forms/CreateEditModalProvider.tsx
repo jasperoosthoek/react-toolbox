@@ -14,21 +14,23 @@ import {
 } from './CreateEditModal';
 import { FormValue } from './FormFields';
 import { ButtonProps, CreateButton, EditButton } from '../buttons/IconButtons';
-const out_of_context_error = 'The useError hook should only be used in a child of the CreateEditModalProvider component.';
 
 export type ShowCreateModal = (show?: boolean) => void;
 export type ShowEditModal<T, K> = (state: { [key in keyof T]: FormValue } & K) => void;
 
 export type ShowCreateModalButton = ButtonProps;
 export const ShowCreateModalButton = ({ onClick, ...props }: ButtonProps) => {
-  const { showCreateModal } = useCreateEditModal();
+  const { showCreateModal, hasProvider } = useCreateEditModal();
 
   return (
     <CreateButton
       {...props}
-      onClick={(e) => { 
+      onClick={(e) => {
+        // A onClick function was given to CreateButton
         if (onClick) onClick(e);
-        showCreateModal();
+        // CreateButton is inside a CreateEditButtonProvider which can handle
+        // showCreateModal. Without the provider, showCreateModal will log an error
+        if (hasProvider) showCreateModal();
       }}
     />
   )
@@ -37,14 +39,17 @@ export interface ShowEditModalButtonProps<T, K> extends ButtonProps {
   state: { [key in keyof T]: FormValue } & K;
 }
 export const ShowEditModalButton = ({ state, onClick, ... props }: ShowEditModalButtonProps<T, K>) => {
-  const { showEditModal } = useCreateEditModal();
+  const { showEditModal, hasProvider } = useCreateEditModal();
 
   return (
     <EditButton
       {...props}
       onClick={(e) => {
+        // A onClick function was given to CreateButton
         if (onClick) onClick(e);
-        showEditModal(state);
+        // CreateButton is inside a CreateEditButtonProvider which can handle
+        // showEditModal. Without the provider, showEditModal will log an error
+        if (hasProvider) showEditModal(state);
       }}
     />
   )
@@ -53,17 +58,19 @@ export const ShowEditModalButton = ({ state, onClick, ... props }: ShowEditModal
 type CreateEditModalContextType<T, K> = {
 	showCreateModal: ShowCreateModal;
 	showEditModal: ShowEditModal<T, K>;
+  hasProvider: boolean;
 }
 
 type T = any;
 type K = any;
 const defaultErrorState: CreateEditModalContextType<T, K> = {
   showCreateModal: () => {
-		console.error(out_of_context_error)
+		console.error('The showCreateModal function should only be used in a child of the CreateEditModalProvider component.');
 	},
-  showEditModal:  (state: { [key in keyof T]: FormValue } & K) => {
-		console.error(out_of_context_error)
+  showEditModal: (state: { [key in keyof T]: FormValue } & K) => {
+		console.error('The showEditModal function should only be used in a child of the CreateEditModalProvider component.');
 	},
+  hasProvider: false,
 };
 export const CreateEditModalContext = React.createContext(defaultErrorState);
 
@@ -109,6 +116,7 @@ export const CreateEditModalProvider: React.FC<CreateEditModalProviderProps<T, K
 				showCreateModal: (show?: boolean) =>
 					showCreateModal(typeof show === 'undefined' ? true : show),
 				showEditModal,
+        hasProvider: true,
 			}}>
       {children}
 			
