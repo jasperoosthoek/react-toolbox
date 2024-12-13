@@ -1,13 +1,13 @@
 {
   "name": "@jasperoosthoek/react-toolbox",
-  "version": "0.5.5",
+  "version": "0.5.6",
   "author": "jasperoosthoek",
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/jasperoosthoek/react-toolbox.git"
   },
-  "description": "Functional factory to create Redux actions and reducers that interface with a backend",
+  "description": "Extensive library of React components that work together with react-bootstrap",
   "files": [
     "src/",
     "dist/",

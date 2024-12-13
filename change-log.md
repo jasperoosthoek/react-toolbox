@@ -239,5 +239,7 @@
 
 ##### Version 0.5.5
 - Remove unnecessary packages from devDependencies
+
+##### Version 0.5.6
 - Rename `CreateEditModal` & `CreateEditModalProvider` to `FormModal` & `FormModalProvider`
 - Remove out of context error when clicking row to open `EditModal` on `DataTable`
