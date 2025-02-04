@@ -243,3 +243,6 @@
 ##### Version 0.5.6
 - Rename `CreateEditModal` & `CreateEditModalProvider` to `FormModal` & `FormModalProvider`
 - Remove out of context error when clicking row to open `EditModal` on `DataTable`
+
+##### Version 0.5.7
+- New optional footer with sum of values in `DataTable` component

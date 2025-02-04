@@ -6,6 +6,7 @@ import React, {
   ReactElement,
   ReactNode,
   ChangeEvent,
+  useMemo,
   Ref,
 } from 'react';
 import { FaSort, FaSortUp, FaSortDown } from 'react-icons/fa';
@@ -45,6 +46,8 @@ export type DataTableColumn<R> = {
   orderBy?: OrderByColumn<R>;
   optionsDropdown?: OptionsDropdown;
   className?: string;
+  value?: number | string | ((row: R)  => number);
+  formatSum?: ((value: number) => ReactElement | string | number) | ReactElement | string | number;
   selector: number | string | ((row: R) => ReactElement | string | number | (ReactElement | string | number)[]);
   onClick?: OnClickRow<R>;
 }
@@ -87,6 +90,7 @@ export type DataTableProps<D extends any[]> = {
   className?: string;
   rowClassName?: string | ((row: D[number]) => string);
   style?: any;
+  showSum?: boolean;
 }
 
 export const DataTable = <D extends any[]>({
@@ -107,6 +111,7 @@ export const DataTable = <D extends any[]>({
   className,
   rowClassName,
   style,
+  showSum,
   ...restProps
 }: DataTableProps<D>) => {
   const { showEditModal, hasProvider } = useFormModal();
@@ -198,6 +203,12 @@ export const DataTable = <D extends any[]>({
       )}
     </tr>
   );
+
+  const sums = useMemo(() => columns.map(({ value }) => (
+    value && data.reduce((sum, row) => (
+      sum + (typeof value === 'function' ? value(row) : row[value])
+    ), 0)
+  )), [columns])
   
   if (!Component) return null;
   return (
@@ -414,6 +425,25 @@ export const DataTable = <D extends any[]>({
             : data.map((row, index) => <Component row={row} key={index} />)
           }
         </tbody>
+        {showSum && (
+          <tfoot>
+            <tr>
+
+              {columns.map(({ value, formatSum }, index) =>
+                <td
+                  key={index}
+                >
+                  {value 
+                    ? (typeof formatSum === 'function'
+                        ? formatSum(sums[index])
+                        : sums[index]
+                      )
+                    : formatSum}
+                </td>
+              )}
+            </tr>
+          </tfoot>
+        )}
       </Table>
     </div>
   )

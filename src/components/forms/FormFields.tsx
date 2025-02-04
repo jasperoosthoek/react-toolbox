@@ -1,7 +1,6 @@
 import React, { ReactElement, ChangeEvent, KeyboardEvent } from 'react';
 import { Form, FormControl, Badge, Dropdown, BadgeProps, FormControlProps, FormCheckProps  } from 'react-bootstrap';
 import { Variant} from 'react-bootstrap/types';
-import PropTypes from 'prop-types';
 import { useLocalization } from '../../localization/LocalizationContext';
 import moment, { Moment } from 'moment';
 
@@ -263,9 +262,6 @@ export const FormSelect = ({
       </FormControl>
     </Form.Group>
   </>;
-}
-FormSelect.propTypes = {
-  onChange: PropTypes.func.isRequired,
 }
 
 export interface BadgeSelectionProps extends BadgeProps {
