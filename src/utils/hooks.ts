@@ -3,7 +3,9 @@ import { useDispatch } from 'react-redux';
 
 // https://stackoverflow.com/questions/53446020/how-to-compare-oldvalues-and-newvalues-on-react-hooks-useeffect
 export const usePrevious = <T>(value: T): T | undefined => {
-  const ref = useRef<T>();
+  // Explicitly set initial value to `undefined`
+  const ref = useRef<T | undefined>(undefined);
+
   useEffect(() => {
     ref.current = value;
   });

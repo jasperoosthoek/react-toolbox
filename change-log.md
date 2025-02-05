@@ -246,3 +246,6 @@
 
 ##### Version 0.5.7
 - New optional footer with sum of values in `DataTable` component
+
+##### Version 0.6.0
+- Update to React 19
