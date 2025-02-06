@@ -249,3 +249,6 @@
 
 ##### Version 0.6.0
 - Update to React 19
+
+##### Version 0.6.1
+- New `downloadFile` function in `utils`
