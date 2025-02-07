@@ -252,3 +252,7 @@
 
 ##### Version 0.6.1
 - New `downloadFile` function in `utils`
+
+
+##### Version 0.6.2
+- `SearchBox` has optional label & placeholder and is wrapped by `Form.Group` component

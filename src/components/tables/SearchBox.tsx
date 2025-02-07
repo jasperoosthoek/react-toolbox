@@ -1,4 +1,4 @@
-import React, { ChangeEvent } from 'react';
+import React, { ChangeEvent, ReactNode } from 'react';
 import { InputGroup, Form, FormControlProps } from 'react-bootstrap';
 
 import { useLocalization } from '../../localization/LocalizationContext';
@@ -10,29 +10,47 @@ export type SearchBoxProps = {
   onChange: (value: string) => void;
   onClear?: () => void;
   onSearch?: () => void;
+  label?: ReactNode | string | number;
+  placeholder?: string | false;
 }
-export const SearchBox = ({ className='', value, onChange, onClear, onSearch }: SearchBoxProps) => {
+export const SearchBox = ({
+  className='',
+  value,
+  onChange,
+  onClear,
+  onSearch,
+  label,
+  placeholder, 
+}: SearchBoxProps) => {
   const { strings } = useLocalization();
 
-  return (<>
-    <InputGroup {...className ? { className } : {}}>
-      <Form.Control
-        value={value}
-        placeholder={strings.getString('search')}
-        onChange={(e: ChangeEvent<HTMLInputElement>) => onChange(e.target.value)}
-      />
-      {onClear &&
-        <UnCheckButton
-          variant="outline-secondary"
-          onClick={() => onClear()}
+  return (
+    <Form.Group>
+      {label && <Form.Label>{label}</Form.Label>}
+      
+      <InputGroup {...className ? { className } : {}}>
+        <Form.Control
+          value={value}
+          placeholder={
+            placeholder
+              ? placeholder
+              : placeholder !== false && strings.getString('search')
+          }
+          onChange={(e: ChangeEvent<HTMLInputElement>) => onChange(e.target.value)}
         />
-      }
-      {onSearch &&
-        <SearchButton
-          variant="outline-secondary"
-          onClick={() => onSearch()}
-        />
-      }
-    </InputGroup></>
+        {onClear &&
+          <UnCheckButton
+            variant="outline-secondary"
+            onClick={() => onClear()}
+          />
+        }
+        {onSearch &&
+          <SearchButton
+            variant="outline-secondary"
+            onClick={() => onSearch()}
+          />
+        }
+      </InputGroup>
+    </Form.Group>
   )
 }
