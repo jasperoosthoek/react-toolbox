@@ -7,12 +7,14 @@ import { isEmpty } from '../../utils/utils';
 import { useLocalization } from '../../localization/LocalizationContext';
 import { FormComponentProps, FormSelectProps, FormOnChange, FormValue } from './FormFields';
 
+export type FormFieldComponent = (props: FormComponentProps | FormSelectProps) => ReactElement
+
 export type FormField = {
   initialValue?: any;
   type?: 'string' | 'number';
   required?: boolean;
   formProps?: any;
-  component?: (props: FormComponentProps | FormSelectProps) => ReactElement;
+  component?: FormFieldComponent;
   onChange?: FormOnChange;
   label?: ReactElement | string;
 }
