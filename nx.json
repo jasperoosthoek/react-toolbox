@@ -50,10 +50,10 @@
   "generators": {
     "@nx/react": {
       "application": {
+        "babel": true,
         "style": "scss",
         "linter": "eslint",
-        "bundler": "webpack",
-        "babel": true
+        "bundler": "webpack"
       },
       "component": {
         "style": "scss"
@@ -65,6 +65,9 @@
     }
   },
   "projects": {
+    "demo": {
+      "root": "packages/demo"
+    },
     "react-toolbox": {
       "root": "packages/react-toolbox",
       "targets": {
@@ -85,5 +88,23 @@
       }
     }
   },
-  "defaultProject": "react-toolbox"
+  "defaultProject": "demo",
+  "plugins": [
+    {
+      "plugin": "@nx/webpack/plugin",
+      "options": {
+        "buildTargetName": "webpack:build",
+        "serveTargetName": "serve",
+        "previewTargetName": "preview",
+        "buildDepsTargetName": "build-deps",
+        "watchDepsTargetName": "watch-deps"
+      }
+    },
+    {
+      "plugin": "@nx/eslint/plugin",
+      "options": {
+        "targetName": "lint"
+      }
+    }
+  ]
 }
