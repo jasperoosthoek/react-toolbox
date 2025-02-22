@@ -32,6 +32,7 @@ const DashboardPage = () => {
       </Navbar>
 
       {showMenu &&
+        // Mobile menu that can be opened by clicking on MenuButton
         <div className='nav-menu bg-light'>
           <div className='p-0 d-md-none ms-3'>
             <div className='divider' />

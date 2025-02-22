@@ -1,6 +1,6 @@
 const { NxAppWebpackPlugin } = require('@nx/webpack/app-plugin');
 const { NxReactWebpackPlugin } = require('@nx/react/webpack-plugin');
-const { join } = require('path');
+const { join, resolve } = require('path');
 
 module.exports = {
   output: {
@@ -32,4 +32,17 @@ module.exports = {
       // svgr: false
     }),
   ],
+  resolve: {
+    symlinks: false,
+    alias: {
+      // Manually point modules to their default location so react-toolbox can be 
+      // imported like it is a module installed in node_modules
+      'react': resolve(__dirname, '../../node_modules/react'),
+      'react-dom': resolve(__dirname, '../../node_modules/react-dom'),
+      'redux': resolve(__dirname, '../../node_modules/redux'),
+      'react-redux': resolve(__dirname, '../../node_modules/react-redux'),
+      'react-dnd': resolve(__dirname, '../../node_modules/react-dnd'),
+      'react-dnd-html5-backend': resolve(__dirname, '../../node_modules/react-dnd-html5-backend'),
+    }
+  }
 };

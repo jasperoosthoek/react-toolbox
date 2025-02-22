@@ -26,6 +26,7 @@ import { HiOutlineCog, HiOutlineLink } from 'react-icons/hi';
 import { VscMenu } from 'react-icons/vsc';
 import { RiQuestionnaireLine, RiDropdownList } from 'react-icons/ri';
 import { LuClipboardPaste } from "react-icons/lu";
+
 export interface ButtonProps extends ReactBootstrapButtonProps {
   loading?: boolean,
   iconSize?: string,
@@ -56,10 +57,9 @@ export const IconButton = ({
     }}
     {...restProps}
   >
-    {loading 
-      ? <CgSpinner style={{ animation: 'spinner-border .75s linear infinite' }}/>
-      : Icon && <Icon size={iconSize}/>
-    }
+    {loading && <CgSpinner style={{ animation: 'spinner-border .75s linear infinite' }} />}
+    {!loading && Icon && typeof Icon === "function" && <Icon size={iconSize} />}
+    
     {children && <>&nbsp;</>}
     {children}
   </Button>
