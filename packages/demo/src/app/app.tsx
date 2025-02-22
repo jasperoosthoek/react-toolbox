@@ -1,18 +1,17 @@
-// Uncomment this line to use CSS modules
-// import styles from './app.module.scss';
 
-import { Route, Routes, Link } from 'react-router';
+import 'react-toastify/dist/ReactToastify.css';
+import 'bootstrap/dist/css/bootstrap.css';
+import './app.module.scss';
+
+import { Route, Routes } from 'react-router';
+import DashboardPage from './pages/DashboardPage';
 
 export function App() {
   return (
       <Routes>
         <Route
           path="/"
-          element={
-            <div>
-              This is the generated root route.{' '}
-            </div>
-          }
+          element={<DashboardPage />}
         />
       </Routes>
   );

@@ -32,9 +32,9 @@ export const SearchBox = ({
         <Form.Control
           value={value}
           placeholder={
-            placeholder
-              ? placeholder
-              : placeholder !== false && strings.getString('search')
+            placeholder !== false
+              ? placeholder || strings.getString('search')
+              : undefined
           }
           onChange={(e: ChangeEvent<HTMLInputElement>) => onChange(e.target.value)}
         />

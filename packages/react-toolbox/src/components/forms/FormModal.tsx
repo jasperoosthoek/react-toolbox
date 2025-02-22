@@ -55,14 +55,14 @@ export const FormModal = <
   T extends FormFields,
   K extends IncludeData<T>
 >({
-  initialState = null,
+  initialState = {} as K,
   formFields,
   includeData = {} as K,
   show = true,
   onSave,
   onHide,
-  validate = null,
-  modalTitle = null,
+  validate,
+  modalTitle = '',
   loading = false,
   dialogClassName='',
   width,

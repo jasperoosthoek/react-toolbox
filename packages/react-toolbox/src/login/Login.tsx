@@ -19,11 +19,9 @@ export type LoginActions =
   | { type: 'LOGIN_UNSET_CURRENT_USER' };
 
 const useThunkDispatch = () => {
-  const store = useStore();
   const dispatch = useDispatch() as ThunkDispatch<any, undefined, LoginActions>;
-
   return dispatch;
-}
+};
 
 export type AuthState = {
   isAuthenticated: boolean;
@@ -87,8 +85,8 @@ export const loginFactory = ({
   const login = (
     userData: any,
     callback?: () => void
-  ): ThunkAction<Promise<void>, any, unknown, LoginActions> => {
-    return async (dispatch: ThunkDispatch<any, unknown, LoginActions>) => {
+  ): ThunkAction<Promise<void>, any, undefined, LoginActions> => {
+    return async (dispatch: ThunkDispatch<any, undefined, LoginActions>) => {
       try {
         const response = await axios.post(loginUrl, userData);
         const { auth_token } = response.data;
