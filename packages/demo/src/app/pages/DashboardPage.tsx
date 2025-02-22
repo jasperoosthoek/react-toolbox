@@ -10,19 +10,16 @@ const DashboardPage = () => {
 
   return (
     <>
-      <Navbar
-        bg='light'
-        style={{ padding: '0.5rem 1rem'}}
-      >
-        <Link to="../">
+      <Navbar bg='light'>
+        <Link to='../'>
           <Navbar.Brand>React-Toolbox</Navbar.Brand>
         </Link>
         <MenuButton
-          className="p-0 d-md-none ms-3"
+          className='p-0 d-md-none ms-3'
           onClick={() => setShowMenu(!showMenu)}
         />
-        <Nav className="mr-auto">
-          <Navbar.Text id="dashboard-title">
+        <Nav className='mr-auto'>
+          <Navbar.Text className='dashboard-title'>
             <div></div>
           </Navbar.Text>
         </Nav>
@@ -33,25 +30,25 @@ const DashboardPage = () => {
           {/* <Nav.Link onClick={() => logout()}>Logout</Nav.Link> */}
         </Navbar.Collapse>
       </Navbar>
-      
+
       {showMenu &&
-        <div style={{ width: '100%'}} className="bg-light">
+        <div className='nav-menu bg-light'>
           <div className='p-0 d-md-none ms-3'>
-            <div className="divider" />
-            <Nav className="d-block">
+            <div className='divider' />
+            <Nav className='d-block'>
               <NavLinks />
             </Nav>
           </div>
         </div>
       }
 
-      <Row style={{ width: '100%'}}>
-        <Col sm="2" className="sidebar">
-          <Nav className="d-none d-md-block bg-light fluid"  style={{ minHeight: 'calc(100vh - 58px)'}}>
+      <Row className='full-width'>
+        <Col sm='2' className='sidebar'>
+          <Nav className='nav-sidebar no-wrap d-none d-md-block bg-light fluid'>
             <NavLinks />
           </Nav>
         </Col>
-        <Col sm="10">
+        <Col sm='10'>
           <Outlet />
         </Col>
       </Row>
