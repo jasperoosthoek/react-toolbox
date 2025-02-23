@@ -17,6 +17,10 @@ export const LocalizationContext = React.createContext({
     console.error(out_of_context_error);
     return str[0];
   },
+  textByLang: (lang: string) => (str: TemplateStringsArray, ...values: (string | number)[]) => {
+    console.error(out_of_context_error);
+    return str[0];
+  },
   strings: new LocalizedStrings({ en: {} }),
   localizationStrings: {} as AdditionalLocalization,
   setLocalization: (localization: AdditionalLocalization) => console.error(out_of_context_error),
@@ -58,8 +62,8 @@ export const LocalizationProvider = ({
   const strings = new LocalizedStrings(localizationStrings);
   strings.setLanguage(lang);
 
-  const text = (str: TemplateStringsArray, ...values: (string | number)[]) => {
-    const text_or_func = strings.getString(str[0]) as string | LocalizationFunction;
+  const textByLang = (lang: string) => (str: TemplateStringsArray, ...values: (string | number)[]) => {
+    const text_or_func = strings.getString(str[0], lang) as string | LocalizationFunction;
     if (!text_or_func) {
       console.error(`Language string not found: "${str[0]}"`);
       return str[0];
@@ -93,7 +97,8 @@ export const LocalizationProvider = ({
           setLanguage(lang);
         },
         strings,
-        text,
+        text: textByLang(lang),
+        textByLang,
         localizationStrings,
         setLocalization,
         ...restProps,
