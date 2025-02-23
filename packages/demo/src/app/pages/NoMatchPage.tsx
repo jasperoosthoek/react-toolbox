@@ -1,9 +1,12 @@
 
-import { ErrorPage } from '@jasperoosthoek/react-toolbox';
+import { ErrorPage, useLocalization } from '@jasperoosthoek/react-toolbox';
 
 
-const NoMatchPage = () => (
-  <ErrorPage>Page cannot be found</ErrorPage>
-)
+const NoMatchPage = () => {
+  const { text } = useLocalization();
+  return (
+    <ErrorPage>{text`page_not_found`}</ErrorPage>
+  )
+}
 
 export default NoMatchPage;

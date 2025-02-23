@@ -4,6 +4,7 @@ import { Link, Outlet } from 'react-router';
 
 import { MenuButton } from '@jasperoosthoek/react-toolbox';
 import NavLinks from '../components/NavLinks';
+import LanguageDropdown from '../components/LanguageDropdown';
 
 const DashboardPage = () => {
   const [showMenu, setShowMenu] = useState(false);
@@ -27,6 +28,10 @@ const DashboardPage = () => {
           <Navbar.Text>
           </Navbar.Text>
           &nbsp;
+          
+          <Navbar.Text>
+            <LanguageDropdown />
+          </Navbar.Text>
           {/* <Nav.Link onClick={() => logout()}>Logout</Nav.Link> */}
         </Navbar.Collapse>
       </Navbar>
