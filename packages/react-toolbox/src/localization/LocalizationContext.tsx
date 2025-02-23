@@ -3,11 +3,28 @@ import LocalizedStrings from 'react-localization';
 import {
   defaultLocalization,
   AdditionalLocalization,
+  LocalizationElement,
   LocalizationFunction,
   defaultLanguages,
 } from './localization';
 
 const out_of_context_error = 'This function should only be used in a child of LocalizationProvider.';
+
+export const combineLocalization = (...locals: AdditionalLocalization[]) => {
+  // Extract all unique language keys
+  const languages = [...new Set(locals.flatMap(Object.keys))];
+
+  return languages.reduce(
+    (o, lang) => ({
+      ...o,
+      [lang]: locals.reduce<LocalizationElement>(
+        (acc, l) => ({ ...acc, ...(l[lang] || {}) }),
+        {} as LocalizationElement
+      ),
+    }),
+    {} as AdditionalLocalization
+  );
+};
 
 export const LocalizationContext = React.createContext({
   lang: 'en',
@@ -57,7 +74,9 @@ export const LocalizationProvider = ({
         ...defaultLocalization[lang] || {},
         ...additionalLocalization[lang] || {},
       },
-    }), {});
+    }),
+    {}
+  );
     
   const strings = new LocalizedStrings(localizationStrings);
   strings.setLanguage(lang);

@@ -1,10 +1,13 @@
 export type LocalizationFunction = (...args: (string | number)[]) => string;
 
-export type AdditionalLocalization = {
-  [lang: string]: {
-    [languageString: string]: string | LocalizationFunction;
-  }
+export type LocalizationElement = {
+  [languageString: string]: (string | LocalizationFunction)
 }
+
+export type AdditionalLocalization = {
+  [lang: string]: LocalizationElement;
+}
+
 export interface LocalizationStrings {
   select: string;
   search: string;

@@ -257,4 +257,5 @@
 - `SearchBox` has optional label & placeholder and is wrapped by `Form.Group` component
 
 ##### Version 0.6.3
-- New `textByLang` localization function
+- New `textByLang` localization function in `useLocalization`
+- New `combineLocalization` helper function
