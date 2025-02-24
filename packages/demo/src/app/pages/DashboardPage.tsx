@@ -32,7 +32,7 @@ const DashboardPage = () => {
           <Navbar.Text>
             <LanguageDropdown />
           </Navbar.Text>
-          {/* <Nav.Link onClick={() => logout()}>Logout</Nav.Link> */}
+          {/* <Nav.Link onClick={() => logout()}>{text`logout`}</Nav.Link> */}
         </Navbar.Collapse>
       </Navbar>
 
@@ -48,13 +48,19 @@ const DashboardPage = () => {
         </div>
       }
 
-      <Row className='full-width'>
-        <Col sm='2' className='sidebar'>
-          <Nav className='nav-sidebar no-wrap d-none d-md-block bg-light fluid'>
-            <NavLinks />
+      <Row className="full-width">
+        {/* Sidebar: Visible on md+ screens, hidden on small screens */}
+        <Col md="2" className="sidebar d-none d-md-block">
+          <Nav className="nav-sidebar no-wrap bg-light fluid">
+            <div>
+
+              <NavLinks />
+            </div>
           </Nav>
         </Col>
-        <Col sm='10'>
+
+        {/* Main Content: Full width when sidebar is hidden */}
+        <Col xs="12" md="10">
           <Outlet />
         </Col>
       </Row>

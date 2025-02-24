@@ -2,6 +2,7 @@ import React, { ReactNode } from 'react';
 import { Nav } from 'react-bootstrap';
 import { Link } from 'react-router';
 
+import { useLocalization } from '@jasperoosthoek/react-toolbox';
 
 const NavLink = ({ to, children }: { to: string; children: ReactNode }) => (
   <Nav.Item>
@@ -11,11 +12,15 @@ const NavLink = ({ to, children }: { to: string; children: ReactNode }) => (
   </Nav.Item>
 );
 
-const NavLinks = () => (
-  <>
-    <NavLink to="../datatable">Data tables</NavLink>
-    <NavLink to="../form">Forms</NavLink>
-  </>
-)
+const NavLinks = () => {
+  const { text } = useLocalization();
+
+  return (
+    <>
+      <NavLink to="../datatable">{text`link_datatable`}</NavLink>
+      <NavLink to="../form">{text`link_form`}</NavLink>
+    </>
+  )
+}
 
 export default NavLinks;

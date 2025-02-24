@@ -1,6 +1,4 @@
-
 import { ErrorPage, useLocalization } from '@jasperoosthoek/react-toolbox';
-
 
 const NoMatchPage = () => {
   const { text } = useLocalization();
