@@ -263,3 +263,4 @@
 - Rename `ShowEditModalButton` to `FormEditModalButton`
 - Fix incorrect calculation of number of pages in `DataTable`
 - Fix `FormModalProvider` does not pass `validate` function to create and edit modals
+- New `ResetButton` component

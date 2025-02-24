@@ -26,6 +26,7 @@ import { HiOutlineCog, HiOutlineLink } from 'react-icons/hi';
 import { VscMenu } from 'react-icons/vsc';
 import { RiQuestionnaireLine, RiDropdownList } from 'react-icons/ri';
 import { LuClipboardPaste } from "react-icons/lu";
+import { RiResetLeftLine } from "react-icons/ri";
 
 export interface ButtonProps extends ReactBootstrapButtonProps {
   loading?: boolean,
@@ -102,6 +103,7 @@ export const UpButton = makeIconButton(AiFillCaretUp);
 export const UploadButton = makeIconButton(AiOutlineUpload);
 export const QuestionnaireButton = makeIconButton(RiQuestionnaireLine);
 export const DropdownButton = makeIconButton(RiDropdownList);
+export const ResetButton = makeIconButton(RiResetLeftLine);
 
 export interface UploadTextButtonProps extends ButtonProps {
   accept?: string;

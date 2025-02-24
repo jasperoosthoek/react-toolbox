@@ -6,7 +6,7 @@ import { LocalizationContext } from '../../localization/LocalizationContext';
 import { ButtonProps } from './IconButtons';
 
 export interface ConfirmButtonProps extends ButtonProps {
-  modalTitle: ReactElement | string;
+  modalTitle?: ReactElement | string;
   modalBody?: ReactElement | string;
   confirmText?: ReactElement | string;
   cancelText?: ReactElement | string;
