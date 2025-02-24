@@ -100,6 +100,7 @@ export const FormModalProvider: React.FC<FormModalProviderProps<T, K>> = ({
 	editModalTitle,
 	formFields,
   initialState,
+  validate,
 	loading,
 	onCreate,
 	onUpdate,
@@ -126,6 +127,7 @@ export const FormModalProvider: React.FC<FormModalProviderProps<T, K>> = ({
 					onHide={() => showCreateModal(false)}
 					initialState={initialState}
 					formFields={formFields}
+          validate={validate}
 					loading={loading}
           // @ts-ignore Ignore as Typescript does not recognize that this is allowed
 					onSave={onCreate || onSave}
@@ -139,6 +141,7 @@ export const FormModalProvider: React.FC<FormModalProviderProps<T, K>> = ({
           onHide={() => showEditModal(null)}
           initialState={instanceInEditModal}
           formFields={formFields}
+          validate={validate}
           loading={loading}
           // @ts-ignore
           onSave={onUpdate || onSave}
