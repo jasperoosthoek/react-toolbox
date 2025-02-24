@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, ReactNode } from 'react';
+import React, { useState, useContext, ReactNode } from 'react';
 
 import { useLocalization } from '../../localization/LocalizationContext';
 import {
@@ -18,8 +18,8 @@ import { ButtonProps, CreateButton, EditButton } from '../buttons/IconButtons';
 export type ShowCreateModal = (show?: boolean) => void;
 export type ShowEditModal<T, K> = (state: { [key in keyof T]: FormValue } & K) => void;
 
-export type ShowCreateModalButton = ButtonProps;
-export const ShowCreateModalButton = ({ onClick, ...props }: ButtonProps) => {
+export type FormCreateModalButton = ButtonProps;
+export const FormCreateModalButton = ({ onClick, ...props }: ButtonProps) => {
   const { showCreateModal, hasProvider } = useFormModal();
 
   return (
@@ -35,10 +35,10 @@ export const ShowCreateModalButton = ({ onClick, ...props }: ButtonProps) => {
     />
   )
 }
-export interface ShowEditModalButtonProps<T, K> extends ButtonProps {
+export interface FormEditModalButtonProps<T, K> extends ButtonProps {
   state: { [key in keyof T]: FormValue } & K;
 }
-export const ShowEditModalButton = ({ state, onClick, ... props }: ShowEditModalButtonProps<T, K>) => {
+export const FormEditModalButton = ({ state, onClick, ... props }: FormEditModalButtonProps<T, K>) => {
   const { showEditModal, hasProvider } = useFormModal();
 
   return (

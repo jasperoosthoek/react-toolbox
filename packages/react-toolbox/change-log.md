@@ -110,7 +110,7 @@
 - New French translation
 - New `storeState` & `retrieveState` functions to store and retrieve state object from `localStorage`
 - Convert everything to Typescript
-- `CreateEditModal` component uses `onKeyPress` instead of deprecated `onKeyPress` handler
+- `CreateEditModal` component uses `onKeyDown` instead of deprecated `onKeyPress` handler
 
 ##### Version 0.3.5
 - New `SaveButton` component
@@ -215,7 +215,7 @@
 - Allow `validate` function in `CreateEditModal` to allow objects with empty values
 
 ##### Version 0.4.25
-- Usable `onClick` handler in  `ShowCreateModalButton` and `ShowEditModalButton`
+- Usable `onClick` handler in `ShowCreateModalButton` and `ShowEditModalButton`
 
 ##### Version 0.4.26
 - Prop `orderByColumn` of `DataTable` can be a function that yields a number
@@ -259,3 +259,6 @@
 ##### Version 0.6.3
 - New `textByLang` localization function in `useLocalization`
 - New `combineLocalization` helper function
+- Rename `ShowCreateModalButton` to `FormCreateModalButton`
+- Rename `ShowEditModalButton` to `FormEditModalButton`
+- Fix incorrect calculation of number of pages in `DataTable`

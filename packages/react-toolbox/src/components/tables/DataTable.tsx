@@ -137,7 +137,7 @@ export const DataTable = <D extends any[]>({
         )
   );
 
-  const pagesCount = (data && rowsPerPage && Math.ceil((data.length - 1) / rowsPerPage));
+  const pagesCount = (data && rowsPerPage && Math.ceil(data.length / rowsPerPage));
   useEffect(
     () => { if (pagesCount && page >= pagesCount) setPage(pagesCount - 1) },
     [setPage, pagesCount, page]
