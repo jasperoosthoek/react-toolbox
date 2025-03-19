@@ -1,7 +1,6 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
-    "rootDir": ".",
     "sourceMap": true,
     "declaration": false,
     "moduleResolution": "node",
@@ -15,7 +14,7 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@jasperoosthoek/react-toolbox": ["packages/react-toolbox/src/index.ts"]
+      "@jasperoosthoek/react-toolbox": ["../lib/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

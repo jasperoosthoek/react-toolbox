@@ -69,20 +69,20 @@
       "root": "packages/demo"
     },
     "react-toolbox": {
-      "root": "packages/react-toolbox",
+      "root": "../lib",
       "targets": {
         "build": {
           "executor": "nx:run-commands",
           "options": {
             "command": "npm run build",
-            "cwd": "packages/react-toolbox"
+            "cwd": "../lib"
           }
         },
         "test": {
           "executor": "nx:run-commands",
           "options": {
             "command": "npm test",
-            "cwd": "packages/react-toolbox"
+            "cwd": "../lib"
           }
         }
       }
