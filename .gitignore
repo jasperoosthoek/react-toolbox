@@ -2,3 +2,4 @@
 .nx/
 node_modules
 tmp
+dist
