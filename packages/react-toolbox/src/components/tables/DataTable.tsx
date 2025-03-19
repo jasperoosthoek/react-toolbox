@@ -165,11 +165,11 @@ export const DataTable = <D extends any[]>({
   if (pagesCount) {
     data = data.slice(page * rowsPerPage, (page + 1) * rowsPerPage);
   }
+  
+  type ComponentProps<R> = { row: R } & DragAndDropListComponentProps;
 
-  const Component = forwardRef<
-    HTMLTableRowElement,
-    { row: R } & DragAndDropListComponentProps
-  >(({ row }: R, ref: Ref<HTMLTableRowElement> | null) =>
+  const Component = forwardRef<HTMLTableRowElement, ComponentProps<R>>(
+    ({ row }, ref) => (
     <tr
       ref={ref}
       {
@@ -202,7 +202,7 @@ export const DataTable = <D extends any[]>({
         </td>
       )}
     </tr>
-  );
+  ));
 
   const sums = useMemo(() => columns.map(({ value }) => (
     value && data.reduce((sum, row) => (
