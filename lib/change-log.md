@@ -264,3 +264,6 @@
 - Fix incorrect calculation of number of pages in `DataTable`
 - Fix `FormModalProvider` does not pass `validate` function to create and edit modals
 - New `ResetButton` component
+
+##### Version 0.6.4
+- Remove Node polyfills to for the module to work with Webpak 5+

@@ -1,6 +1,6 @@
 {
   "name": "@jasperoosthoek/react-toolbox",
-  "version": "0.6.2",
+  "version": "0.6.4",
   "author": "jasperoosthoek",
   "license": "MIT",
   "repository": {
@@ -72,5 +72,12 @@
   "jest": {
     "preset": "ts-jest",
     "testEnvironment": "node"
+  },
+  "browser": {
+    "fs": false,
+    "os": false,
+    "path": false,
+    "crypto": false,
+    "zlib": false
   }
 }
