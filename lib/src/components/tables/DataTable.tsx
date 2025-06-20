@@ -48,7 +48,7 @@ export type DataTableColumn<R> = {
   className?: string;
   value?: number | string | ((row: R)  => number);
   formatSum?: ((value: number) => ReactElement | string | number) | ReactElement | string | number;
-  selector: number | string | ((row: R) => ReactElement | string | number | (ReactElement | string | number)[]);
+  selector: number | string | ((row: R) => ReactElement | string | number | null | (ReactElement | string | number | null)[]);
   onClick?: OnClickRow<R>;
 }
 

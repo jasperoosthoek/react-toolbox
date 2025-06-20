@@ -267,3 +267,6 @@
 
 ##### Version 0.6.4
 - Remove Node polyfills to for the module to work with Webpak 5+
+
+##### Version 0.6.5
+- The `DataTable` `selector` function can output `null` as well
