@@ -8,7 +8,8 @@ import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
 import { LocalizationProvider } from '@jasperoosthoek/react-toolbox';
 import localization from './localization/localization';
-import DashboardPage from './pages/DashboardPage';
+import Dashboard from './components/Dashboard';
+import DashboardPage from './pages/dashboard/DashboardPage';
 import DataTablePage from './pages/datatable/DataTablePage';
 import NoMatchPage from './pages/NoMatchPage';
 
@@ -20,8 +21,12 @@ export function App() {
           <Routes>
             <Route
               path="/"
-              element={<DashboardPage />}
+              element={<Dashboard />}
             >
+              <Route
+                index
+                element={<DashboardPage />}
+              />
               <Route
                 path="datatable"
                 element={<DataTablePage />}

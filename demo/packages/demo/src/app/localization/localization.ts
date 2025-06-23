@@ -16,6 +16,12 @@ const localization = combineLocalization(
       link_datatable: 'Data tabels',
       link_form: 'Forms',
     },
+    fr: {
+      page_not_found: 'Page introuvable.',
+      language_full: "Français",
+      link_datatable: 'Tableaux de données',
+      link_form: 'Formulaires',
+    }
   }
  ) as AdditionalLocalization;
 
