@@ -20,6 +20,7 @@
     "html-react-parser": "^5.2.2",
     "lodash": "^4.17.21",
     "moment": "^2.29.4",
+    "msw": "^2.10.2",
     "react": "19.0.0",
     "react-bootstrap": "^2.9.1",
     "react-dnd": "^16.0.1",
@@ -64,5 +65,10 @@
     "typescript": "~5.2.2",
     "url-loader": "^4.1.1",
     "webpack-cli": "^5.1.4"
+  },
+  "msw": {
+    "workerDirectory": [
+      "packages/demo/src"
+    ]
   }
 }

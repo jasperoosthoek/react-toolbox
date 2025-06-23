@@ -21,7 +21,7 @@ module.exports = {
       main: './src/main.tsx',
       index: './src/index.html',
       baseHref: '/',
-      assets: ['./src/favicon.png', './src/assets'],
+      assets: ['./src/favicon.png', './src/assets', "./src/mockServiceWorker.js"],
       styles: ['./src/styles.scss'],
       outputHashing: process.env['NODE_ENV'] === 'production' ? 'all' : 'none',
       optimization: process.env['NODE_ENV'] === 'production',
@@ -44,5 +44,11 @@ module.exports = {
       'react-dnd': resolve(__dirname, '../../node_modules/react-dnd'),
       'react-dnd-html5-backend': resolve(__dirname, '../../node_modules/react-dnd-html5-backend'),
     }
-  }
+  },
+    ignoreWarnings: [
+    {
+      module: /tough-cookie/,
+      message: /Critical dependency: require function is used/,
+    },
+  ],
 };
