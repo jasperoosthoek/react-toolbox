@@ -1,54 +1,48 @@
 import { http, HttpResponse } from 'msw';
+import { db } from './db';
 
 type WithId<T> = T & { id: number };
 
-function loadFromStorage<T>(key: string, fallback: WithId<T>[]): WithId<T>[] {
-  const raw = localStorage.getItem(key);
-  if (raw) {
-    return JSON.parse(raw);
-  }
-  localStorage.setItem(key, JSON.stringify(fallback));
-  return fallback;
-}
-
-function saveToStorage<T>(key: string, data: WithId<T>[]): void {
-  localStorage.setItem(key, JSON.stringify(data));
-}
-
-export function createRestHandlers<T>(
-  basePath: string,             // e.g., "/api/todos"
-  storageKey: string,           // e.g., "todos"
-  initialData: WithId<T>[] = [] // e.g., mock seed data
+export function createRestHandlers<T extends object>(
+  entity: keyof typeof db,
+  basePath: string,
+  {
+    onDelete,
+  }: {
+    onDelete?: (deleted: WithId<T>) => void;
+  } = {}
 ) {
-  const getData = () => loadFromStorage<T>(storageKey, initialData);
-  const saveData = (data: WithId<T>[]) => saveToStorage<T>(storageKey, data);
-
   return [
     http.get(basePath, () => {
-      return HttpResponse.json(getData());
+      const all = (db[entity] as any).getAll() as WithId<T>[];
+      return HttpResponse.json(all);
     }),
 
     http.post(basePath, async ({ request }) => {
-      const newItem = await request.json() as Omit<WithId<T>, 'id'>;
-      const existing = getData();
-      const id = Math.max(0, ...existing.map(i => i.id)) + 1;
-      const created = { ...newItem, id } as WithId<T>;
-      saveData([...existing, created]);
+      const data = await request.json() as Omit<WithId<T>, 'id'>;
+      const created = (db[entity] as any).create(data);
       return HttpResponse.json(created, { status: 201 });
     }),
 
     http.put(`${basePath}/:id`, async ({ params, request }) => {
       const id = Number(params.id);
-      const updated = await request.json() as WithId<T>;
-      const data = getData().map(item => item.id === id ? updated : item);
-      saveData(data);
-      return HttpResponse.json(updated);
+      const updated = await request.json();
+      const result = (db[entity] as any).update({
+        where: { id: { equals: id } },
+        data: updated,
+      });
+      return HttpResponse.json(result);
     }),
 
     http.delete(`${basePath}/:id`, ({ params }) => {
       const id = Number(params.id);
-      const data = getData().filter(item => item.id !== id);
-      saveData(data);
+      const deleted = (db[entity] as any).findFirst({
+        where: { id: { equals: id } },
+      });
+
+      if (deleted && onDelete) onDelete(deleted);
+
+      (db[entity] as any).delete({ where: { id: { equals: id } } });
       return new HttpResponse(null, { status: 204 });
     }),
   ];

@@ -9,6 +9,7 @@
   },
   "private": false,
   "dependencies": {
+    "@mswjs/data": "^0.16.2",
     "@nrwl/react": "^19.8.4",
     "@nx/react": "^20.6.2",
     "@reduxjs/toolkit": "^2.5.1",

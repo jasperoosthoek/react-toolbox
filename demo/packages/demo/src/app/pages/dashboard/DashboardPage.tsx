@@ -14,9 +14,12 @@ import { useState } from 'react';
 
 const DashboardPage = () => {
   useEffect(() => {
-    const todos = fetch("/api/todos")
+    const users = fetch("/api/users")
       .then(res => res.json())
-    console.log({ todos })
+    console.log({ users })
+    const posts = fetch("/api/posts")
+      .then(res => res.json())
+    console.log({ posts })
   }, [])
   
   const CreateUserButton = () => <FormCreateModalButton title='Create new user'/>
