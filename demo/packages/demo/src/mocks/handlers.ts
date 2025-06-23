@@ -1,6 +1,6 @@
-import { http, HttpResponse } from 'msw';
+import { factory, primaryKey, oneOf } from '@mswjs/data';
 
-import { db } from './db';
+import { seedDatabase, InferModel } from './db';
 import { createRestHandlers } from './createRestHandlers';
 
 interface Todo {
@@ -30,6 +30,8 @@ function saveTodos(todos: Todo[]) {
   localStorage.setItem('todos', JSON.stringify(todos));
 }
 
+// type User = InferModel<typeof schema.user>;
+// type Post = InferModel<typeof schema.post>;
 interface User {
   name: string;
 }
@@ -37,6 +39,37 @@ interface Post {
   title: string;
   user_id: number;
 }
+
+export const schema = {
+  user: {
+    id: primaryKey(Number),
+    name: String,
+  },
+  post: {
+    id: primaryKey(Number),
+    title: String,
+    user: oneOf('user'),
+  },
+};
+
+export type Schema = typeof schema
+
+export const db = factory(schema);
+
+seedDatabase(
+  db,
+  schema,
+  {
+    user: [
+      { id: 1, name: 'Alice' },
+      { id: 2, name: 'Bob' },
+    ],
+    post: [
+      { id: 1, title: 'Post A', user_id: 1 },
+      { id: 2, title: 'Post B', user_id: 2 },
+    ],
+  },
+);
 
 export const handlers = [
   ...createRestHandlers<User>('user', '/api/users', {
