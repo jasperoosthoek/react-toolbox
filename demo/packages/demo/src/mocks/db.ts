@@ -28,20 +28,20 @@ export function seedDatabase<S extends Record<string, any>>(
       const record = { ...rawRecord };
 
       for (const [key, fieldDef] of Object.entries(modelDef)) {
-        const relationType = (fieldDef as any).__type;
+        const relationType = (fieldDef as any)?.kind;
 
         if (
-          (relationType === 'oneOf' || relationType === 'manyOf') &&
-          record[`${key}_id`] !== undefined
+          (relationType === 'ONE_OF' || relationType === 'MANY_OF') &&
+          record[key] !== undefined
         ) {
-          const relatedEntity = (fieldDef as any).__relatedEntity;
-          const foreignId = record[`${key}_id`];
+          const relatedEntity = (fieldDef as any)?.target?.modelName;
+          const foreignId = record[key];
           const related = (db as any)[relatedEntity].findFirst({
             where: { id: { equals: foreignId } },
           });
           if (related) {
             record[key] = related;
-            delete record[`${key}_id`];
+            delete record[key];
           }
         }
       }

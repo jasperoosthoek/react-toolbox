@@ -13,7 +13,7 @@ const Dashboard = () => {
     <>
       <Navbar bg='light'>
         <Link to='../'>
-          <Navbar.Brand>React-Toolbox</Navbar.Brand>
+          <Navbar.Brand>Dashboard</Navbar.Brand>
         </Link>
         <MenuButton
           className='p-0 d-md-none ms-3'
