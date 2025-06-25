@@ -270,3 +270,7 @@
 
 ##### Version 0.6.5
 - The `DataTable` `selector` function can output `null` as well
+
+##### Version 0.6.6
+- Improve types of `FormFields`
+- Validate `list` argument of `FormDropdown` component

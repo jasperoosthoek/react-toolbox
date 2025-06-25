@@ -1,4 +1,4 @@
-import React, { ReactElement, ChangeEvent, KeyboardEvent } from 'react';
+import React, { ReactElement, ChangeEvent, KeyboardEvent, useMemo } from 'react';
 import { Form, FormControl, Badge, Dropdown, BadgeProps, FormControlProps, FormCheckProps  } from 'react-bootstrap';
 import { Variant} from 'react-bootstrap/types';
 import { useLocalization } from '../../localization/LocalizationContext';
@@ -34,7 +34,7 @@ export type FormType = {
   pristine: boolean;
 }
 
-export type FormInputProps = Omit<FormControlProps, 'onChange'> & FormType & {
+export interface FormInputProps extends Omit<FormControlProps, 'onChange'>, FormType {
   onChange: (value: FormValue) => void;
   controlId?: string;
   label?: ReactElement;
@@ -92,7 +92,7 @@ export const FormDate = (props: FormInputProps) => (
   />
 )
 
-export type FormDateTimeProps = Omit<FormInputProps, 'onChange' | 'value'> & {
+export interface FormDateTimeProps extends Omit<FormInputProps, 'onChange' | 'value'> {
   value: string | Moment;
   onChange: (value: string) => void;
 }
@@ -111,7 +111,7 @@ export const FormDateTime = ({ value, onChange, ...restProps }: FormDateTimeProp
 );
 
 
-export type FormCheckboxProps = Omit<FormCheckProps, 'onChange'> & FormType & {
+export interface FormCheckboxProps extends Omit<FormCheckProps, 'onChange'>, FormType {
   onChange: (value: boolean) => void;
   controlId?: string;
   label?: ReactElement;
@@ -169,7 +169,7 @@ export type DisabledProps = {
   initialValue: any;
 }
 
-export type FormSelectProps = Omit<FormInputProps, 'disabled' | 'onChange'> & {
+export interface FormSelectProps extends Omit<FormInputProps, 'disabled' | 'onChange' | 'list'> {
   onChange: (value: number | string | number[] | string[] | null) => void;
   list: any[];
   multiple?: boolean;
@@ -357,48 +357,19 @@ export const FormBadgesSelection = ({
   );
 }
 
-// export const FormSelectControl = ({
-//   controlId,
-//   label,
-//   formProps,
-//   onChange,
-//   options,
-//   defaultValue,
-//   children,
-//   ...restProps
-// }) => (
-//   <InputGroup controlId={controlId}>
-//     {label && <Form.Label>{label}</Form.Label>}
-//     <FormControl as='select'
-//       onChange={e => onChange(e.target.value)}
-//       {...formProps}
-//       {...restProps}
-//     >
-//       {options.map(({ value, children, ...option }) =>
-//         <option
-//           key={value}
-//           value={value}
-//           defaultValue={defaultValue}
-//           {...option}
-//         >
-//           {children}
-//         </option>
-//       )}
-//     </FormControl>
-//     {children}
-//   </InputGroup>
-// );
-
-export type FormDropdownProps =  Omit<FormInputProps, 'disabled' | 'onChange'> & {
-  onChange: (value: number | string | number[] | string[] | null) => void;
-  list: any[];
-  idKey?: string;
+export interface FormDropdownProps<T> extends Omit<FormInputProps, 'disabled' | 'onChange' | 'list'> {
+   onChange: (value: number | string | number[] | string[] | null) => void;
+  list: T[];
+  idKey?: keyof T;
+  nameKey?: keyof T;
   disabled?: boolean | ((props: DisabledProps) => boolean);
   variant?: Variant;
 }
-export const FormDropdown = ({  
-  list,
-  id = 'id',
+
+export const FormDropdown = <T,>({
+  list: listBase,
+  idKey = 'id' as keyof T,
+  nameKey = 'name' as keyof T,
   value,
   onChange,
   label,
@@ -409,13 +380,40 @@ export const FormDropdown = ({
   disabled,
   initialState,
   initialValue,
-  variant='light',
-  keyName,
+  variant = 'light',
   pristine,
+  keyName,
   ...restProps
-}: FormDropdownProps) => {
+}: FormDropdownProps<T>) => {
   const { strings } = useLocalization();
-  const selectedItem = list.find(({ [id]: itemId }) => itemId === value);
+
+  const [list, mismatch] = useMemo(() => {
+    if (!listBase || !Array.isArray(listBase)) {
+      return [null, null] as [T[] | null, any];
+    }
+    const mismatch = listBase?.find((item: any) => (
+      !['number', 'string'].includes(typeof item[idKey])
+      || !['number', 'string'].includes(typeof item[nameKey])
+    ))
+    if (mismatch) return [null, mismatch];
+    return [listBase, null];
+  }, [listBase])
+
+  if (!list) {
+    console.error(
+      `FormDropdown Error:
+      - Each item in 'list' must include a valid 'idKey' (${String(idKey)}) and 'nameKey' (${String(nameKey)}).
+      - Both keys must exist on every item and be of type 'string' or 'number'.
+      - One or more items failed this check.
+      
+      Received list:`,
+      listBase,
+      ...mismatch ? ['First mismatch:', mismatch] : []
+    );
+    return null;
+  }
+  
+  const selectedItem = list.find(item => item[idKey] === value);
   return (
     <Form.Group controlId={controlId}>
       {label && <Form.Label>{label}</Form.Label>}
@@ -424,7 +422,7 @@ export const FormDropdown = ({
         <Dropdown>
           <Dropdown.Toggle variant={variant}>
             {selectedItem
-              ? selectedItem.name
+              ? selectedItem[nameKey] as string
               : strings.getString('choose_one')
             }
           </Dropdown.Toggle>
@@ -434,15 +432,15 @@ export const FormDropdown = ({
                 key={key}
                 disabled={
                   typeof disabled === 'function'
-                    ? disabled({ initialValue, list, value: item[id], state, initialState })
+                    ? disabled({ initialValue, list, value: item[idKey] as string, state, initialState })
                     : disabled
                 }
-                selected={value === item[id]}
+                selected={value === item[idKey]}
                 cursor='pointer'
-                onClick={() => onChange(item[id])}
+                onClick={() => onChange(item[idKey] as any)}
                 {...restProps}
               >
-                {item.name}
+                {item[nameKey] as string}
               </Dropdown.Item>
             )}
           </Dropdown.Menu>
