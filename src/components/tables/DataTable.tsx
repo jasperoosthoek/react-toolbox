@@ -67,9 +67,10 @@ export type OnMove<R> = ({ item, target, reset }: OnMoveProps<R>) => void;
 export type OnClickRow<R> = (row: R) => void;
 
 export type DataTableHeader = {
-  search?: boolean,
-  numberOfRows?: boolean,
-  pagination?: boolean,
+  search?: boolean;
+  numberOfRows?: boolean;
+  pagination?: boolean;
+  customHeader?: ReactElement | string;
 };
 
 export type DataTableProps<D extends any[]> = {
@@ -211,14 +212,19 @@ export const DataTable = <D extends any[]>({
   )), [columns])
   
   if (!Component) return null;
+
+  const customHeader = showHeader && (showHeader as DataTableHeader).customHeader;
+  const sm = customHeader ? 4 : 6; 
+  const lg = customHeader ? 3 : 4; 
+  
   return (
     <div style={style} className={className}>
-      {showHeader &&
+      {(showHeader) &&
         <Row className="mb-4">
           {(showHeader === true || showHeader.search) && (
             <Col
               xs={12}
-              lg={4}
+              lg={lg}
               className="d-flex flex-col justify-content-end align-items-end"
             >
               <InputGroup>
@@ -240,8 +246,8 @@ export const DataTable = <D extends any[]>({
           {(showHeader === true || showHeader.numberOfRows) && (
             <Col
               xs={12}
-              sm={6}
-              lg={4}
+              sm={sm}
+              lg={lg}
               className="d-flex flex-col justify-content-lg-center align-items-center justify-content-sm-start mb-2 mb-sm-0"
             >
               <Form.Group>
@@ -275,8 +281,8 @@ export const DataTable = <D extends any[]>({
           {(showHeader === true || showHeader.pagination) && (
             <Col
               xs={12}
-              sm={6}
-              lg={4}
+              sm={sm}
+              lg={lg}
               className="d-flex flex-col justify-content-end align-items-end"
             >
               <ButtonGroup>
@@ -306,6 +312,17 @@ export const DataTable = <D extends any[]>({
                   {'>>'}
                 </PaginationButton>
               </ButtonGroup>
+            </Col>
+          )}
+          
+          {customHeader && (
+            <Col
+              xs={12}
+              sm={sm}
+              lg={lg}
+              className="d-flex flex-col justify-content-end align-items-end"
+            >          
+              {customHeader}
             </Col>
           )}
         </Row>

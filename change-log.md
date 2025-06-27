@@ -274,3 +274,7 @@
 ##### Version 0.6.6
 - Improve types of `FormFields`
 - Validate `list` argument of `FormDropdown` component
+
+##### Version 0.6.7
+- New `customHeader` in `DataTable` component
+- Stricter types in `FormDropdown` component

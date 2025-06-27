@@ -161,7 +161,6 @@ export const FormSwitch = ({ className = '', ...restProps }: FormCheckboxProps) 
 );
 
 export type DisabledProps = {
-
   list: any[];
   value: string | number;
   state: any;
@@ -432,12 +431,12 @@ export const FormDropdown = <T,>({
                 key={key}
                 disabled={
                   typeof disabled === 'function'
-                    ? disabled({ initialValue, list, value: item[idKey] as string, state, initialState })
+                    ? disabled({ initialValue, list, value: item[idKey] as number | string, state, initialState })
                     : disabled
                 }
                 selected={value === item[idKey]}
                 cursor='pointer'
-                onClick={() => onChange(item[idKey] as any)}
+                onClick={() => onChange(item[idKey] as number | string)}
                 {...restProps}
               >
                 {item[nameKey] as string}
