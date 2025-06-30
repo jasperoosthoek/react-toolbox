@@ -183,7 +183,7 @@ export const DataTable = <D extends any[]>({
       {...{ ...(typeof onClickRow === 'function' || showEditModal)
         ? { onClick: () => {
             if (onClickRow) onClickRow(row);
-            if (hasProvider) showEditModal(row);
+            if (hasProvider && showEditModalOnClickRow) showEditModal(row);
           } }
         : {}
       }}

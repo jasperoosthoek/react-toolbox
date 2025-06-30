@@ -278,3 +278,6 @@
 ##### Version 0.6.7
 - New `customHeader` in `DataTable` component
 - Stricter types in `FormDropdown` component
+
+##### Version 0.6.8
+- Fix: always opening `EditModal` when clicking row of `DataTable` regardless of `showEditModalOnClickRow` prop
