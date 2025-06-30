@@ -78,7 +78,7 @@ export type DataTableProps<D extends any[]> = {
   columns: DataTableColumn<D[number]>[];
   rowsPerPage?: number | null;
   rowsPerPageOptions?: RowsPerPageOptions;
-  filterColumn?: ((row: D[number]) => string) | string;
+  filterColumn?: keyof D | ((row: D[number]) => string) | (keyof D | ((row: D[number]) => string))[];
   orderByDefault?: ((row: D[number]) => number) | string | null;
   orderByDefaultDirection?: OrderByDirection;
   onMove?: OnMove<D[number]>;
@@ -126,16 +126,24 @@ export const DataTable = <D extends any[]>({
   const [rowsPerPage, setRowsPerPage] = useState(rowsPerPageDefault);
   const [page, setPage] = useState(0);
   let data = allData && (
-    Object.values(allData)
-      .filter(
-        row => filterColumn && filterText
-          ? (
-              typeof filterColumn === 'function' 
-                ? filterColumn(row)
-                : row[filterColumn]
-            ).match(new RegExp(`${filterText}`, 'i'))
-          : true
-        )
+  Object.values(allData).filter(row =>
+    filterColumn && filterText
+      ? (
+          typeof filterColumn === 'function'
+            ? filterColumn(row)
+            : Array.isArray(filterColumn)
+              ? filterColumn.reduce((acc, col) => {
+                  if (typeof col === 'function') {
+                    return acc + ' ' + col(row);
+                  } else if (typeof row[col] !== 'undefined') {
+                    return acc + ' ' + row[col];
+                  }
+                  return acc;
+                }, '')
+              : row[filterColumn]
+        ).toString().match(new RegExp(`${filterText}`, 'i'))
+      : true
+    )
   );
 
   const pagesCount = (data && rowsPerPage && Math.ceil(data.length / rowsPerPage));

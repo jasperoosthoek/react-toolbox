@@ -281,3 +281,6 @@
 
 ##### Version 0.6.8
 - Fix: always opening `EditModal` when clicking row of `DataTable` regardless of `showEditModalOnClickRow` prop
+
+##### Version 0.6.9
+- `filterColumn` in  `DataTable` can also be an array of strings or modifiers
