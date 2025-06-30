@@ -284,3 +284,6 @@
 
 ##### Version 0.6.9
 - `filterColumn` in  `DataTable` can also be an array of strings or modifiers
+
+##### Version 0.7.0
+- Fix brackets in `filterColumn` type
