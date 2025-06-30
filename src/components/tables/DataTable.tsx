@@ -78,7 +78,7 @@ export type DataTableProps<D extends any[]> = {
   columns: DataTableColumn<D[number]>[];
   rowsPerPage?: number | null;
   rowsPerPageOptions?: RowsPerPageOptions;
-  filterColumn?: (keyof D) | ((row: D[number]) => string) | ((keyof D) | ((row: D[number]) => string))[];
+  filterColumn?: string | ((row: D[number]) => string) | (string | ((row: D[number]) => string))[];
   orderByDefault?: ((row: D[number]) => number) | string | null;
   orderByDefaultDirection?: OrderByDirection;
   onMove?: OnMove<D[number]>;

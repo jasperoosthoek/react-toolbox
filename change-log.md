@@ -287,3 +287,6 @@
 
 ##### Version 0.7.0
 - Fix brackets in `filterColumn` type
+
+##### Version 0.7.1
+- Make `filterColumn` type less strict
