@@ -98,7 +98,7 @@ export const DataTable = <D extends any[]>({
   data: allData,
   columns,
   rowsPerPage: rowsPerPageDefault = 10,
-  rowsPerPageOptions = [10,25, 50, 100, null],
+  rowsPerPageOptions = [10, 25, 50, 100, null],
   filterColumn,
   orderByDefault,
   orderByDefaultDirection='asc',
@@ -271,9 +271,8 @@ export const DataTable = <D extends any[]>({
                   }
                 >
                   <option
-                    value=""
+                    value="everything"
                     disabled={rowsPerPage !== null}
-                    selected={rowsPerPage === null}
                   >
                     {strings.getString('select')}
                   </option>

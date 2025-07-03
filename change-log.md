@@ -290,3 +290,7 @@
 
 ##### Version 0.7.1
 - Make `filterColumn` type less strict
+
+##### Version 0.7.2
+- Fix error when supplying `FormModal` with empty `FormFields`
+- Fix placing `selected` on `option` html tag that breaks Reacts best practices
