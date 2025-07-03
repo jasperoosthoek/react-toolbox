@@ -12,7 +12,6 @@ export const usePrevious = <T>(value: T): T | undefined => {
   return ref.current;
 };
 
-  
 // https://stackoverflow.com/questions/54666401/how-to-use-throttle-or-debounce-with-react-hook
 export const useDebouncedEffect = (effect: () => void, deps: any[], delay: number) => {
   useEffect(() => {
@@ -66,6 +65,11 @@ export const useInterval = (func: () => void, value: number) => useEffect(() => 
 
 export const useLocalStorage = <T,>(key: string, initialValue: T): [T, (value: T) => void] => {
   const initialLocalStorageValue = localStorage.getItem(key);
+
+  if (initialLocalStorageValue === null) {
+    localStorage.setItem(key, JSON.stringify(initialValue));
+  }
+
   const [state, setState] = useState<T>(
     initialLocalStorageValue
       ? JSON.parse(initialLocalStorageValue) as T
@@ -79,18 +83,14 @@ export const useLocalStorage = <T,>(key: string, initialValue: T): [T, (value: T
       }
     };
 
+    // Manually dispatch an event to update components in the same document
     window.addEventListener('storage', handleStorageChange);
-
-    return () => {
-      window.removeEventListener('storage', handleStorageChange);
-    };
+    return () => window.removeEventListener('storage', handleStorageChange);
   }, [key]);
 
   const setLocalStorage = (value: T) => {
     setState(value);
     localStorage.setItem(key, JSON.stringify(value));
-
-    // Manually dispatch an event to update components in the same document
     window.dispatchEvent(new StorageEvent('storage', {
       key,
       newValue: JSON.stringify(value),

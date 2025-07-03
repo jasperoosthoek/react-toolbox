@@ -85,6 +85,8 @@ export const FormTextArea = ({ as = 'textarea', rows = 3, ...restProps }: FormIn
   />
 );
 
+export type FormTextAreaProps = FormInputProps;
+
 export const FormDate = (props: FormInputProps) => (
   <FormInput
     {...props}
@@ -382,6 +384,7 @@ export const FormDropdown = <T,>({
   variant = 'light',
   pristine,
   keyName,
+  onEnter,
   ...restProps
 }: FormDropdownProps<T>) => {
   const { strings } = useLocalization();
@@ -418,7 +421,14 @@ export const FormDropdown = <T,>({
       {label && <Form.Label>{label}</Form.Label>}
       
       <div className={`form-control ${isInvalid ? 'is-invalid' : ''}`}>
-        <Dropdown>
+        <Dropdown
+          onKeyDown={(e: KeyboardEvent<HTMLInputElement>) => {
+            if (e.key === 'Enter' && typeof onEnter === 'function') {
+              e.preventDefault();
+              onEnter();
+            }
+          }}
+        >
           <Dropdown.Toggle variant={variant}>
             {selectedItem
               ? selectedItem[nameKey] as string

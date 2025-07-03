@@ -73,6 +73,10 @@ export const FormModal = <
     console.error(`Unrecognised props given to FormModal:`, restProps);
   }
 
+  if (!formFields) {
+    console.error(`Property formFields cannot be empty.`)
+    return null;
+  }
   const getInitialFormData = () => ({
     ...Object.entries(formFields).reduce((o, [key, { initialValue }]) => ({ ...o, [key]: initialValue || '' }), {}),
     ...initialState || {},
