@@ -223,7 +223,7 @@ export const DataTable = <D extends any[]>({
 
   const customHeader = showHeader && (showHeader as DataTableHeader).customHeader;
   const sm = customHeader ? 4 : 6; 
-  const lg = customHeader ? 3 : 4; 
+  const lg = customHeader ? 3 : 4;
   
   return (
     <div style={style} className={className}>
