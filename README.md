@@ -100,7 +100,7 @@ const SomeComponent = () => {
 
 ### The DeleteConfirmButton
 
-Very similar to the ConfirmButton but specialize to deleting something. Note that `buttonComponent` is the `DeleteButton`.
+Very similar to the ConfirmButton but specialized to deleting something. Note that the `buttonComponent` is the `DeleteButton`.
 
 ```typescript
 import { MoveButton } from '@jasperoosthoek/react-toolbox';

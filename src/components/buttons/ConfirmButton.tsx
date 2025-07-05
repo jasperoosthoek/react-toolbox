@@ -3,7 +3,7 @@ import { Button, Modal } from 'react-bootstrap';
 
 import { SmallSpinner } from '../indicators/LoadingIndicator';
 import { LocalizationContext } from '../../localization/LocalizationContext';
-import { ButtonProps } from './IconButtons';
+import { type ButtonProps } from './IconButtons';
 
 export interface ConfirmButtonProps extends ButtonProps {
   modalTitle?: ReactElement | string;
