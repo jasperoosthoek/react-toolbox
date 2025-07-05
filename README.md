@@ -14,36 +14,6 @@ This is a highly customizable and interactive DataTable component. It provides a
 - **Search & Filter**: Instantly find relevant data with a easy to configure real-time search input.
 </ul>
 
-### The ErrorBoundary component
-
-Simple `ErrorBoundary` component with `useError` hook that can be used to get and clear the error anywhere in the application:
-
-```typescript
-export const App = () => (
-  <ErrorBoundary>
-    <BrowserRouter />
-    // Rest of the app
-  </ErrorBoundary>
-);
-
-
-// React component somewhere in the tree
-const MyComponent = () => {
-  const { error, clearError } = useError();
-  if (error) console.error(error);
-
-  return (
-    <div
-      className='display-error'
-      onClick={() => clearError()}
-    > 
-      {error && 'An error occurred, click to clear'}
-    <div>
-  )
-}
-
-```
-
 ### Custom hooks
 
 #### useLocalStorage
@@ -126,11 +96,13 @@ const SomeComponent = () => {
     </div>
   )
 }
+```
 
 ### The DeleteConfirmButton
 
 Very similar to the ConfirmButton but specialize to deleting something. Note that `buttonComponent` is the `DeleteButton`.
 
+```typescript
 import { MoveButton } from '@jasperoosthoek/react-toolbox';
 
 const SomeComponent = () => {
@@ -150,3 +122,34 @@ const SomeComponent = () => {
     </div>
   )
 }
+```
+
+### The ErrorBoundary component
+
+Simple `ErrorBoundary` context provider with `useError` hook that can be used to get and clear the error anywhere in the application:
+
+```typescript
+export const App = () => (
+  <ErrorBoundary>
+    <BrowserRouter />
+    // Rest of the app
+  </ErrorBoundary>
+);
+
+
+// React component somewhere in the tree
+const MyComponent = () => {
+  const { error, clearError } = useError();
+  if (error) console.error(error);
+
+  return (
+    <div
+      className='display-error'
+      onClick={() => clearError()}
+    > 
+      {error && 'An error occurred, click to clear'}
+    <div>
+  )
+}
+
+```
