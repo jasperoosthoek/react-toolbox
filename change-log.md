@@ -294,3 +294,6 @@
 ##### Version 0.7.2
 - Fix error when supplying `FormModal` with empty `FormFields`
 - Fix placing `selected` on `option` html tag that breaks Reacts best practices
+
+##### Version 0.7.3
+- Upgrade to React@19.1.0
