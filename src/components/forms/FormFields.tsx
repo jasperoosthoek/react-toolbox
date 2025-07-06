@@ -8,7 +8,7 @@ export type FormValue = boolean | string | string[] | number | number[];
 
 // export type FormOnChange = <T extends { [key: string]: FormValue }>(value: FormValue, formData: T) => Partial<T>;
 export type FormOnChange = (
-  ((value: FormValue, formData: any) => any)
+  ((value: FormValue, formData?: any) => any)
 );
 
 export type FormComponentProps = {

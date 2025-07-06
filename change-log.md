@@ -300,3 +300,6 @@
 
 ##### Version 0.7.4
 - Fix type of `FormOnChange` to handle second argument
+
+##### Version 0.7.5
+- Make second input argument of `FormOnChange` optional
