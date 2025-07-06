@@ -297,3 +297,6 @@
 
 ##### Version 0.7.3
 - Upgrade to React@19.1.0
+
+##### Version 0.7.4
+- Fix type of `FormOnChange` to handle second argument
