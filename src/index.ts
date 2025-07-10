@@ -18,11 +18,12 @@ export * from './components/tables/SearchBox';
 export * from './components/errors/Errors';
 export * from './components/errors/ErrorBoundary';
 
+export * from './components/login/LoginPage';
+
 export * from './utils/hooks';
 export * from './utils/timeAndDate';
 export * from './utils/utils';
 
-export * from './components/login/LoginPage';
 
 export * from './localization/localization';
 export * from './localization/LocalizationContext';

@@ -307,3 +307,6 @@
 ##### Version 0.8.0
 - Completely remove Redux dependency
 - Replace `Login` hook by simple `LoginPage` component
+
+##### Version 0.8.1
+- Fix typo that prevents import of `LoginPage` component
