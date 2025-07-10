@@ -1,5 +1,4 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
-import { useDispatch } from 'react-redux';
 
 // https://stackoverflow.com/questions/53446020/how-to-compare-oldvalues-and-newvalues-on-react-hooks-useeffect
 export const usePrevious = <T>(value: T): T | undefined => {
@@ -40,12 +39,6 @@ export const useSetState = <T>(initialState: T): [T, (subState: Partial<T>) => v
   }
   return [state, setSubState];
 }
-
-export const useWithDispatch = <G extends any[]>(obj: (...args: G) => any) => {
-  const dispatch = useDispatch();
-  
-  return (...args: G) => dispatch(obj(...args));
-};
 
 // https://devtrium.com/posts/set-interval-react
 export const useInterval = (func: () => void, value: number) => useEffect(() => {

@@ -303,3 +303,7 @@
 
 ##### Version 0.7.5
 - Make second input argument of `FormOnChange` optional
+
+##### Version 0.8.0
+- Completely remove Redux dependency
+- Replace `Login` hook by simple `LoginPage` component
