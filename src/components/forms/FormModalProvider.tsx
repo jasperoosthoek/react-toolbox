@@ -1,22 +1,12 @@
 import React, { useState, useContext, ReactNode } from 'react';
-
 import { useLocalization } from '../../localization/LocalizationContext';
-import {
-    FormFields,
-    IncludeData,
-    InitialState,
-    OnSave,
-    Validate,
-    ModalTitle,
-    Width,
-		FormModal,
-    
-} from './FormModal';
+import { FormProvider, FormFields, InitialState, OnSubmit, Validate } from './FormProvider';
+import { FormModal, ModalTitle, Width } from './FormModal';
 import { FormValue } from './FormFields';
 import { ButtonProps, CreateButton, EditButton } from '../buttons/IconButtons';
 
 export type ShowCreateModal = (show?: boolean) => void;
-export type ShowEditModal<T, K> = (state: { [key in keyof T]: FormValue } & K) => void;
+export type ShowEditModal<T extends FormFields> = (state: InitialState<T>) => void;
 
 export type FormCreateModalButton = ButtonProps;
 export const FormCreateModalButton = ({ onClick, ...props }: ButtonProps) => {
@@ -28,26 +18,28 @@ export const FormCreateModalButton = ({ onClick, ...props }: ButtonProps) => {
       onClick={(e) => {
         // A onClick function was given to CreateButton
         if (onClick) onClick(e);
-        // CreateButton is inside a CreateEditButtonProvider which can handle
+        // CreateButton is inside a FormModalProvider which can handle
         // showCreateModal. Without the provider, showCreateModal will log an error
         if (hasProvider) showCreateModal();
       }}
     />
   )
 }
-export interface FormEditModalButtonProps<T, K> extends ButtonProps {
-  state: { [key in keyof T]: FormValue } & K;
+
+export interface FormEditModalButtonProps<T extends FormFields> extends ButtonProps {
+  state: InitialState<T>;
 }
-export const FormEditModalButton = ({ state, onClick, ... props }: FormEditModalButtonProps<T, K>) => {
-  const { showEditModal, hasProvider } = useFormModal();
+
+export const FormEditModalButton = <T extends FormFields>({ state, onClick, ...props }: FormEditModalButtonProps<T>) => {
+  const { showEditModal, hasProvider } = useFormModal<T>();
 
   return (
     <EditButton
       {...props}
       onClick={(e) => {
-        // A onClick function was given to CreateButton
+        // A onClick function was given to EditButton
         if (onClick) onClick(e);
-        // CreateButton is inside a CreateEditButtonProvider which can handle
+        // EditButton is inside a FormModalProvider which can handle
         // showEditModal. Without the provider, showEditModal will log an error
         if (hasProvider) showEditModal(state);
       }}
@@ -55,38 +47,32 @@ export const FormEditModalButton = ({ state, onClick, ... props }: FormEditModal
   )
 }
 
-type FormModalContextType<T, K> = {
-	showCreateModal: ShowCreateModal;
-	showEditModal: ShowEditModal<T, K>;
+type FormModalContextType<T extends FormFields> = {
+  showCreateModal: ShowCreateModal;
+  showEditModal: ShowEditModal<T>;
   hasProvider: boolean;
 }
 
-type T = any;
-type K = any;
-const defaultErrorState: FormModalContextType<T, K> = {
+const defaultErrorState: FormModalContextType<any> = {
   showCreateModal: () => {
-		console.error('The showCreateModal function should only be used in a child of the FormModalProvider component.');
-	},
-  showEditModal: (state: { [key in keyof T]: FormValue } & K) => {
-		console.error('The showEditModal function should only be used in a child of the FormModalProvider component.');
-	},
+    console.error('The showCreateModal function should only be used in a child of the FormModalProvider component.');
+  },
+  showEditModal: () => {
+    console.error('The showEditModal function should only be used in a child of the FormModalProvider component.');
+  },
   hasProvider: false,
 };
+
 export const FormModalContext = React.createContext(defaultErrorState);
 
-export const useFormModal = () => useContext(FormModalContext);
+export const useFormModal = <T extends FormFields>() => useContext(FormModalContext) as FormModalContextType<T>;
 
-
-export type FormModalProviderProps<
-  T extends FormFields,
-  K extends IncludeData<T>
-> = {
-  initialState: InitialState<T> | K;
-  includeData?: K;
+export type FormModalProviderProps<T extends FormFields> = {
   formFields: T;
-  onSave?: OnSave<T, K>;
-  onCreate?: OnSave<T, K>;
-  onUpdate?: OnSave<T, K>;
+  initialState?: InitialState<T>;
+  onSave?: OnSubmit<T>;
+  onCreate?: OnSubmit<T>;
+  onUpdate?: OnSubmit<T>;
   validate?: Validate;
   createModalTitle?: ModalTitle;
   editModalTitle?: ModalTitle;
@@ -95,58 +81,91 @@ export type FormModalProviderProps<
   width?: Width;
   children: ReactNode;
 }
-export const FormModalProvider: React.FC<FormModalProviderProps<T, K>> = ({
-	createModalTitle,
-	editModalTitle,
-	formFields,
-  initialState,
+
+export const FormModalProvider = <T extends FormFields>({
+  createModalTitle,
+  editModalTitle,
+  formFields,
+  initialState = {} as InitialState<T>,
   validate,
-	loading,
-	onCreate,
-	onUpdate,
+  loading = false,
+  onCreate,
+  onUpdate,
   onSave,
   dialogClassName,
-	children,
-}) => {
-  const [createModalActive, showCreateModal] = useState(false);
-  const [instanceInEditModal, showEditModal] = useState<({ [key in keyof T]: FormValue } & K) | null>(null);
+  width,
+  children,
+}: FormModalProviderProps<T>) => {
+  const [createModalActive, setCreateModalActive] = useState(false);
+  const [editModalState, setEditModalState] = useState<InitialState<T> | null>(null);
   const { strings } = useLocalization();
+
+  const handleCreateSubmit: OnSubmit<T> = (state, callback) => {
+    const submitHandler = onCreate || onSave;
+    if (submitHandler) {
+      submitHandler(state, () => {
+        setCreateModalActive(false);
+        if (callback) callback();
+      });
+    }
+  };
+
+  const handleEditSubmit: OnSubmit<T> = (state, callback) => {
+    const submitHandler = onUpdate || onSave;
+    if (submitHandler) {
+      submitHandler(state, () => {
+        setEditModalState(null);
+        if (callback) callback();
+      });
+    }
+  };
+
   return (
     <FormModalContext.Provider
       value={{
-				showCreateModal: (show?: boolean) =>
-					showCreateModal(typeof show === 'undefined' ? true : show),
-				showEditModal,
+        showCreateModal: (show?: boolean) =>
+          setCreateModalActive(typeof show === 'undefined' ? true : show),
+        showEditModal: setEditModalState,
         hasProvider: true,
-			}}>
+      }}
+    >
       {children}
-			
+      
       {createModalActive && (onCreate || onSave) && (
-				<FormModal
-					modalTitle={createModalTitle || strings.getString('modal_create')}
-					onHide={() => showCreateModal(false)}
-					initialState={initialState}
-					formFields={formFields}
-          validate={validate}
-					loading={loading}
-          // @ts-ignore Ignore as Typescript does not recognize that this is allowed
-					onSave={onCreate || onSave}
-          dialogClassName={dialogClassName}
-				/>
-			)}
-      {instanceInEditModal && (onUpdate || onSave) && (
-        <FormModal
-          show={!!instanceInEditModal}
-          modalTitle={editModalTitle || strings.getString('modal_edit')}
-          onHide={() => showEditModal(null)}
-          initialState={instanceInEditModal}
+        <FormProvider
           formFields={formFields}
+          initialState={initialState}
+          onSubmit={handleCreateSubmit}
           validate={validate}
           loading={loading}
-          // @ts-ignore
-          onSave={onUpdate || onSave}
-          dialogClassName={dialogClassName}
-        />
+          resetTrigger={createModalActive}
+        >
+          <FormModal
+            modalTitle={createModalTitle || strings.getString('modal_create')}
+            onHide={() => setCreateModalActive(false)}
+            dialogClassName={dialogClassName}
+            width={width}
+          />
+        </FormProvider>
+      )}
+      
+      {editModalState && (onUpdate || onSave) && (
+        <FormProvider
+          formFields={formFields}
+          initialState={editModalState}
+          onSubmit={handleEditSubmit}
+          validate={validate}
+          loading={loading}
+          resetTrigger={editModalState}
+        >
+          <FormModal
+            show={!!editModalState}
+            modalTitle={editModalTitle || strings.getString('modal_edit')}
+            onHide={() => setEditModalState(null)}
+            dialogClassName={dialogClassName}
+            width={width}
+          />
+        </FormProvider>
       )}
     </FormModalContext.Provider>
   );
