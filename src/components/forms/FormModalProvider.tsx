@@ -6,7 +6,7 @@ import { FormValue } from './FormFields';
 import { ButtonProps, CreateButton, EditButton } from '../buttons/IconButtons';
 
 export type ShowCreateModal = (show?: boolean) => void;
-export type ShowEditModal<T extends FormFields> = (state: InitialState<T>) => void;
+export type ShowEditModal<T extends FormFields> = (state: InitialState<T> | null) => void;
 
 export type FormCreateModalButton = ButtonProps;
 export const FormCreateModalButton = ({ onClick, ...props }: ButtonProps) => {
@@ -125,7 +125,7 @@ export const FormModalProvider = <T extends FormFields>({
       value={{
         showCreateModal: (show?: boolean) =>
           setCreateModalActive(typeof show === 'undefined' ? true : show),
-        showEditModal: setEditModalState,
+        showEditModal: (state: InitialState<T> | null) => setEditModalState(state),
         hasProvider: true,
       }}
     >

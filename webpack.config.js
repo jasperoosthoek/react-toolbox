@@ -60,9 +60,6 @@ module.exports = {
   target: 'web',
   externals: {
     'react': 'react',
-    'react-redux': 'react-redux',
-    'redux': 'redux',
-    'redux-thunk': 'redux-thunk',
     'react-dom': 'react-dom',
     'react-dnd': 'react-dnd',
   },

@@ -2,8 +2,8 @@ import React, { ReactElement, ChangeEvent, KeyboardEvent } from 'react';
 import { Form, Modal, Button } from 'react-bootstrap';
 import { SmallSpinner } from '../indicators/LoadingIndicator';
 import { useLocalization } from '../../localization/LocalizationContext';
-import { useForm, FormFields } from './FormProvider';
-import { FormComponentProps, FormSelectProps, FormValue } from './FormFields';
+import { useForm } from './FormProvider';
+import { FormValue } from './FormFields';
 
 export type ModalTitle = ReactElement | string;
 export type Width = 25 | 50 | 75 | 100;
@@ -29,12 +29,7 @@ export const FormModal = ({
 }: FormModalProps) => {
   const {
     formData,
-    pristine,
-    validated,
-    validationErrors,
     loading,
-    getValue,
-    setValue,
     submit,
     hasProvider
   } = useForm();
@@ -51,9 +46,6 @@ export const FormModal = ({
   // Get formFields from context - we'll need to add this to the context
   // For now, we'll get it from the formData keys, but this is a limitation
   // we might need to pass formFields to the context as well
-  const handleSave = () => {
-    submit();
-  };
 
   return (
     <Modal
@@ -84,7 +76,7 @@ export const FormModal = ({
         </Button>
         <Button
           variant="primary"
-          onClick={handleSave}
+          onClick={submit}
           disabled={loading}
         >
           {submitText || strings.getString('save')}
@@ -133,7 +125,7 @@ export const FormFieldsRenderer = () => {
                     setState={(newState = {}) => {
                       // Update form data with new state
                       Object.entries(newState).forEach(([k, v]) => {
-                        setValue(k, v);
+                        setValue(k, v as FormValue);
                       });
                     }}
                     onChange={(value: FormValue) => setValue(key, value)}
