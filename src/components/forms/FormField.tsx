@@ -3,12 +3,16 @@ import { Form } from 'react-bootstrap';
 import { useForm } from './FormProvider';
 import { FormValue } from './FormFields';
 
-export interface FormFieldProps {
+export interface FormFieldProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'name' | 'value' | 'onChange'> {
   name: string;
+  label?: React.ReactElement | string;
+  as?: string;         // For textarea, select, etc.
+  rows?: number;       // For textarea
   children?: React.ReactNode;
+  // All other HTML input props like type, placeholder, disabled, etc. are inherited
 }
 
-export const FormField = ({ name, children }: FormFieldProps) => {
+export const FormField = ({ name, children, label: propLabel, required: propRequired, ...htmlProps }: FormFieldProps) => {
   const {
     formFields,
     formData,
@@ -32,9 +36,16 @@ export const FormField = ({ name, children }: FormFieldProps) => {
     return null;
   }
 
-  const { formProps = {}, label, component: Component, required } = fieldConfig;
+  const { formProps = {}, label: configLabel, component: Component, required: configRequired } = fieldConfig;
+  
+  // Priority order: component props > config props > defaults
+  const label = propLabel !== undefined ? propLabel : configLabel;
+  const required = propRequired !== undefined ? propRequired : configRequired;
   const isInvalid = !pristine && !!(!validated && validationErrors[name]);
   const value = getValue(name);
+
+  // Merge props: htmlProps override formProps
+  const mergedProps = { ...formProps, ...htmlProps };
 
   // If children are provided, render them instead of the default field
   if (children) {
@@ -67,19 +78,18 @@ export const FormField = ({ name, children }: FormFieldProps) => {
             onChange={(value: FormValue) => setValue(name, value)}
             initialState={formData}
             initialValue={formData[name]}
-            {...formProps}
+            {...mergedProps}
           />
         : <Form.Control
-            as="input"
             autoComplete="off"
-            {...formProps}
+            {...mergedProps}
             value={value}
             isInvalid={isInvalid}
             onChange={(e: ChangeEvent<HTMLInputElement>) => {
               setValue(name, e.target.value);
             }}
             onKeyDown={(e: KeyboardEvent<HTMLInputElement>) => {
-              if (e.key === 'Enter' && formProps.as !== 'textarea') {
+              if (e.key === 'Enter' && mergedProps.as !== 'textarea') {
                 // Pressing the enter key will save data unless it is a multi line text area
                 e.preventDefault();
                 submit();

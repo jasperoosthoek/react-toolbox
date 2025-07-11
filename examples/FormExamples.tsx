@@ -12,20 +12,17 @@ import {
 
 // Example 1: Using FormProvider with custom layout
 const CustomFormExample = () => {
+  // Minimal config - only essentials
   const formFields = {
     name: {
-      label: 'Name',
       required: true,
       initialValue: '',
     },
     email: {
-      label: 'Email',
       required: true,
-      type: 'string' as const,
-      formProps: { type: 'email' },
+      initialValue: '',
     },
     age: {
-      label: 'Age',
       type: 'number' as const,
       initialValue: 0,
     }
@@ -55,9 +52,25 @@ const CustomFormExample = () => {
     >
       <div>
         <h3>Custom Form Layout</h3>
-        <FormField name="name" />
-        <FormField name="email" />
-        <FormField name="age" />
+        {/* Direct HTML props - much cleaner! */}
+        <FormField 
+          name="name" 
+          label="Full Name" 
+          placeholder="Enter your full name"
+        />
+        <FormField 
+          name="email" 
+          label="Email Address" 
+          type="email"
+          placeholder="Enter your email"
+        />
+        <FormField 
+          name="age" 
+          label="Age" 
+          type="number"
+          min={0}
+          max={120}
+        />
         
         <CustomSubmitButton />
       </div>
@@ -81,6 +94,7 @@ const CustomSubmitButton = () => {
 
 // Example 2: Using FormModalProvider (simplified usage)
 const ModalFormExample = () => {
+  // For modals, you can still pre-define everything
   const formFields = {
     title: {
       label: 'Title',
@@ -90,6 +104,7 @@ const ModalFormExample = () => {
     description: {
       label: 'Description',
       formProps: { as: 'textarea', rows: 3 },
+      initialValue: '',
     }
   };
 
@@ -175,4 +190,103 @@ const FlexibleFormExample = () => {
   );
 };
 
-export { CustomFormExample, ModalFormExample, FlexibleFormExample };
+// Example 4: Mixed approach - minimal config with component overrides
+const MixedFormExample = () => {
+  const formFields = {
+    username: {
+      required: true,
+      initialValue: '',
+    },
+    password: {
+      required: true,
+      initialValue: '',
+    },
+    confirmPassword: {
+      required: true,
+      initialValue: '',
+    },
+    bio: {
+      initialValue: '',
+    },
+    newsletter: {
+      initialValue: false,
+    }
+  };
+
+  const validate = (data: any) => {
+    const errors: any = {};
+    if (data.password !== data.confirmPassword) {
+      errors.confirmPassword = 'Passwords do not match';
+    }
+    return errors;
+  };
+
+  const handleRegister = (data: any, callback?: () => void) => {
+    console.log('Registration data:', data);
+    setTimeout(() => {
+      if (callback) callback();
+    }, 1000);
+  };
+
+  return (
+    <FormProvider
+      formFields={formFields}
+      onSubmit={handleRegister}
+      validate={validate}
+    >
+      <div>
+        <h3>Registration Form</h3>
+        
+        {/* Override labels and add HTML attributes */}
+        <FormField 
+          name="username" 
+          label="Choose Username" 
+          placeholder="Username"
+          minLength={3}
+        />
+        
+        <FormField 
+          name="password" 
+          label="Password" 
+          type="password"
+          placeholder="Enter password"
+          minLength={8}
+        />
+        
+        <FormField 
+          name="confirmPassword" 
+          label="Confirm Password" 
+          type="password"
+          placeholder="Confirm your password"
+        />
+        
+        {/* Textarea with component props */}
+        <FormField 
+          name="bio" 
+          label="Bio (Optional)" 
+          as="textarea"
+          rows={4}
+          placeholder="Tell us about yourself..."
+        />
+        
+        {/* Custom component can still use children */}
+        <FormField name="newsletter">
+          <div className="form-check">
+            <input 
+              type="checkbox" 
+              className="form-check-input"
+              id="newsletter"
+            />
+            <label className="form-check-label" htmlFor="newsletter">
+              Subscribe to newsletter
+            </label>
+          </div>
+        </FormField>
+        
+        <CustomSubmitButton />
+      </div>
+    </FormProvider>
+  );
+};
+
+export { CustomFormExample, ModalFormExample, FlexibleFormExample, MixedFormExample };

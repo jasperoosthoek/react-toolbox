@@ -4,6 +4,7 @@ import { SmallSpinner } from '../indicators/LoadingIndicator';
 import { useLocalization } from '../../localization/LocalizationContext';
 import { useForm } from './FormProvider';
 import { FormValue } from './FormFields';
+import { FormField } from './FormField';
 
 export type ModalTitle = ReactElement | string;
 export type Width = 25 | 50 | 75 | 100;
@@ -88,73 +89,17 @@ export const FormModal = ({
 
 // Component that renders all form fields using the form context
 export const FormFieldsRenderer = () => {
-  const {
-    formFields,
-    formData,
-    pristine,
-    validated,
-    validationErrors,
-    getValue,
-    setValue,
-    submit,
-    hasProvider
-  } = useForm();
+  const { formFields, hasProvider } = useForm();
 
-  if (!hasProvider || !formData || !formFields) {
+  if (!hasProvider || !formFields) {
     return null;
   }
 
   return (
     <Form>
-      {Object.entries(formFields).map(
-        ([key, { formProps = {}, label, component: Component, required }]) => {
-          const isInvalid = !pristine && !!(!validated && validationErrors[key]);
-          const value = getValue(key);
-          
-          return (
-            <Form.Group controlId={key} key={key}>
-              {label && <Form.Label>{label}{required && ' *'}</Form.Label>}
-              {isInvalid && ` (${validationErrors[key]})`}
-              {Component
-                ? <Component
-                    keyName={key}
-                    pristine={pristine}
-                    isInvalid={isInvalid}
-                    value={formData[key]}
-                    state={formData}
-                    setState={(newState = {}) => {
-                      // Update form data with new state
-                      Object.entries(newState).forEach(([k, v]) => {
-                        setValue(k, v as FormValue);
-                      });
-                    }}
-                    onChange={(value: FormValue) => setValue(key, value)}
-                    initialState={formData}
-                    initialValue={formData[key]}
-                    {...formProps}
-                  />
-                : <Form.Control
-                    as="input"
-                    autoComplete="off"
-                    {...formProps}
-                    value={value}
-                    isInvalid={isInvalid}
-                    onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                      setValue(key, e.target.value);
-                    }}
-                    onKeyDown={(e: KeyboardEvent<HTMLInputElement>) => {
-                      if (e.key === 'Enter' && formProps.as !== 'textarea') {
-                        // Pressing the enter key will save data unless it is a multi line text area
-                        e.preventDefault();
-                        submit();
-                      }
-                    }}
-                  />
-              }
-            </Form.Group>
-          )
-        }
-      )}
+      {Object.keys(formFields).map(name => (
+        <FormField key={name} name={name} />
+      ))}
     </Form>
   );
 };

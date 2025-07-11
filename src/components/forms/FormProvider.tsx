@@ -4,7 +4,7 @@ import { isEmpty } from '../../utils/utils';
 import { useLocalization } from '../../localization/LocalizationContext';
 import { FormValue } from './FormFields';
 
-export type FormField = {
+export type FormFieldConfig = {
   initialValue?: any;
   type?: 'string' | 'number';
   required?: boolean;
@@ -14,7 +14,7 @@ export type FormField = {
   label?: React.ReactElement | string;
 }
 
-export type FormFields = { [key: string]: FormField };
+export type FormFields = { [key: string]: FormFieldConfig };
 
 export type InitialState<T> = Partial<{
   [key in keyof T]: FormValue;
