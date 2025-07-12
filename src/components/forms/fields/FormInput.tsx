@@ -49,10 +49,61 @@ export const FormDate = (props: FormInputProps) => (
 );
 
 export interface FormDateTimeProps extends Omit<FormInputProps, 'value' | 'onChange'> {
-  value?: string;
+  value?: string | Date;
   onChange?: (value: string) => void;
+  timezone?: string;
 }
 
-export const FormDateTime = (props: FormDateTimeProps) => (
-  <FormInput type="datetime-local" {...props} />
-);
+export const FormDateTime = ({ value, onChange, timezone, ...props }: FormDateTimeProps) => {
+  // Convert value to datetime-local format (YYYY-MM-DDTHH:mm)
+  const formatForInput = (val: string | Date | undefined) => {
+    if (!val) return '';
+    
+    try {
+      const date = typeof val === 'string' ? new Date(val) : val;
+      if (isNaN(date.getTime())) return '';
+      
+      // Format as YYYY-MM-DDTHH:mm for datetime-local input
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      const hours = String(date.getHours()).padStart(2, '0');
+      const minutes = String(date.getMinutes()).padStart(2, '0');
+      
+      return `${year}-${month}-${day}T${hours}:${minutes}`;
+    } catch {
+      return '';
+    }
+  };
+  
+  const handleChange = (inputValue: string) => {
+    if (!onChange) return;
+    
+    if (!inputValue) {
+      onChange('');
+      return;
+    }
+    
+    try {
+      // Convert datetime-local value to ISO string
+      const date = new Date(inputValue);
+      if (isNaN(date.getTime())) {
+        onChange('');
+        return;
+      }
+      
+      onChange(date.toISOString());
+    } catch {
+      onChange('');
+    }
+  };
+  
+  return (
+    <FormInput 
+      type="datetime-local"
+      value={formatForInput(value)}
+      onChange={handleChange}
+      {...props}
+    />
+  );
+};

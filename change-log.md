@@ -310,3 +310,19 @@
 
 ##### Version 0.8.1
 - Fix typo that prevents import of `LoginPage` component
+
+##### Version 0.8.2
+- **BREAKING**: Refactor form architecture - separate concerns between FormProvider (validation logic) and FormModal (UI only)
+- New `FormProvider` component that handles all form state management and validation logic independently
+- New `useFormField` hook provides shared logic for all form components - eliminates code duplication
+- Reorganize form field components into dedicated `fields/` directory for better organization
+- New dedicated form components: `FormInput`, `FormSelect`, `FormCheckbox`, `FormDropdown`, `FormBadgesSelection` all using consistent `useFormField` pattern
+- FormModal now gets submit functionality from FormProvider via hooks instead of handling validation itself
+- FormFieldsRenderer automatically chooses appropriate components based on field configuration
+- Replace `moment` dependency with `date-fns` for better tree-shaking and modern date handling
+- Enhanced `FormDateTime` component with better Date object support and ISO string conversion
+- New date utility functions: `formatDate`, `formatDateTime`, `toUtc`, `fromUtc` using date-fns
+- Form field components now accept direct HTML props instead of nested `formProps` for cleaner API
+- Support both declarative (modal) and flexible (custom layout) form patterns
+- Backwards compatible - existing FormModalProvider usage continues to work
+- Renamed `FormTextArea` to `FormTextarea`
