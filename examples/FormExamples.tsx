@@ -4,7 +4,11 @@ import React from 'react';
 import { 
   FormProvider, 
   FormModal, 
-  FormField, 
+  FormField,
+  FormInput,
+  FormSelect,
+  FormCheckbox,
+  FormTextarea,
   useForm, 
   FormModalProvider,
   FormCreateModalButton 
@@ -52,19 +56,19 @@ const CustomFormExample = () => {
     >
       <div>
         <h3>Custom Form Layout</h3>
-        {/* Direct HTML props - much cleaner! */}
-        <FormField 
+        {/* Direct component usage - most flexible */}
+        <FormInput
           name="name" 
           label="Full Name" 
           placeholder="Enter your full name"
         />
-        <FormField 
+        <FormInput
           name="email" 
           label="Email Address" 
           type="email"
           placeholder="Enter your email"
         />
-        <FormField 
+        <FormInput
           name="age" 
           label="Age" 
           type="number"
@@ -190,7 +194,75 @@ const FlexibleFormExample = () => {
   );
 };
 
-// Example 4: Mixed approach - minimal config with component overrides
+// Example 4: FormFieldsRenderer with automatic component selection
+const RendererFormExample = () => {
+  const formFields = {
+    name: {
+      label: 'Full Name',
+      required: true,
+      initialValue: '',
+    },
+    email: {
+      label: 'Email',
+      required: true,
+      initialValue: '',
+      formProps: { type: 'email' },
+    },
+    country: {
+      label: 'Country',
+      type: 'select' as const,
+      required: true,
+      initialValue: '',
+      options: [
+        { value: 'us', label: 'United States' },
+        { value: 'uk', label: 'United Kingdom' },
+        { value: 'ca', label: 'Canada' },
+      ],
+    },
+    newsletter: {
+      label: 'Subscribe to newsletter',
+      type: 'checkbox' as const,
+      initialValue: false,
+    },
+    bio: {
+      label: 'Bio',
+      type: 'textarea' as const,
+      initialValue: '',
+      formProps: { rows: 4 },
+    }
+  };
+
+  const handleSubmit = (data: any, callback?: () => void) => {
+    console.log('Auto-rendered form submitted:', data);
+    setTimeout(() => {
+      if (callback) callback();
+    }, 1000);
+  };
+
+  // Note: FormFieldsRenderer is available from FormModal exports
+  const FormFieldsRenderer = () => {
+    const { formFields, hasProvider } = useForm();
+    // Implementation would be the same as in FormModal
+    return null; // Placeholder for example
+  };
+
+  return (
+    <FormProvider
+      formFields={formFields}
+      onSubmit={handleSubmit}
+    >
+      <div>
+        <h3>Auto-Rendered Form</h3>
+        <p>FormFieldsRenderer automatically chooses components based on config:</p>
+        {/* This will render FormInput, FormSelect, FormCheckbox, FormTextarea automatically */}
+        <FormFieldsRenderer />
+        <CustomSubmitButton />
+      </div>
+    </FormProvider>
+  );
+};
+
+// Example 5: Mixed approach - minimal config with direct component usage
 const MixedFormExample = () => {
   const formFields = {
     username: {
@@ -237,15 +309,15 @@ const MixedFormExample = () => {
       <div>
         <h3>Registration Form</h3>
         
-        {/* Override labels and add HTML attributes */}
-        <FormField 
+        {/* Mix of direct components and convenience wrappers */}
+        <FormInput
           name="username" 
           label="Choose Username" 
           placeholder="Username"
           minLength={3}
         />
         
-        <FormField 
+        <FormInput
           name="password" 
           label="Password" 
           type="password"
@@ -253,35 +325,24 @@ const MixedFormExample = () => {
           minLength={8}
         />
         
-        <FormField 
+        <FormInput
           name="confirmPassword" 
           label="Confirm Password" 
           type="password"
           placeholder="Confirm your password"
         />
         
-        {/* Textarea with component props */}
-        <FormField 
+        <FormTextarea
           name="bio" 
           label="Bio (Optional)" 
-          as="textarea"
           rows={4}
           placeholder="Tell us about yourself..."
         />
         
-        {/* Custom component can still use children */}
-        <FormField name="newsletter">
-          <div className="form-check">
-            <input 
-              type="checkbox" 
-              className="form-check-input"
-              id="newsletter"
-            />
-            <label className="form-check-label" htmlFor="newsletter">
-              Subscribe to newsletter
-            </label>
-          </div>
-        </FormField>
+        <FormCheckbox
+          name="newsletter"
+          label="Subscribe to newsletter"
+        />
         
         <CustomSubmitButton />
       </div>
@@ -289,4 +350,4 @@ const MixedFormExample = () => {
   );
 };
 
-export { CustomFormExample, ModalFormExample, FlexibleFormExample, MixedFormExample };
+export { CustomFormExample, ModalFormExample, FlexibleFormExample, RendererFormExample, MixedFormExample };

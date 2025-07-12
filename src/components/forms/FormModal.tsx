@@ -4,7 +4,8 @@ import { SmallSpinner } from '../indicators/LoadingIndicator';
 import { useLocalization } from '../../localization/LocalizationContext';
 import { useForm } from './FormProvider';
 import { FormValue } from './FormFields';
-import { FormField } from './FormField';
+import { FormInput } from './FormInput';
+import { FormSelect, FormCheckbox } from './FormSelectAndCheckbox';
 
 export type ModalTitle = ReactElement | string;
 export type Width = 25 | 50 | 75 | 100;
@@ -97,9 +98,51 @@ export const FormFieldsRenderer = () => {
 
   return (
     <Form>
-      {Object.keys(formFields).map(name => (
-        <FormField key={name} name={name} />
-      ))}
+      {Object.entries(formFields).map(([name, config]) => {
+        // Renderer decides which component to use based on config
+        if (config.component) {
+          // Custom component specified in config
+          const Component = config.component;
+          return (
+            <Component 
+              key={name} 
+              name={name} 
+              {...config.formProps}
+            />
+          );
+        }
+        
+        // Built-in component selection based on config properties
+        if (config.type === 'select' && config.options) {
+          return (
+            <FormSelect 
+              key={name} 
+              name={name} 
+              options={config.options}
+              {...config.formProps}
+            />
+          );
+        }
+        
+        if (config.type === 'checkbox' || config.type === 'boolean') {
+          return (
+            <FormCheckbox 
+              key={name} 
+              name={name} 
+              {...config.formProps}
+            />
+          );
+        }
+        
+        // Default to FormInput for most cases
+        return (
+          <FormInput 
+            key={name} 
+            name={name} 
+            {...config.formProps}
+          />
+        );
+      })}
     </Form>
   );
 };
