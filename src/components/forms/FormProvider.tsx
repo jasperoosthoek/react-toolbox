@@ -6,13 +6,16 @@ import { FormValue } from './FormFields';
 
 export type FormFieldConfig = {
   initialValue?: any;
-  type?: 'string' | 'number' | 'select' | 'checkbox' | 'boolean' | 'textarea';
+  type?: 'string' | 'number' | 'select' | 'checkbox' | 'boolean' | 'textarea' | 'dropdown';
   required?: boolean;
   formProps?: any;
   component?: any;
   onChange?: (value: FormValue, formData?: any) => any;
   label?: React.ReactElement | string;
   options?: Array<{ value: string | number; label: string; disabled?: boolean }>; // For select fields
+  list?: any[]; // For dropdown fields
+  idKey?: string; // For dropdown fields
+  nameKey?: string; // For dropdown fields
 }
 
 export type FormFields = { [key: string]: FormFieldConfig };

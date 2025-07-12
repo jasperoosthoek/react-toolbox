@@ -9,8 +9,7 @@ export * from './components/forms/FormModal';
 export * from './components/forms/FormModalProvider';
 export * from './components/forms/FormFields';
 export * from './components/forms/FormField';
-export * from './components/forms/FormInput';
-export * from './components/forms/FormSelectAndCheckbox';
+export * from './components/forms/fields';
 
 export * from './components/indicators/LoadingIndicator';
 export * from './components/indicators/CheckIndicator';

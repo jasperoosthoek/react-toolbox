@@ -1,7 +1,7 @@
 import React from 'react';
 import { useForm } from './FormProvider';
 import { FormValue } from './FormFields';
-import { FormInput, FormInputProps } from './FormInput';
+import { FormInput, FormInputProps } from './fields/FormInput';
 
 // FormField is now just a convenience wrapper around FormInput
 export interface FormFieldProps extends FormInputProps {

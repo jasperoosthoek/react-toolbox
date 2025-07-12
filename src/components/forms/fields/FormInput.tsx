@@ -1,6 +1,6 @@
 import React, { ChangeEvent, KeyboardEvent } from 'react';
 import { Form } from 'react-bootstrap';
-import { useFormField } from './FormField';
+import { useFormField } from '../FormField';
 
 export interface FormInputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'name' | 'value' | 'onChange'> {
   name: string;
@@ -42,4 +42,17 @@ export const FormInput = (props: FormInputProps) => {
 
 export const FormTextarea = ({ rows = 3, ...props }: FormInputProps) => (
   <FormInput as="textarea" rows={rows} {...props} />
+);
+
+export const FormDate = (props: FormInputProps) => (
+  <FormInput type="date" {...props} />
+);
+
+export interface FormDateTimeProps extends Omit<FormInputProps, 'value' | 'onChange'> {
+  value?: string;
+  onChange?: (value: string) => void;
+}
+
+export const FormDateTime = (props: FormDateTimeProps) => (
+  <FormInput type="datetime-local" {...props} />
 );

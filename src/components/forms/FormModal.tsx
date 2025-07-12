@@ -4,8 +4,7 @@ import { SmallSpinner } from '../indicators/LoadingIndicator';
 import { useLocalization } from '../../localization/LocalizationContext';
 import { useForm } from './FormProvider';
 import { FormValue } from './FormFields';
-import { FormInput } from './FormInput';
-import { FormSelect, FormCheckbox } from './FormSelectAndCheckbox';
+import { FormInput, FormSelect, FormCheckbox, FormDropdown } from './fields';
 
 export type ModalTitle = ReactElement | string;
 export type Width = 25 | 50 | 75 | 100;
@@ -119,6 +118,19 @@ export const FormFieldsRenderer = () => {
               key={name} 
               name={name} 
               options={config.options}
+              {...config.formProps}
+            />
+          );
+        }
+        
+        if (config.type === 'dropdown' && config.list) {
+          return (
+            <FormDropdown 
+              key={name} 
+              name={name} 
+              list={config.list}
+              idKey={config.idKey}
+              nameKey={config.nameKey}
               {...config.formProps}
             />
           );
