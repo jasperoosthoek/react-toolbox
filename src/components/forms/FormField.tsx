@@ -36,7 +36,9 @@ export const FormField = ({ children, ...props }: FormFieldProps) => {
 };
 
 // Hook to get form field value and setter for a specific field
-export const useFormField = (name: string) => {
+export const useFormField = (componentProps: { name: string; label?: any; required?: boolean; [key: string]: any }) => {
+  const { name, label: propLabel, required: propRequired, ...htmlProps } = componentProps;
+  
   const { 
     getValue, 
     setValue, 
@@ -55,7 +57,9 @@ export const useFormField = (name: string) => {
       onChange: () => {},
       isInvalid: false,
       error: null,
-      config: null,
+      label: undefined,
+      required: false,
+      mergedProps: {},
       submit: () => {},
     };
   }
@@ -68,12 +72,21 @@ export const useFormField = (name: string) => {
   const isInvalid = !pristine && !!(!validated && validationErrors[name]);
   const error = validationErrors[name];
   
+  // Priority order: component props > config props > defaults
+  const label = propLabel !== undefined ? propLabel : fieldConfig?.label;
+  const required = propRequired !== undefined ? propRequired : fieldConfig?.required;
+  
+  // Merge props: htmlProps override config.formProps
+  const mergedProps = { ...fieldConfig?.formProps, ...htmlProps };
+  
   return {
     value: getValue(name),
     onChange: (value: FormValue) => setValue(name, value),
     isInvalid,
     error,
-    config: fieldConfig,
+    label,
+    required,
+    mergedProps,
     submit,
   };
 };

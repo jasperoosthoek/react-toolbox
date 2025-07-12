@@ -9,22 +9,11 @@ export interface FormInputProps extends Omit<React.InputHTMLAttributes<HTMLInput
   rows?: number;       // For textarea
 }
 
-export const FormInput = ({ name, label: propLabel, required: propRequired, ...htmlProps }: FormInputProps) => {
-  const { value, onChange, isInvalid, error, config, submit } = useFormField(name);
-
-  if (!config) {
-    return null;
-  }
-
-  // Priority order: component props > config props > defaults
-  const label = propLabel !== undefined ? propLabel : config.label;
-  const required = propRequired !== undefined ? propRequired : config.required;
-  
-  // Merge props: htmlProps override config.formProps
-  const mergedProps = { ...config.formProps, ...htmlProps };
+export const FormInput = (props: FormInputProps) => {
+  const { value, onChange, isInvalid, error, label, required, mergedProps, submit } = useFormField(props);
 
   return (
-    <Form.Group controlId={name}>
+    <Form.Group controlId={props.name}>
       {label && <Form.Label>{label}{required && ' *'}</Form.Label>}
       {isInvalid && error && (
         <Form.Text className="text-danger">
