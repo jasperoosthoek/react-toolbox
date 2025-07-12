@@ -24,6 +24,7 @@
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^16.2.0",
     "@types/jest": "^29.5.2",
+    "babel-jest": "^29.7.0",
     "@types/lodash": "^4.14.191",
     "@types/node": "^18.11.19",
     "babel-loader": "^8.2.5",
@@ -43,8 +44,10 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "webpack",
-    "prepublishOnly": "npm run build",
-    "test": "jest"
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "prepublishOnly": "npm run test && npm run build"
   },
   "bugs": {
     "url": "https://github.com/jasperoosthoek/react-toolbox/issues"
@@ -67,10 +70,6 @@
     "ui",
     "components"
   ],
-  "jest": {
-    "preset": "ts-jest",
-    "testEnvironment": "node"
-  },
   "browser": {
     "fs": false,
     "os": false,
