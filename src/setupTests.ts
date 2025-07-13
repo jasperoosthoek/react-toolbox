@@ -81,7 +81,18 @@ jest.mock('react-bootstrap', () => {
     InputGroup: (props) => mockReact.createElement('div', { ...props, className: 'input-group' }, props.children),
     Alert: (props) => mockReact.createElement('div', { ...props, className: 'alert' }, props.children),
     Card: (props) => mockReact.createElement('div', { ...props, className: 'card' }, props.children),
-    Dropdown: (props) => mockReact.createElement('div', { ...props, className: 'dropdown' }, props.children),
+    ButtonGroup: (props) => mockReact.createElement('div', { ...props, className: 'btn-group' }, props.children),
+    Dropdown: Object.assign(
+      (props) => mockReact.createElement('div', { ...props, className: 'dropdown' }, props.children),
+      {
+        Toggle: mockReact.forwardRef((props, ref) => {
+          const Component = props.as || 'button';
+          return mockReact.createElement(Component, { ...props, ref }, props.children);
+        }),
+        Menu: (props) => mockReact.createElement('div', { ...props, className: 'dropdown-menu' }, props.children),
+        Item: (props) => mockReact.createElement('a', { ...props, className: 'dropdown-item' }, props.children),
+      }
+    ),
     Nav: (props) => mockReact.createElement('nav', props, props.children),
     Navbar: (props) => mockReact.createElement('nav', { ...props, className: 'navbar' }, props.children),
   };
@@ -187,6 +198,14 @@ jest.mock('react-icons/lu', () => {
     LuClipboardPaste: () => mockReact.createElement('span', { 'data-testid': 'clipboard-paste-icon' }, '📋'),
   };
 });
+
+// Mock FormModalProvider - using correct path from src/ directory
+jest.mock('./components/forms/FormModalProvider', () => ({
+  useFormModal: () => ({
+    showEditModal: jest.fn(),
+    hasProvider: false,
+  }),
+}));
 
 // Mock date-fns
 jest.mock('date-fns', () => ({
