@@ -23,12 +23,27 @@ jest.mock('axios', () => ({
 
 // Mock react-localization
 jest.mock('react-localization', () => {
-  return jest.fn().mockImplementation((translations) => ({
-    setLanguage: jest.fn(),
-    getString: jest.fn((key, lang) => key || 'mock_string'),
-    getLanguage: jest.fn(() => 'en'),
-    getAvailableLanguages: jest.fn(() => ['en']),
-  }));
+  return jest.fn().mockImplementation((translations) => {
+    const instance = {
+      translations,
+      currentLanguage: 'en',
+      setLanguage: jest.fn(function(lang) {
+        this.currentLanguage = lang;
+      }),
+      getString: jest.fn(function(key, lang) {
+        const targetLang = lang || this.currentLanguage;
+        if (this.translations && this.translations[targetLang] && this.translations[targetLang][key]) {
+          return this.translations[targetLang][key];
+        }
+        return key;
+      }),
+      getLanguage: jest.fn(function() {
+        return this.currentLanguage;
+      }),
+      getAvailableLanguages: jest.fn(() => ['en']),
+    };
+    return instance;
+  });
 });
 
 // Mock react-dnd
@@ -205,18 +220,4 @@ jest.mock('./components/forms/FormModalProvider', () => ({
     showEditModal: jest.fn(),
     hasProvider: false,
   }),
-}));
-
-// Mock date-fns
-jest.mock('date-fns', () => ({
-  format: jest.fn((date, formatStr) => 'mocked-date'),
-  parseISO: jest.fn((dateStr) => new Date(dateStr)),
-  isValid: jest.fn(() => true),
-}));
-
-// Mock date-fns-tz
-jest.mock('date-fns-tz', () => ({
-  zonedTimeToUtc: jest.fn((date, timezone) => date),
-  utcToZonedTime: jest.fn((date, timezone) => date),
-  format: jest.fn((date, formatStr, options) => 'mocked-date'),
 }));

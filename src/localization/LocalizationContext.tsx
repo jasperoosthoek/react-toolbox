@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect, useMemo } from 'react';
 import LocalizedStrings from 'react-localization';
 import {
   defaultLocalization,
@@ -61,25 +61,39 @@ export const LocalizationProvider = ({
   children,
   ...restProps
  }: LocalizationProviderProps) => {
-  const [additionalLocalization, setLocalization] = useState(additionalLocalizationInitial);
+  const [additionalLocalization, setAdditionalLocalization] = useState(additionalLocalizationInitial);
   const [lang, setLanguage] = useState(initialLanguage);
+  
   const languages = Array.from(new Set([
     ...languagesOverride || Object.keys(defaultLocalization),
     ...Object.keys(additionalLocalization),
   ]));
-  const localizationStrings = languages.reduce(
-    (o, lang) => ({
-      ...o,
-      [lang]: {
-        ...defaultLocalization[lang] || {},
-        ...additionalLocalization[lang] || {},
-      },
-    }),
-    {}
-  );
+  
+  const localizationStrings = useMemo(() => {
+    return languages.reduce(
+      (o, lang) => ({
+        ...o,
+        [lang]: {
+          ...defaultLocalization[lang] || {},
+          ...additionalLocalization[lang] || {},
+        },
+      }),
+      {}
+    );
+  }, [languages, additionalLocalization]);
     
-  const strings = new LocalizedStrings(localizationStrings);
-  strings.setLanguage(lang);
+  const strings = useMemo(() => {
+    const localizedStrings = new LocalizedStrings(localizationStrings);
+    localizedStrings.setLanguage(lang);
+    return localizedStrings;
+  }, [localizationStrings, lang]);
+
+  const setLocalization = (newLocalization: AdditionalLocalization) => {
+    setAdditionalLocalization(prev => {
+      const merged = combineLocalization(prev, newLocalization);
+      return merged;
+    });
+  };
 
   const textByLang = (lang: string) => (str: TemplateStringsArray, ...values: (string | number)[]) => {
     const text_or_func = strings.getString(str[0], lang) as string | LocalizationFunction;
@@ -108,12 +122,12 @@ export const LocalizationProvider = ({
       value={{
         lang,
         languages,
-        setLanguage: (lang: string) => {
-          if (!languages.includes(lang)) {
-            console.error(`Language ${lang} not available`);
+        setLanguage: (newLang: string) => {
+          if (!languages.includes(newLang)) {
+            console.error(`Language ${newLang} not available`);
             return;
           }
-          setLanguage(lang);
+          setLanguage(newLang);
         },
         strings,
         text: textByLang(lang),
