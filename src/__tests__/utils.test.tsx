@@ -9,14 +9,9 @@ import {
   downloadFile,
 } from '../utils/utils';
 
-// Mock axios
-const mockAxios = {
-  create: jest.fn(() => mockAxiosInstance),
-};
-
-const mockAxiosInstance = jest.fn();
-
-jest.mock('axios', () => mockAxios);
+// Mock fetch
+const mockFetch = jest.fn();
+global.fetch = mockFetch;
 
 // Mock DOM APIs
 Object.defineProperty(window, 'URL', {
@@ -60,7 +55,7 @@ describe('Utils - General Utilities Tests', () => {
       expect(isEmpty('0')).toBe(false);
       expect(isEmpty({ key: 'value' })).toBe(false);
       expect(isEmpty([1, 2, 3])).toBe(false);
-      expect(isEmpty([])).toBe(false); // empty array is not considered empty
+      expect(isEmpty([])).toBe(true); // empty array should be considered empty
     });
 
     it('should handle edge cases', () => {
@@ -114,12 +109,12 @@ describe('Utils - General Utilities Tests', () => {
     });
 
     it('should handle already uppercase strings', () => {
-      expect(camelToSnakeCase('ALREADY_UPPER')).toBe('A_L_R_E_A_D_Y___U_P_P_E_R');
+      expect(camelToSnakeCase('ALREADY_UPPER')).toBe('ALREADY_UPPER');
     });
 
     it('should handle strings with numbers', () => {
-      expect(camelToSnakeCase('test123')).toBe('TEST123');
-      expect(camelToSnakeCase('test123Word')).toBe('TEST123_WORD');
+      expect(camelToSnakeCase('test123')).toBe('TEST_123');
+      expect(camelToSnakeCase('test123Word')).toBe('TEST_123_WORD');
     });
   });
 
@@ -151,7 +146,7 @@ describe('Utils - General Utilities Tests', () => {
       expect(pluralToSingle('')).toBe('');
       expect(pluralToSingle('s')).toBe('');
       expect(pluralToSingle('ies')).toBe('y');
-      expect(pluralToSingle('IES')).toBe('Y');
+      expect(pluralToSingle('IES')).toBe('Y'); // now works correctly
     });
   });
 
@@ -273,6 +268,7 @@ describe('Utils - General Utilities Tests', () => {
     let mockLink: any;
     let createElementSpy: jest.SpyInstance;
     let appendChildSpy: jest.SpyInstance;
+    let removeChildSpy: jest.SpyInstance;
 
     beforeEach(() => {
       mockLink = {
@@ -283,30 +279,29 @@ describe('Utils - General Utilities Tests', () => {
 
       createElementSpy = jest.spyOn(document, 'createElement').mockReturnValue(mockLink);
       appendChildSpy = jest.spyOn(document.body, 'appendChild').mockImplementation();
+      removeChildSpy = jest.spyOn(document.body, 'removeChild').mockImplementation();
       
-      mockAxiosInstance.mockResolvedValue({
-        data: new Blob(['test content'], { type: 'text/plain' }),
+      // Mock successful fetch response
+      mockFetch.mockResolvedValue({
+        ok: true,
+        status: 200,
+        blob: () => Promise.resolve(new Blob(['test content'], { type: 'text/plain' })),
       });
     });
 
     afterEach(() => {
       createElementSpy.mockRestore();
       appendChildSpy.mockRestore();
+      removeChildSpy.mockRestore();
+      mockFetch.mockClear();
     });
 
-    it('should download file using provided axios instance', async () => {
-      const customAxios = jest.fn().mockResolvedValue({
-        data: new Blob(['custom content'], { type: 'text/plain' }),
-      });
+    it('should download file using default fetch', async () => {
+      await downloadFile('http://example.com/file.txt', 'download.txt');
 
-      await downloadFile('http://example.com/file.txt', 'download.txt', {
-        axios: customAxios
-      });
-
-      expect(customAxios).toHaveBeenCalledWith({
-        url: 'http://example.com/file.txt',
+      expect(mockFetch).toHaveBeenCalledWith('http://example.com/file.txt', {
         method: 'GET',
-        responseType: 'blob',
+        headers: {},
       });
 
       expect(window.URL.createObjectURL).toHaveBeenCalled();
@@ -314,51 +309,79 @@ describe('Utils - General Utilities Tests', () => {
       expect(mockLink.setAttribute).toHaveBeenCalledWith('download', 'download.txt');
       expect(appendChildSpy).toHaveBeenCalledWith(mockLink);
       expect(mockLink.click).toHaveBeenCalled();
+      expect(removeChildSpy).toHaveBeenCalledWith(mockLink);
+      expect(window.URL.revokeObjectURL).toHaveBeenCalledWith('mock-blob-url');
     });
 
-    it('should download file using default axios when not provided', async () => {
-      await downloadFile('http://example.com/file.txt', 'download.txt', {
-        axios: mockAxiosInstance
+    it('should download file using custom fetch function', async () => {
+      const customFetch = jest.fn().mockResolvedValue({
+        ok: true,
+        status: 200,
+        blob: () => Promise.resolve(new Blob(['custom content'], { type: 'text/plain' })),
       });
 
-      expect(mockAxiosInstance).toHaveBeenCalledWith({
-        url: 'http://example.com/file.txt',
+      await downloadFile('http://example.com/file.txt', 'download.txt', {
+        fetchFn: customFetch
+      });
+
+      expect(customFetch).toHaveBeenCalledWith('http://example.com/file.txt', {
         method: 'GET',
-        responseType: 'blob',
+        headers: {},
       });
     });
 
     it('should set correct href and download attributes', async () => {
-      await downloadFile('http://example.com/test.pdf', 'my-file.pdf', {
-        axios: mockAxiosInstance
-      });
+      await downloadFile('http://example.com/test.pdf', 'my-file.pdf');
 
       expect(mockLink.href).toBe('mock-blob-url');
       expect(mockLink.setAttribute).toHaveBeenCalledWith('download', 'my-file.pdf');
     });
 
-    it('should handle axios errors', async () => {
+    it('should handle fetch errors', async () => {
       const error = new Error('Network error');
-      mockAxiosInstance.mockRejectedValue(error);
+      mockFetch.mockRejectedValue(error);
 
       await expect(
-        downloadFile('http://example.com/file.txt', 'download.txt', {
-          axios: mockAxiosInstance
-        })
+        downloadFile('http://example.com/file.txt', 'download.txt')
       ).rejects.toThrow('Network error');
     });
 
     it('should create blob URL and trigger download', async () => {
       const mockBlob = new Blob(['test content'], { type: 'application/pdf' });
-      mockAxiosInstance.mockResolvedValue({ data: mockBlob });
-
-      await downloadFile('http://example.com/document.pdf', 'document.pdf', {
-        axios: mockAxiosInstance
+      mockFetch.mockResolvedValue({
+        ok: true,
+        status: 200,
+        blob: () => Promise.resolve(mockBlob),
       });
+
+      await downloadFile('http://example.com/document.pdf', 'document.pdf');
 
       expect(window.URL.createObjectURL).toHaveBeenCalledWith(mockBlob);
       expect(mockLink.href).toBe('mock-blob-url');
       expect(mockLink.click).toHaveBeenCalled();
+    });
+
+    it('should handle HTTP errors', async () => {
+      mockFetch.mockResolvedValue({
+        ok: false,
+        status: 404,
+        blob: () => Promise.resolve(new Blob()),
+      });
+
+      await expect(
+        downloadFile('http://example.com/file.txt', 'download.txt')
+      ).rejects.toThrow('HTTP error! status: 404');
+    });
+
+    it('should use custom headers when provided', async () => {
+      await downloadFile('http://example.com/file.txt', 'download.txt', {
+        headers: { 'Authorization': 'Bearer token123' }
+      });
+
+      expect(mockFetch).toHaveBeenCalledWith('http://example.com/file.txt', {
+        method: 'GET',
+        headers: { 'Authorization': 'Bearer token123' },
+      });
     });
   });
 
@@ -375,7 +398,7 @@ describe('Utils - General Utilities Tests', () => {
     it('should handle special characters in string conversions', () => {
       expect(snakeToCamelCase('test_with_123')).toBe('testWith123');
       expect(snakeToCamelCase('test-with-special')).toBe('testWithSpecial');
-      expect(camelToSnakeCase('testWith123')).toBe('TEST_WITH123');
+      expect(camelToSnakeCase('testWith123')).toBe('TEST_WITH_123');
     });
 
     it('should handle floating point precision', () => {

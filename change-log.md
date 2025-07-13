@@ -326,3 +326,4 @@
 - Support both declarative (modal) and flexible (custom layout) form patterns
 - Backwards compatible - existing FormModalProvider usage continues to work
 - Renamed `FormTextArea` to `FormTextarea`
+- Uninstall `axios` and `downloadFile` no longer depends on `axios`.

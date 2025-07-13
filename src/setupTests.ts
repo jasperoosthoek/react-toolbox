@@ -10,17 +10,6 @@ global.console = {
   warn: jest.fn(),
 };
 
-// Mock axios for all tests
-jest.mock('axios', () => ({
-  create: jest.fn(() => ({
-    get: jest.fn(),
-    post: jest.fn(),
-    put: jest.fn(),
-    patch: jest.fn(),
-    delete: jest.fn(),
-  })),
-}));
-
 // Mock react-localization
 jest.mock('react-localization', () => {
   return jest.fn().mockImplementation((translations) => {

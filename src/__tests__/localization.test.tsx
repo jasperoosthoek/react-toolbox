@@ -224,7 +224,7 @@ describe('Localization Tests', () => {
       );
 
       expect(getByTestId('current-lang')).toHaveTextContent('en');
-      expect(getByTestId('close-string')).toHaveTextContent('close');
+      expect(getByTestId('close-string')).toHaveTextContent('Close');
     });
 
     it('should handle language changes', () => {
@@ -280,7 +280,7 @@ describe('Localization Tests', () => {
         </LocalizationProvider>
       );
 
-      expect(getByTestId('text-result')).toHaveTextContent('close');
+      expect(getByTestId('text-result')).toHaveTextContent('Close');
     });
 
     it('should provide textByLang function', () => {
@@ -305,8 +305,8 @@ describe('Localization Tests', () => {
         </LocalizationProvider>
       );
 
-      expect(getByTestId('english-text')).toHaveTextContent('close');
-      expect(getByTestId('french-text')).toHaveTextContent('close');
+      expect(getByTestId('english-text')).toHaveTextContent('Close');
+      expect(getByTestId('french-text')).toHaveTextContent('Fermer');
     });
 
     it('should handle setLocalization function', () => {
