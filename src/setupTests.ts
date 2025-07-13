@@ -52,16 +52,67 @@ jest.mock('react-dnd-html5-backend', () => ({
 jest.mock('react-bootstrap', () => {
   const mockReact = require('react');
   return {
-    Button: mockReact.forwardRef((props, ref) => mockReact.createElement('button', { ...props, ref }, props.children)),
+    Button: mockReact.forwardRef((props, ref) => {
+      const { variant, size, className = '', ...restProps } = props;
+      let classes = 'btn';
+      if (variant) classes += ` btn-${variant}`;
+      if (size) classes += ` btn-${size}`;
+      if (className) classes += ` ${className}`;
+      
+      return mockReact.createElement('button', { 
+        ...restProps, 
+        ref, 
+        className: classes.trim()
+      }, props.children);
+    }),
     Container: (props) => mockReact.createElement('div', { ...props, className: `container ${props.className || ''}` }, props.children),
     Row: (props) => mockReact.createElement('div', { ...props, className: `row ${props.className || ''}` }, props.children),
     Col: (props) => mockReact.createElement('div', { ...props, className: `col ${props.className || ''}` }, props.children),
     Spinner: (props) => mockReact.createElement('div', { ...props, 'data-testid': 'spinner' }, props.children),
     Badge: (props) => mockReact.createElement('span', { ...props, className: `badge ${props.className || ''}` }, props.children),
     Modal: Object.assign(
-      (props) => props.show ? mockReact.createElement('div', { ...props, className: 'modal' }, props.children) : null,
+      (props) => {
+        if (!props.show) return null;
+        
+        const modalElement = mockReact.createElement('div', { 
+          ...props, 
+          className: 'modal',
+          role: props.role || 'dialog'
+        }, 
+          // Clone children and pass onHide to Modal.Header
+          mockReact.Children.map(props.children, (child) => {
+            if (child && child.type && child.type.displayName === 'Modal.Header') {
+              return mockReact.cloneElement(child, { onHide: props.onHide });
+            }
+            return child;
+          })
+        );
+        
+        return modalElement;
+      },
       {
-        Header: (props) => mockReact.createElement('div', { ...props, className: 'modal-header' }, props.children),
+        Header: Object.assign(
+          (props) => {
+            const headerContent = mockReact.createElement('div', { 
+              key: 'header-content',
+              className: 'modal-header' 
+            }, [
+              props.children,
+              // Add close button if closeButton prop is true
+              props.closeButton && mockReact.createElement('button', {
+                key: 'close-button',
+                type: 'button',
+                className: 'btn-close',
+                'aria-label': 'Close',
+                onClick: props.onHide, // Wire up the close button to onHide
+                children: 'Close' // Accessible text for testing
+              })
+            ].filter(Boolean));
+            
+            return headerContent;
+          },
+          { displayName: 'Modal.Header' }
+        ),
         Title: (props) => mockReact.createElement('h4', { ...props, className: 'modal-title' }, props.children),
         Body: (props) => mockReact.createElement('div', { ...props, className: 'modal-body' }, props.children),
         Footer: (props) => mockReact.createElement('div', { ...props, className: 'modal-footer' }, props.children)
@@ -70,14 +121,67 @@ jest.mock('react-bootstrap', () => {
     Form: Object.assign(
       (props) => mockReact.createElement('form', props, props.children),
       {
-        Group: (props) => mockReact.createElement('div', { ...props, className: 'form-group' }, props.children),
-        Label: (props) => mockReact.createElement('label', props, props.children),
+        Group: (props) => {
+          const { controlId, ...restProps } = props;
+          return mockReact.createElement('div', { 
+            ...restProps, 
+            className: 'form-group',
+            id: props.id || controlId
+          }, props.children);
+        },
+        Label: (props) => mockReact.createElement('label', { 
+          ...props,
+          htmlFor: props.htmlFor || undefined
+        }, props.children),
         Control: mockReact.forwardRef((props, ref) => {
           const element = props.as || (props.type === 'textarea' ? 'textarea' : 'input');
-          return mockReact.createElement(element, { ...props, ref });
+          const { isInvalid, className = '', ...restProps } = props;
+          let classes = className;
+          if (isInvalid) {
+            classes += (classes ? ' ' : '') + 'is-invalid';
+          }
+          const controlProps = { 
+            ...restProps, 
+            ref,
+            id: props.id || undefined,
+            className: classes.trim() || undefined
+          };
+          // Add default type="text" for input elements if not specified
+          if (element === 'input' && !controlProps.type) {
+            controlProps.type = 'text';
+          }
+          return mockReact.createElement(element, controlProps);
         }),
         Select: mockReact.forwardRef((props, ref) => mockReact.createElement('select', { ...props, ref }, props.children)),
-        Check: mockReact.forwardRef((props, ref) => mockReact.createElement('input', { ...props, type: 'checkbox', ref })),
+        Check: mockReact.forwardRef((props, ref) => {
+          const { label, type, checked, isInvalid, className = '', id, ...restProps } = props;
+          let classes = 'form-check-input';
+          if (isInvalid) {
+            classes += ' is-invalid';
+          }
+          if (className) {
+            classes += ` ${className}`;
+          }
+          
+          const checkboxId = id || 'checkbox';
+          
+          return mockReact.createElement('div', { className: 'form-check' }, [
+            mockReact.createElement('input', {
+              key: 'input',
+              ...restProps,
+              ref,
+              type: type === 'switch' ? 'checkbox' : (type || 'checkbox'),
+              className: classes.trim(),
+              checked: !!checked,
+              id: checkboxId
+            }),
+            label && mockReact.createElement('label', {
+              key: 'label',
+              className: 'form-check-label',
+              htmlFor: checkboxId
+            }, label)
+          ]);
+        }),
         Text: (props) => mockReact.createElement('div', { ...props, className: 'form-text' }, props.children),
       }
     ),
@@ -210,3 +314,6 @@ jest.mock('./components/forms/FormModalProvider', () => ({
     hasProvider: false,
   }),
 }));
+
+// Let LocalizationContext tests run against the real implementation
+// Only mock specific tests that need different behavior

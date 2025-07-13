@@ -11,13 +11,24 @@ import {
 const out_of_context_error = 'This function should only be used in a child of LocalizationProvider.';
 
 export const combineLocalization = (...locals: AdditionalLocalization[]) => {
+  if (locals.length === 0) {
+    return {} as AdditionalLocalization;
+  }
+  
+  // Filter out empty objects
+  const validLocals = locals.filter(local => local && Object.keys(local).length > 0);
+  
+  if (validLocals.length === 0) {
+    return {} as AdditionalLocalization;
+  }
+  
   // Extract all unique language keys
-  const languages = [...new Set(locals.flatMap(Object.keys))];
+  const languages = [...new Set(validLocals.flatMap(Object.keys))];
 
   return languages.reduce(
     (o, lang) => ({
       ...o,
-      [lang]: locals.reduce<LocalizationElement>(
+      [lang]: validLocals.reduce<LocalizationElement>(
         (acc, l) => ({ ...acc, ...(l[lang] || {}) }),
         {} as LocalizationElement
       ),

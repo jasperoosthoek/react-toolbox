@@ -12,19 +12,23 @@ export interface FormInputProps extends Omit<React.InputHTMLAttributes<HTMLInput
 export const FormInput = (props: FormInputProps) => {
   const { value, onChange, isInvalid, error, label, required, mergedProps, submit } = useFormField(props);
 
+  const errorId = isInvalid && error ? `${props.name}-error` : undefined;
+
   return (
-    <Form.Group controlId={props.name}>
-      {label && <Form.Label>{label}{required && ' *'}</Form.Label>}
+    <Form.Group controlId={props.name} id={props.name}>
+      {label && <Form.Label htmlFor={props.name}>{label}{required && ' *'}</Form.Label>}
       {isInvalid && error && (
-        <Form.Text className="text-danger">
+        <Form.Text id={errorId} className="text-danger">
           {error}
         </Form.Text>
       )}
       <Form.Control
+        id={props.name}
         autoComplete="off"
         {...mergedProps}
         value={value || ''}
         isInvalid={isInvalid}
+        aria-describedby={errorId}
         onChange={(e: ChangeEvent<HTMLInputElement>) => {
           onChange(e.target.value);
         }}

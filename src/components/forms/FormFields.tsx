@@ -38,8 +38,6 @@ export interface FormInputProps extends Omit<FormControlProps, 'onChange'>, Form
   rows?: number;
 }
 
-
-
 export type DisabledProps = {
   list: any[];
   value: string | number;
@@ -47,6 +45,3 @@ export type DisabledProps = {
   initialState: any;
   initialValue: any;
 }
-
-
-

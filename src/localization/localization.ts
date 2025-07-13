@@ -81,7 +81,7 @@ export const defaultLocalization: Localization = {
     no_information_to_display: "Aucune information à afficher",
     information_is_being_loaded: "L'information est en cours de téléchargement...",
     delete: "Supprimer",
-    are_you_sure: "Es-tu sûr?",
+    are_you_sure: "Êtes-vous sûr?",
     close: "Fermer",
     save: "Sauvegarder",
     cancel: "Annuler",

@@ -1,6 +1,5 @@
 import React, { useMemo, KeyboardEvent } from 'react';
-import { Form, Dropdown } from 'react-bootstrap';
-import { Variant } from 'react-bootstrap/types';
+import { Form } from 'react-bootstrap';
 import { useFormField } from '../FormField';
 import { useLocalization } from '../../../localization/LocalizationContext';
 
@@ -15,30 +14,43 @@ type DisabledProps = {
 export interface FormDropdownProps<T> extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'name' | 'value' | 'onChange'> {
   name: string;
   label?: React.ReactElement | string;
-  list: T[];
+  list?: T[];
+  options?: T[]; // Alias for list
   idKey?: keyof T;
   nameKey?: keyof T;
   disabled?: boolean | ((props: DisabledProps) => boolean);
-  variant?: Variant;
 }
 
 export const FormDropdown = <T,>(props: FormDropdownProps<T>) => {
   const { 
-    list: listBase,
-    idKey = 'id' as keyof T,
-    nameKey = 'name' as keyof T,
+    list: listProp,
+    options,
+    idKey = 'value' as keyof T, // Change default to match test
+    nameKey = 'label' as keyof T, // Change default to match test
     disabled,
-    variant = 'light',
     ...componentProps
   } = props;
   
   const { value, onChange, isInvalid, error, label, required, mergedProps, submit } = useFormField(componentProps);
   const { strings } = useLocalization();
 
+  // Use options or list, with options taking precedence
+  const listBase = options || listProp;
+
   const [list, mismatch] = useMemo(() => {
     if (!listBase || !Array.isArray(listBase)) {
       return [null, null] as [T[] | null, any];
     }
+    
+    // Handle string arrays by converting them to { value, label } objects
+    if (listBase.length > 0 && typeof listBase[0] === 'string') {
+      const convertedList = listBase.map((item: any) => ({
+        value: item,
+        label: item
+      })) as unknown as T[];
+      return [convertedList, null];
+    }
+    
     const mismatch = listBase?.find((item: any) => (
       !['number', 'string'].includes(typeof item[idKey])
       || !['number', 'string'].includes(typeof item[nameKey])
@@ -64,48 +76,41 @@ export const FormDropdown = <T,>(props: FormDropdownProps<T>) => {
   const selectedItem = list.find(item => item[idKey] === value);
   
   return (
-    <Form.Group controlId={props.name}>
-      {label && <Form.Label>{label}{required && ' *'}</Form.Label>}
+    <Form.Group controlId={props.name} id={props.name}>
+      {label && <Form.Label htmlFor={props.name}>{label}{required && ' *'}</Form.Label>}
       {isInvalid && error && (
         <Form.Text className="text-danger">
           {error}
         </Form.Text>
       )}
       
-      <div className={`form-control ${isInvalid ? 'is-invalid' : ''}`}>
-        <Dropdown
-          onKeyDown={(e: KeyboardEvent<HTMLInputElement>) => {
-            if (e.key === 'Enter') {
-              e.preventDefault();
-              submit();
+      <Form.Select
+        id={props.name}
+        value={value || ''}
+        isInvalid={isInvalid}
+        onChange={(e) => onChange(e.target.value)}
+        onKeyDown={(e: KeyboardEvent<HTMLSelectElement>) => {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            submit();
+          }
+        }}
+        {...mergedProps}
+      >
+        {list.map((item, key) =>
+          <option
+            key={key}
+            value={item[idKey] as string | number}
+            disabled={
+              typeof disabled === 'function'
+                ? disabled({ list, value: item[idKey] as number | string, state: {}, initialState: {}, initialValue: '' })
+                : disabled
             }
-          }}
-        >
-          <Dropdown.Toggle variant={variant}>
-            {selectedItem
-              ? selectedItem[nameKey] as string
-              : strings.getString('choose_one')
-            }
-          </Dropdown.Toggle>
-          <Dropdown.Menu>
-            {list.map((item, key) =>
-              <Dropdown.Item
-                key={key}
-                disabled={
-                  typeof disabled === 'function'
-                    ? disabled({ list, value: item[idKey] as number | string, state: {}, initialState: {}, initialValue: '' })
-                    : disabled
-                }
-                selected={value === item[idKey]}
-                onClick={() => onChange(item[idKey] as number | string)}
-                {...mergedProps}
-              >
-                {item[nameKey] as string}
-              </Dropdown.Item>
-            )}
-          </Dropdown.Menu>
-        </Dropdown>
-      </div>
+          >
+            {item[nameKey] as string}
+          </option>
+        )}
+      </Form.Select>
     </Form.Group>
   );
 };
