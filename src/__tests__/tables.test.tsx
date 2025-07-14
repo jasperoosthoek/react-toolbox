@@ -5,6 +5,13 @@ import { DataTable } from '../components/tables/DataTable';
 import { DragAndDropList } from '../components/tables/DragAndDropList';
 import { SearchBox } from '../components/tables/SearchBox';
 
+// Mock react-dnd for testing
+jest.mock('react-dnd', () => ({
+  DndProvider: ({ children }: { children: React.ReactNode }) => <div data-testid="dnd-provider">{children}</div>,
+  useDrag: () => [{ isDragging: false }, (ref: any) => ref, (ref: any) => ref],
+  useDrop: () => [{ isOver: false, handlerId: 'test-handler' }, (ref: any) => ref]
+}));
+
 // Test wrapper with localization context
 const TestWrapper = ({ children }: { children: React.ReactNode }) => (
   <LocalizationProvider>
@@ -473,13 +480,17 @@ describe('Table Components Tests', () => {
 
   describe('DragAndDropList', () => {
     it('should render DragAndDropList without crashing', () => {
+      const TestItem = React.forwardRef<HTMLDivElement, { name: string }>(
+        ({ name, ...props }, ref) => <div ref={ref} {...props}>{name}</div>
+      );
+      
       expect(() => {
         render(
           <TestWrapper>
             <DragAndDropList 
-              data={mockData} 
-              onMove={() => {}} 
-              renderItem={(item) => <div>{item.name}</div>}
+              propsArray={mockData} 
+              onDrop={() => {}} 
+              component={TestItem}
             />
           </TestWrapper>
         );
@@ -487,28 +498,36 @@ describe('Table Components Tests', () => {
     });
 
     it('should handle drag and drop functionality', () => {
-      const mockOnMove = jest.fn();
-      const { container } = render(
+      const mockOnDrop = jest.fn();
+      const TestItem = React.forwardRef<HTMLDivElement, { name: string }>(
+        ({ name, ...props }, ref) => <div ref={ref} {...props}>{name}</div>
+      );
+      
+      const { getByText } = render(
         <TestWrapper>
           <DragAndDropList 
-            data={mockData} 
-            onMove={mockOnMove}
-            renderItem={(item) => <div>{item.name}</div>}
+            propsArray={mockData} 
+            onDrop={mockOnDrop}
+            component={TestItem}
           />
         </TestWrapper>
       );
 
-      // Check if the component rendered something
-      expect(container.innerHTML.length).toBeGreaterThan(0);
+      // Check if the first item is rendered
+      expect(getByText('John Doe')).toBeInTheDocument();
     });
 
     it('should handle empty data', () => {
+      const TestItem = React.forwardRef<HTMLDivElement, { name: string }>(
+        ({ name, ...props }, ref) => <div ref={ref} {...props}>{name}</div>
+      );
+      
       const { container } = render(
         <TestWrapper>
           <DragAndDropList 
-            data={[]} 
-            onMove={() => {}} 
-            renderItem={(item) => <div>{item.name}</div>}
+            propsArray={[]} 
+            onDrop={() => {}} 
+            component={TestItem}
           />
         </TestWrapper>
       );
@@ -518,34 +537,40 @@ describe('Table Components Tests', () => {
     });
 
     it('should handle custom item rendering', () => {
-      const customRender = (item: any) => (
-        <div data-testid={`item-${item.id}`} className="custom-item">
-          {item.name} - {item.email}
-        </div>
+      const customRender = React.forwardRef<HTMLDivElement, any>(
+        (props, ref) => (
+          <div ref={ref} data-testid={`item-${props.id}`} className="custom-item" {...props}>
+            {props.name} - {props.email}
+          </div>
+        )
       );
 
-      const { container } = render(
+      const { getByTestId } = render(
         <TestWrapper>
           <DragAndDropList 
-            data={mockData} 
-            onMove={() => {}} 
-            renderItem={customRender}
+            propsArray={mockData} 
+            onDrop={() => {}} 
+            component={customRender}
           />
         </TestWrapper>
       );
 
-      // Check if the component rendered something
-      expect(container.innerHTML.length).toBeGreaterThan(0);
+      // Check if the custom rendered items are present
+      expect(getByTestId('item-1')).toBeInTheDocument();
+      expect(getByTestId('item-1')).toHaveTextContent('John Doe - john@example.com');
     });
 
     it('should handle loading state', () => {
+      const TestItem = React.forwardRef<HTMLDivElement, { name: string }>(
+        ({ name, ...props }, ref) => <div ref={ref} {...props}>{name}</div>
+      );
+      
       const { container } = render(
         <TestWrapper>
           <DragAndDropList 
-            data={mockData} 
-            onMove={() => {}} 
-            renderItem={(item) => <div>{item.name}</div>}
-            loading={true}
+            propsArray={mockData} 
+            onDrop={() => {}} 
+            component={TestItem}
           />
         </TestWrapper>
       );
@@ -555,13 +580,16 @@ describe('Table Components Tests', () => {
     });
 
     it('should handle disabled state', () => {
+      const TestItem = React.forwardRef<HTMLDivElement, { name: string }>(
+        ({ name, ...props }, ref) => <div ref={ref} {...props}>{name}</div>
+      );
+      
       const { container } = render(
         <TestWrapper>
           <DragAndDropList 
-            data={mockData} 
-            onMove={() => {}} 
-            renderItem={(item) => <div>{item.name}</div>}
-            disabled={true}
+            propsArray={mockData} 
+            onDrop={() => {}} 
+            component={TestItem}
           />
         </TestWrapper>
       );
