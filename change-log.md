@@ -328,3 +328,6 @@
 - Backwards compatible - existing FormModalProvider usage continues to work
 - Renamed `FormTextArea` to `FormTextarea`
 - Many more tests with about 72% coverage
+
+##### Version 0.9.1
+- Revert change that made type inference impossible in `FormModalProvider`

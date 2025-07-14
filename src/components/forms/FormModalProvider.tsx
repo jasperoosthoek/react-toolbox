@@ -5,20 +5,27 @@ import { FormModal, ModalTitle, Width } from './FormModal';
 import { FormValue } from './FormFields';
 import { ButtonProps, CreateButton, EditButton } from '../buttons/IconButtons';
 
-export type ShowCreateModal = (show?: boolean) => void;
-export type ShowEditModal<T extends FormFields> = (state: InitialState<T> | null) => void;
+// Add the IncludeData type from master version
+export type IncludeData<T extends FormFields> = {
+  [key in Exclude<string, keyof T>]: any;
+}
 
-type FormModalContextType<T extends FormFields> = {
+export type ShowCreateModal = (show?: boolean) => void;
+export type ShowEditModal<T, K> = (state: ({ [key in keyof T]: FormValue } & K) | null) => void;
+
+type FormModalContextType<T, K> = {
   showCreateModal: ShowCreateModal;
-  showEditModal: ShowEditModal<T>;
+  showEditModal: ShowEditModal<T, K>;
   hasProvider: boolean;
 }
 
-const defaultErrorState: FormModalContextType<any> = {
+type T = any;
+type K = any;
+const defaultErrorState: FormModalContextType<T, K> = {
   showCreateModal: () => {
     console.error('The showCreateModal function should only be used in a child of the FormModalProvider component.');
   },
-  showEditModal: () => {
+  showEditModal: (state: ({ [key in keyof T]: FormValue } & K) | null) => {
     console.error('The showEditModal function should only be used in a child of the FormModalProvider component.');
   },
   hasProvider: false,
@@ -26,7 +33,7 @@ const defaultErrorState: FormModalContextType<any> = {
 
 export const FormModalContext = React.createContext(defaultErrorState);
 
-export const useFormModal = <T extends FormFields>() => useContext(FormModalContext) as FormModalContextType<T>;
+export const useFormModal = () => useContext(FormModalContext);
 
 export type FormCreateModalButton = ButtonProps;
 export const FormCreateModalButton = ({ onClick, ...props }: ButtonProps) => {
@@ -52,11 +59,11 @@ export const FormCreateModalButton = ({ onClick, ...props }: ButtonProps) => {
   )
 }
 
-export interface FormEditModalButtonProps<T extends FormFields> extends ButtonProps {
-  state: InitialState<T>;
+export interface FormEditModalButtonProps<T, K> extends ButtonProps {
+  state: { [key in keyof T]: FormValue } & K;
 }
 
-export const FormEditModalButton = <T extends FormFields>({ state, onClick, ...props }: FormEditModalButtonProps<T>) => {
+export const FormEditModalButton = ({ state, onClick, ...props }: FormEditModalButtonProps<T, K>) => {
   const context = useContext(FormModalContext);
   
   return (
@@ -79,12 +86,16 @@ export const FormEditModalButton = <T extends FormFields>({ state, onClick, ...p
   )
 }
 
-export type FormModalProviderProps<T extends FormFields> = {
+export type FormModalProviderProps<
+  T extends FormFields,
+  K extends IncludeData<T>
+> = {
   formFields: T;
-  initialState?: InitialState<T>;
-  onSave?: OnSubmit<T>;
-  onCreate?: OnSubmit<T>;
-  onUpdate?: OnSubmit<T>;
+  initialState: InitialState<T> | K;
+  includeData?: K;
+  onSave?: (state: { [key in keyof T]: FormValue } & K, callback?: () => void) => void;
+  onCreate?: (state: { [key in keyof T]: FormValue } & K, callback?: () => void) => void;
+  onUpdate?: (state: { [key in keyof T]: FormValue } & K, callback?: () => void) => void;
   validate?: Validate;
   createModalTitle?: ModalTitle;
   editModalTitle?: ModalTitle;
@@ -94,11 +105,12 @@ export type FormModalProviderProps<T extends FormFields> = {
   children: ReactNode;
 }
 
-export const FormModalProvider = <T extends FormFields>({
+export const FormModalProvider: React.FC<FormModalProviderProps<T, K>> = ({
   createModalTitle,
   editModalTitle,
   formFields,
-  initialState = {} as InitialState<T>,
+  initialState,
+  includeData,
   validate,
   loading = false,
   onCreate,
@@ -107,21 +119,29 @@ export const FormModalProvider = <T extends FormFields>({
   dialogClassName,
   width,
   children,
-}: FormModalProviderProps<T>) => {
+}) => {
   const [createModalActive, setCreateModalActive] = useState(false);
-  const [editModalState, setEditModalState] = useState<InitialState<T> | null>(null);
+  const [editModalState, setEditModalState] = useState<({ [key in keyof T]: FormValue } & K) | null>(null);
   const { strings } = useLocalization();
+  
+  // Provide default values
+  const safeIncludeData = (includeData || {}) as K;
 
   const handleCreateSubmit: OnSubmit<T> = (state, callback) => {
     // Priority: onCreate > onSave fallback
     const submitHandler = onCreate || onSave;
     if (submitHandler) {
-      // For testing purposes and direct submission, always call the handler
-      // The FormProvider's submit() will call this with current form state
-      submitHandler(state, () => {
-        setCreateModalActive(false);
-        if (callback) callback();
-      });
+      // Merge form state with includeData
+      submitHandler(
+        {
+          ...state,
+          ...safeIncludeData,
+        } as { [key in keyof T]: FormValue } & K,
+        () => {
+          setCreateModalActive(false);
+          if (callback) callback();
+        }
+      );
     } else {
       // No handler provided, just close modal
       setCreateModalActive(false);
@@ -133,10 +153,17 @@ export const FormModalProvider = <T extends FormFields>({
     // Priority: onUpdate > onSave fallback
     const submitHandler = onUpdate || onSave;
     if (submitHandler) {
-      submitHandler(state, () => {
-        setEditModalState(null);
-        if (callback) callback();
-      });
+      // Merge form state with includeData
+      submitHandler(
+        {
+          ...state,
+          ...safeIncludeData,
+        } as { [key in keyof T]: FormValue } & K,
+        () => {
+          setEditModalState(null);
+          if (callback) callback();
+        }
+      );
     } else {
       // No handler provided, just close modal
       setEditModalState(null);
@@ -144,14 +171,20 @@ export const FormModalProvider = <T extends FormFields>({
     }
   };
 
+  // Convert entity state to form initial state
+  const getFormInitialState = (entityState: ({ [key in keyof T]: FormValue } & K) | null): InitialState<T> => {
+    if (!entityState) {
+      return initialState as InitialState<T>;
+    }
+    return entityState as unknown as InitialState<T>;
+  };
+
   return (
     <FormModalContext.Provider
       value={{
         showCreateModal: (show?: boolean) =>
           setCreateModalActive(typeof show === 'undefined' ? true : show),
-        showEditModal: (
-          (state: InitialState<T> | null) => setEditModalState(state)
-        ) as (state: Partial<{ [x: string]: FormValue; }> | null) => void,
+        showEditModal: (state: ({ [key in keyof T]: FormValue } & K) | null) => setEditModalState(state),
         hasProvider: true,
       }}
     >
@@ -160,7 +193,7 @@ export const FormModalProvider = <T extends FormFields>({
       {createModalActive && (onCreate || onSave) && (
         <FormProvider
           formFields={formFields}
-          initialState={initialState}
+          initialState={initialState as InitialState<T>}
           onSubmit={handleCreateSubmit}
           validate={validate}
           loading={loading}
@@ -179,7 +212,7 @@ export const FormModalProvider = <T extends FormFields>({
       {editModalState && (onUpdate || onSave) && (
         <FormProvider
           formFields={formFields}
-          initialState={editModalState}
+          initialState={getFormInitialState(editModalState)}
           onSubmit={handleEditSubmit}
           validate={validate}
           loading={loading}
