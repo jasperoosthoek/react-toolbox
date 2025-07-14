@@ -76,10 +76,6 @@ export type FormProviderProps<T extends FormFields> = {
   loading?: boolean;
   children: ReactNode;
   resetTrigger?: any; // When this value changes, the form will reset
-  // Test-only props
-  pristine?: boolean;
-  validated?: boolean;
-  validationErrors?: { [key: string]: any };
 }
 
 export const FormProvider = <T extends FormFields>({
@@ -90,9 +86,6 @@ export const FormProvider = <T extends FormFields>({
   loading = false,
   children,
   resetTrigger,
-  pristine: propPristine,
-  validated: propValidated,
-  validationErrors: propValidationErrors,
 }: FormProviderProps<T>) => {
   const { strings } = useLocalization();
 
@@ -109,7 +102,7 @@ export const FormProvider = <T extends FormFields>({
   const [initialFormData, setInitialFormData] = useState<{ [key in keyof T]: FormValue }>(getInitialFormData());
 
   const [{ pristine, formData, internalLoading }, setState] = useSetState({
-    pristine: propPristine !== undefined ? propPristine : true,
+    pristine: true,
     formData: initialFormData,
     internalLoading: false,
   });
@@ -157,7 +150,7 @@ export const FormProvider = <T extends FormFields>({
     });
   };
 
-  const validationErrors = propValidationErrors || {
+  const validationErrors = {
     ...validate
       ? Object.entries(validate(formData) || {})
         .reduce(
@@ -178,7 +171,7 @@ export const FormProvider = <T extends FormFields>({
     ),
   } as { [key: string]: any };
 
-  const validated = propValidated !== undefined ? propValidated : Object.values(validationErrors).length === 0;
+  const validated = Object.values(validationErrors).length === 0;
 
   const submit = () => {
     setState({ pristine: false });

@@ -163,10 +163,6 @@ export const FormModalProvider = <T extends FormFields>({
           validate={validate}
           loading={loading}
           resetTrigger={createModalActive}
-          // Test-friendly props to ensure callbacks work in test environment
-          pristine={false} // Allow submission
-          validated={true} // Bypass validation for tests
-          validationErrors={{}} // No validation errors
         >
           <FormModal
             show={createModalActive}
@@ -186,10 +182,6 @@ export const FormModalProvider = <T extends FormFields>({
           validate={validate}
           loading={loading}
           resetTrigger={editModalState}
-          // Test-friendly props to ensure callbacks work in test environment
-          pristine={false} // Allow submission
-          validated={true} // Bypass validation for tests
-          validationErrors={{}} // No validation errors
         >
           <FormModal
             show={!!editModalState}
