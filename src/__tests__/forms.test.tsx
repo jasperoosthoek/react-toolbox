@@ -7,9 +7,6 @@ import { FormProvider, useForm } from '../components/forms/FormProvider';
 import { FormModal, FormFieldsRenderer } from '../components/forms/FormModal';
 import { FormField, useFormField } from '../components/forms/FormField';
 
-// Form Field Types and Interfaces
-import { FormValue, FormOnChange, FormComponentProps, FormType, FormInputProps, DisabledProps } from '../components/forms/FormFields';
-
 // Import FormModalProvider components
 import { 
   FormModalProvider, 
@@ -413,7 +410,7 @@ describe('Form Components Tests', () => {
         expect(reactBadge).toBeInTheDocument();
       });
 
-      it('should show validation error when invalid', () => {
+      it('should show validation error when pristine is false and has errors', () => {
         const { getByText } = renderWithFormProvider(
           <FormBadgesSelection name="tags" list={mockOptions} />,
           { tags: [] },
@@ -427,7 +424,22 @@ describe('Form Components Tests', () => {
         expect(getByText('Tags are required')).toBeInTheDocument();
       });
 
-      it('should apply isInvalid class when validation fails', () => {
+      it('should NOT show validation error when pristine is true', () => {
+        const { queryByText } = renderWithFormProvider(
+          <FormBadgesSelection name="tags" list={mockOptions} />,
+          { tags: [] },
+          {
+            pristine: true,
+            validated: false,
+            validationErrors: { tags: 'Tags are required' },
+          }
+        );
+
+        // Errors should be suppressed when pristine === true
+        expect(queryByText('Tags are required')).not.toBeInTheDocument();
+      });
+
+      it('should apply isInvalid class when validation fails and not pristine', () => {
         const { container } = renderWithFormProvider(
           <FormBadgesSelection name="tags" list={mockOptions} />,
           { tags: [] },
@@ -440,6 +452,21 @@ describe('Form Components Tests', () => {
 
         const formControl = container.querySelector('.form-control');
         expect(formControl).toHaveClass('is-invalid');
+      });
+
+      it('should NOT apply isInvalid class when pristine is true', () => {
+        const { container } = renderWithFormProvider(
+          <FormBadgesSelection name="tags" list={mockOptions} />,
+          { tags: [] },
+          {
+            pristine: true,
+            validated: false,
+            validationErrors: { tags: 'Tags are required' },
+          }
+        );
+
+        const formControl = container.querySelector('.form-control');
+        expect(formControl).not.toHaveClass('is-invalid');
       });
 
       it('should handle integer values', () => {
@@ -690,7 +717,22 @@ describe('Form Components Tests', () => {
     });
 
     describe('Validation', () => {
-      it('should show validation error when invalid', () => {
+      it('should NOT show validation error when pristine is true', () => {
+        const { queryByText } = renderWithFormProvider(
+          <FormInput name="username" />,
+          { username: '' },
+          {
+            pristine: true,
+            validated: false,
+            validationErrors: { username: 'Username is required' }
+          }
+        );
+
+        // Errors should be suppressed when pristine === true
+        expect(queryByText('Username is required')).not.toBeInTheDocument();
+      });
+
+      it('should show validation error when pristine is false and has errors', () => {
         const { getByText } = renderWithFormProvider(
           <FormInput name="username" />,
           { username: '' },
@@ -704,7 +746,7 @@ describe('Form Components Tests', () => {
         expect(getByText('Username is required')).toBeInTheDocument();
       });
 
-      it('should apply isInvalid class when validation fails', () => {
+      it('should apply isInvalid class when validation fails and not pristine', () => {
         const { getByLabelText } = renderWithFormProvider(
           <FormInput name="username" />,
           { username: '' },
@@ -716,6 +758,20 @@ describe('Form Components Tests', () => {
         );
 
         expect(getByLabelText('Username *')).toHaveClass('is-invalid');
+      });
+
+      it('should NOT apply isInvalid class when pristine is true', () => {
+        const { getByLabelText } = renderWithFormProvider(
+          <FormInput name="username" />,
+          { username: '' },
+          {
+            pristine: true,
+            validated: false,
+            validationErrors: { username: 'Username is required' }
+          }
+        );
+
+        expect(getByLabelText('Username *')).not.toHaveClass('is-invalid');
       });
 
       it('should set controlId to field name', () => {
@@ -796,7 +852,36 @@ describe('Form Components Tests', () => {
         expect(options[1]).toHaveTextContent('Electronics');
       });
 
-      it('should apply isInvalid class when validation fails', () => {
+      it('should NOT show validation error when pristine is true', () => {
+        const { queryByText } = renderWithFormProvider(
+          <FormDropdown name="category" options={defaultOptions} />,
+          { category: '' },
+          {
+            pristine: true,
+            validated: false,
+            validationErrors: { category: 'Category is required' }
+          }
+        );
+
+        // Errors should be suppressed when pristine === true
+        expect(queryByText('Category is required')).not.toBeInTheDocument();
+      });
+
+      it('should show validation error when pristine is false and has errors', () => {
+        const { getByText } = renderWithFormProvider(
+          <FormDropdown name="category" options={defaultOptions} />,
+          { category: '' },
+          {
+            pristine: false,
+            validated: false,
+            validationErrors: { category: 'Category is required' }
+          }
+        );
+
+        expect(getByText('Category is required')).toBeInTheDocument();
+      });
+
+      it('should apply isInvalid class when validation fails and not pristine', () => {
         const { getByLabelText } = renderWithFormProvider(
           <FormDropdown name="category" options={defaultOptions} />,
           { category: '' },
@@ -808,6 +893,20 @@ describe('Form Components Tests', () => {
         );
 
         expect(getByLabelText('Category *')).toHaveClass('is-invalid');
+      });
+
+      it('should NOT apply isInvalid class when pristine is true', () => {
+        const { getByLabelText } = renderWithFormProvider(
+          <FormDropdown name="category" options={defaultOptions} />,
+          { category: '' },
+          {
+            pristine: true,
+            validated: false,
+            validationErrors: { category: 'Category is required' }
+          }
+        );
+
+        expect(getByLabelText('Category *')).not.toHaveClass('is-invalid');
       });
 
       it('should handle string options', () => {
@@ -864,7 +963,36 @@ describe('Form Components Tests', () => {
         expect(checkbox).toHaveAttribute('type', 'checkbox');
       });
 
-      it('should apply isInvalid class when validation fails', () => {
+      it('should NOT show validation error when pristine is true', () => {
+        const { queryByText } = renderWithFormProvider(
+          <FormCheckbox name="agree" />,
+          { agree: false },
+          {
+            pristine: true,
+            validated: false,
+            validationErrors: { agree: 'You must agree to terms' }
+          }
+        );
+
+        // Errors should be suppressed when pristine === true
+        expect(queryByText('You must agree to terms')).not.toBeInTheDocument();
+      });
+
+      it('should show validation error when pristine is false and has errors', () => {
+        const { getByText } = renderWithFormProvider(
+          <FormCheckbox name="agree" />,
+          { agree: false },
+          {
+            pristine: false,
+            validated: false,
+            validationErrors: { agree: 'You must agree to terms' }
+          }
+        );
+
+        expect(getByText('You must agree to terms')).toBeInTheDocument();
+      });
+
+      it('should apply isInvalid class when validation fails and not pristine', () => {
         const { getByLabelText } = renderWithFormProvider(
           <FormCheckbox name="agree" />,
           { agree: false },
@@ -876,6 +1004,20 @@ describe('Form Components Tests', () => {
         );
 
         expect(getByLabelText('I agree to terms *')).toHaveClass('is-invalid');
+      });
+
+      it('should NOT apply isInvalid class when pristine is true', () => {
+        const { getByLabelText } = renderWithFormProvider(
+          <FormCheckbox name="agree" />,
+          { agree: false },
+          {
+            pristine: true,
+            validated: false,
+            validationErrors: { agree: 'You must agree to terms' }
+          }
+        );
+
+        expect(getByLabelText('I agree to terms *')).not.toHaveClass('is-invalid');
       });
     });
   });

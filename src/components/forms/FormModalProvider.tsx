@@ -149,7 +149,9 @@ export const FormModalProvider = <T extends FormFields>({
       value={{
         showCreateModal: (show?: boolean) =>
           setCreateModalActive(typeof show === 'undefined' ? true : show),
-        showEditModal: (state: InitialState<T> | null) => setEditModalState(state),
+        showEditModal: (
+          (state: InitialState<T> | null) => setEditModalState(state)
+        ) as (state: Partial<{ [x: string]: FormValue; }> | null) => void,
         hasProvider: true,
       }}
     >

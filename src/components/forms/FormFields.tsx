@@ -30,14 +30,6 @@ export type FormType = {
   pristine: boolean;
 }
 
-export interface FormInputProps extends Omit<FormControlProps, 'onChange'>, FormType {
-  onChange: (value: FormValue) => void;
-  controlId?: string;
-  label?: ReactElement;
-  onEnter?: () => void;
-  rows?: number;
-}
-
 export type DisabledProps = {
   list: any[];
   value: string | number;
