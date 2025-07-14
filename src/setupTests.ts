@@ -125,8 +125,7 @@ jest.mock('react-bootstrap', () => {
           const { controlId, ...restProps } = props;
           return mockReact.createElement('div', { 
             ...restProps, 
-            className: 'form-group',
-            id: props.id || controlId
+            className: 'form-group'
           }, props.children);
         },
         Label: (props) => mockReact.createElement('label', { 
@@ -152,7 +151,18 @@ jest.mock('react-bootstrap', () => {
           }
           return mockReact.createElement(element, controlProps);
         }),
-        Select: mockReact.forwardRef((props, ref) => mockReact.createElement('select', { ...props, ref }, props.children)),
+        Select: mockReact.forwardRef((props, ref) => {
+          const { isInvalid, className = '', ...restProps } = props;
+          let classes = className;
+          if (isInvalid) {
+            classes += (classes ? ' ' : '') + 'is-invalid';
+          }
+          return mockReact.createElement('select', { 
+            ...restProps, 
+            ref,
+            className: classes.trim() || undefined
+          }, props.children);
+        }),
         Check: mockReact.forwardRef((props, ref) => {
           const { label, type, checked, isInvalid, className = '', id, ...restProps } = props;
           let classes = 'form-check-input';

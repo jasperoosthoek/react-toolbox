@@ -224,12 +224,12 @@ describe('FormInput', () => {
     });
 
     it('should set controlId to field name', () => {
-      const { container } = renderWithFormProvider(
+      const { getByLabelText } = renderWithFormProvider(
         <FormInput name="username" />
       );
 
-      const formGroup = container.querySelector('.form-group');
-      expect(formGroup).toHaveAttribute('id', 'username');
+      const input = getByLabelText('Username *');
+      expect(input).toHaveAttribute('id', 'username');
     });
 
     it('should merge placeholder from form props', () => {

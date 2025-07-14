@@ -15,7 +15,7 @@ export const FormInput = (props: FormInputProps) => {
   const errorId = isInvalid && error ? `${props.name}-error` : undefined;
 
   return (
-    <Form.Group controlId={props.name} id={props.name}>
+    <Form.Group controlId={props.name}>
       {label && <Form.Label htmlFor={props.name}>{label}{required && ' *'}</Form.Label>}
       {isInvalid && error && (
         <Form.Text id={errorId} className="text-danger">

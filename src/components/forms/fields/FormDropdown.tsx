@@ -51,11 +51,15 @@ export const FormDropdown = <T,>(props: FormDropdownProps<T>) => {
       return [convertedList, null];
     }
     
-    const mismatch = listBase?.find((item: any) => (
-      !['number', 'string'].includes(typeof item[idKey])
-      || !['number', 'string'].includes(typeof item[nameKey])
-    ))
-    if (mismatch) return [null, mismatch];
+    // Only validate object arrays
+    if (listBase.length > 0 && typeof listBase[0] === 'object') {
+      const mismatch = listBase?.find((item: any) => (
+        !['number', 'string'].includes(typeof item[idKey])
+        || !['number', 'string'].includes(typeof item[nameKey])
+      ))
+      if (mismatch) return [null, mismatch];
+    }
+    
     return [listBase, null];
   }, [listBase, idKey, nameKey]);
 
@@ -76,7 +80,7 @@ export const FormDropdown = <T,>(props: FormDropdownProps<T>) => {
   const selectedItem = list.find(item => item[idKey] === value);
   
   return (
-    <Form.Group controlId={props.name} id={props.name}>
+    <Form.Group controlId={props.name}>
       {label && <Form.Label htmlFor={props.name}>{label}{required && ' *'}</Form.Label>}
       {isInvalid && error && (
         <Form.Text className="text-danger">
