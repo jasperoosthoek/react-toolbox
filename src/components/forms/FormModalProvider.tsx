@@ -91,11 +91,11 @@ export type FormModalProviderProps<
   K extends IncludeData<T>
 > = {
   formFields: T;
-  initialState: InitialState<T> | K;
+  initialState?: InitialState<T> | K;
   includeData?: K;
-  onSave?: (state: ({ [key in keyof T]: FormValue }), callback?: () => void) => void;
-  onCreate?: (state: ({ [key in keyof T]: FormValue }), callback?: () => void) => void;
-  onUpdate?: (state: ({ [key in keyof T]: FormValue }), callback?: () => void) => void;
+  onSave?: any;
+  onCreate?: any;
+  onUpdate?: any;
   validate?: Validate;
   createModalTitle?: ModalTitle;
   editModalTitle?: ModalTitle;
@@ -193,7 +193,7 @@ export const FormModalProvider: React.FC<FormModalProviderProps<T, K>> = ({
       {createModalActive && (onCreate || onSave) && (
         <FormProvider
           formFields={formFields}
-          initialState={initialState as InitialState<T>}
+          initialState={(initialState || {}) as InitialState<T>}
           onSubmit={handleCreateSubmit}
           validate={validate}
           loading={loading}

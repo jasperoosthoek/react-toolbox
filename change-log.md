@@ -337,3 +337,6 @@
 
 ##### Version 0.9.3
 - Fix types of updater functions in `FormModalProvider`
+
+##### Version 0.9.4
+- Make `initialState` in `FormModalProvider` optional
