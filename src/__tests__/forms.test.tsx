@@ -434,7 +434,8 @@ describe('Form Components Tests', () => {
             <TestFormWithSubmit />
           </FormProvider>
         );
-
+        // Click one option to trigger validate function, otherwise it will only show "required *"
+        fireEvent.click(getByText('TypeScript'));
         // Try to submit with invalid data - this makes pristine = false
         fireEvent.click(getByTestId('submit-btn'));
 
@@ -777,9 +778,8 @@ describe('Form Components Tests', () => {
         expect(queryByText('Username is required')).not.toBeInTheDocument();
       });
 
-      it('should show validation error after submit attempt with invalid data', () => {
+      it('should show generic required field error when field is empty', () => {
         const mockSubmit = jest.fn();
-        const mockValidate = jest.fn(() => ({ username: 'Username is required' }));
         
         const TestFormWithSubmit = () => {
           const { submit } = useForm();
@@ -796,17 +796,54 @@ describe('Form Components Tests', () => {
             formFields={mockFormFields}
             initialState={{ username: '' }}
             onSubmit={mockSubmit}
+          >
+            <TestFormWithSubmit />
+          </FormProvider>
+        );
+
+        // Try to submit with empty required field
+        fireEvent.click(getByTestId('submit-btn'));
+
+        // Should show generic required field error
+        expect(getByText('required_field')).toBeInTheDocument();
+        // Submit should not have been called due to validation error
+        expect(mockSubmit).not.toHaveBeenCalled();
+      });
+
+      it('should show validation error after submit attempt with invalid data', () => {
+        const mockSubmit = jest.fn();
+        const mockValidate = jest.fn(() => ({ username: 'Username must be at least 3 characters' }));
+        
+        const TestFormWithSubmit = () => {
+          const { submit } = useForm();
+          return (
+            <div>
+              <FormInput name="username" />
+              <button onClick={submit} data-testid="submit-btn">Submit</button>
+            </div>
+          );
+        };
+
+        const { getByTestId, getByText, getByLabelText } = render(
+          <FormProvider 
+            formFields={mockFormFields}
+            initialState={{ username: '' }}
+            onSubmit={mockSubmit}
             validate={mockValidate}
           >
             <TestFormWithSubmit />
           </FormProvider>
         );
 
+        // Enter invalid data (too short)
+        const input = getByLabelText('Username *');
+        fireEvent.change(input, { target: { value: 'ab' } });
+
         // Try to submit with invalid data
         fireEvent.click(getByTestId('submit-btn'));
 
-        // Now errors should be visible (no longer pristine)
-        expect(getByText('Username is required')).toBeInTheDocument();
+        // Now custom validation error should be visible (no longer pristine)
+        expect(getByText('Username must be at least 3 characters')).toBeInTheDocument();
         // Submit should not have been called due to validation error
         expect(mockSubmit).not.toHaveBeenCalled();
       });
@@ -969,7 +1006,7 @@ describe('Form Components Tests', () => {
 
       it('should show validation error after submit attempt with invalid data', () => {
         const mockSubmit = jest.fn();
-        const mockValidate = jest.fn(() => ({ category: 'Category is required' }));
+        const mockValidate = jest.fn(() => ({ category: 'Please select a valid category' }));
         
         const TestFormWithSubmit = () => {
           const { submit } = useForm();
@@ -981,7 +1018,7 @@ describe('Form Components Tests', () => {
           );
         };
 
-        const { getByTestId, getByText } = render(
+        const { getByTestId, getByText, getByLabelText } = render(
           <FormProvider 
             formFields={mockFormFields}
             initialState={{ category: '' }}
@@ -992,11 +1029,15 @@ describe('Form Components Tests', () => {
           </FormProvider>
         );
 
+        // Select a value first to trigger custom validation instead of required field validation
+        const select = getByLabelText('Category *');
+        fireEvent.change(select, { target: { value: 'invalid-option' } });
+
         // Try to submit with invalid data
         fireEvent.click(getByTestId('submit-btn'));
 
-        // Now errors should be visible (no longer pristine)
-        expect(getByText('Category is required')).toBeInTheDocument();
+        // Now custom validation error should be visible (no longer pristine)
+        expect(getByText('Please select a valid category')).toBeInTheDocument();
         // Submit should not have been called due to validation error
         expect(mockSubmit).not.toHaveBeenCalled();
       });
