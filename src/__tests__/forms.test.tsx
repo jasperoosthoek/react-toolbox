@@ -889,21 +889,29 @@ describe('Form Components Tests', () => {
           return (
             <div>
               <FormInput name="username" />
+              <FormInput name="password" />
               <button onClick={submit} data-testid="submit-btn">Submit</button>
             </div>
           );
         };
 
-        const { getByTestId } = render(
+        const { getByTestId, getByLabelText } = render(
           <FormProvider 
             formFields={mockFormFields}
-            initialState={{ username: 'validuser' }}
+            initialState={{ username: '', password: '' }}
             onSubmit={mockSubmit}
             validate={mockValidate}
           >
             <TestFormWithSubmit />
           </FormProvider>
         );
+
+        // Fill all required fields with valid data
+        const usernameInput = getByLabelText('Username *');
+        const passwordInput = getByLabelText('Password *');
+        
+        fireEvent.change(usernameInput, { target: { value: 'validuser' } });
+        fireEvent.change(passwordInput, { target: { value: 'validpassword' } });
 
         // Submit with valid data
         fireEvent.click(getByTestId('submit-btn'));
@@ -1008,6 +1016,15 @@ describe('Form Components Tests', () => {
         const mockSubmit = jest.fn();
         const mockValidate = jest.fn(() => ({ category: 'Please select a valid category' }));
         
+        // Custom form fields for this test - category is not required so custom validation runs
+        const customFormFields = {
+          category: {
+            label: 'Category',
+            required: false, // Not required so custom validation takes precedence
+            formProps: { 'data-testid': 'dropdown-select' },
+          },
+        };
+        
         const TestFormWithSubmit = () => {
           const { submit } = useForm();
           return (
@@ -1020,8 +1037,8 @@ describe('Form Components Tests', () => {
 
         const { getByTestId, getByText, getByLabelText } = render(
           <FormProvider 
-            formFields={mockFormFields}
-            initialState={{ category: '' }}
+            formFields={customFormFields}
+            initialState={{ category: 'electronics' }}
             onSubmit={mockSubmit}
             validate={mockValidate}
           >
@@ -1029,9 +1046,9 @@ describe('Form Components Tests', () => {
           </FormProvider>
         );
 
-        // Select a value first to trigger custom validation instead of required field validation
-        const select = getByLabelText('Category *');
-        fireEvent.change(select, { target: { value: 'invalid-option' } });
+        // Change to invalid value to trigger custom validation
+        const select = getByLabelText('Category');
+        fireEvent.change(select, { target: { value: 'invalid-category' } });
 
         // Try to submit with invalid data
         fireEvent.click(getByTestId('submit-btn'));
@@ -1149,7 +1166,16 @@ describe('Form Components Tests', () => {
 
       it('should show validation error when pristine is false and has errors', () => {
         const mockSubmit = jest.fn();
-        const mockValidate = jest.fn(() => ({ agree: 'You must agree to terms' }));
+        const mockValidate = jest.fn(() => ({ agree: 'You must agree to the terms and conditions' }));
+        
+        // Custom form fields for this test - agree is not required so custom validation runs
+        const customFormFields = {
+          agree: {
+            label: 'I agree to terms',
+            required: false, // Not required so custom validation takes precedence
+            formProps: { 'data-testid': 'checkbox-field' },
+          },
+        };
         
         const TestFormWithSubmit = () => {
           const { submit } = useForm();
@@ -1161,10 +1187,10 @@ describe('Form Components Tests', () => {
           );
         };
 
-        const { getByTestId, getByText } = render(
+        const { getByTestId, getByText, getByLabelText } = render(
           <FormProvider 
-            formFields={mockFormFields}
-            initialState={{ agree: false }}
+            formFields={customFormFields}
+            initialState={{ agree: false }} // Start unchecked to trigger validation
             onSubmit={mockSubmit}
             validate={mockValidate}
           >
@@ -1172,11 +1198,11 @@ describe('Form Components Tests', () => {
           </FormProvider>
         );
 
-        // Try to submit with invalid data - this makes pristine = false
+        // Try to submit with invalid data (unchecked) - this makes pristine = false
         fireEvent.click(getByTestId('submit-btn'));
 
-        // Now errors should be visible (no longer pristine)
-        expect(getByText('You must agree to terms')).toBeInTheDocument();
+        // Now custom validation error should be visible (no longer pristine)
+        expect(getByText('You must agree to the terms and conditions')).toBeInTheDocument();
         expect(mockSubmit).not.toHaveBeenCalled(); // Submit blocked by validation
       });
 
