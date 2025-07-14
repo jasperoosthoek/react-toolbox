@@ -333,4 +333,7 @@
 - Revert change that made type inference impossible in `FormModalProvider`
 
 ##### Version 0.9.2
-- Make types in `FormModalProvider` more flexible 
+- Make types in `FormModalProvider` more flexible
+
+##### Version 0.9.3
+- Fix types of updater functions in `FormModalProvider`

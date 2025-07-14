@@ -93,9 +93,9 @@ export type FormModalProviderProps<
   formFields: T;
   initialState: InitialState<T> | K;
   includeData?: K;
-  onSave?: (state: { [key in keyof T]: FormValue } & K, callback?: () => void) => void;
-  onCreate?: (state: { [key in keyof T]: FormValue } & K, callback?: () => void) => void;
-  onUpdate?: (state: { [key in keyof T]: FormValue } & K, callback?: () => void) => void;
+  onSave?: (state: ({ [key in keyof T]: FormValue }), callback?: () => void) => void;
+  onCreate?: (state: ({ [key in keyof T]: FormValue }), callback?: () => void) => void;
+  onUpdate?: (state: ({ [key in keyof T]: FormValue }), callback?: () => void) => void;
   validate?: Validate;
   createModalTitle?: ModalTitle;
   editModalTitle?: ModalTitle;
