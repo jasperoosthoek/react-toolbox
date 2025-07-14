@@ -141,6 +141,7 @@ export const FormModalProvider = <T extends FormFields>({
           resetTrigger={createModalActive}
         >
           <FormModal
+            show={createModalActive}
             modalTitle={createModalTitle || strings.getString('modal_create')}
             onHide={() => setCreateModalActive(false)}
             dialogClassName={dialogClassName}

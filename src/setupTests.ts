@@ -69,7 +69,16 @@ jest.mock('react-bootstrap', () => {
     Row: (props) => mockReact.createElement('div', { ...props, className: `row ${props.className || ''}` }, props.children),
     Col: (props) => mockReact.createElement('div', { ...props, className: `col ${props.className || ''}` }, props.children),
     Spinner: (props) => mockReact.createElement('div', { ...props, 'data-testid': 'spinner' }, props.children),
-    Badge: (props) => mockReact.createElement('span', { ...props, className: `badge ${props.className || ''}` }, props.children),
+    Badge: (props) => {
+      const { bg, className = '', ...restProps } = props;
+      let classes = 'badge';
+      if (bg) classes += ` badge-${bg}`;
+      if (className) classes += ` ${className}`;
+      return mockReact.createElement('span', { 
+        ...restProps, 
+        className: classes.trim()
+      }, props.children);
+    },
     Modal: Object.assign(
       (props) => {
         if (!props.show) return null;

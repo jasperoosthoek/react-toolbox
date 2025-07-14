@@ -5,6 +5,12 @@ import { LocalizationProvider } from '../localization/LocalizationContext';
 // Core Form Components
 import { FormProvider, useForm } from '../components/forms/FormProvider';
 import { FormModal, FormFieldsRenderer } from '../components/forms/FormModal';
+import { 
+  FormModalProvider,
+  FormCreateModalButton,
+  FormEditModalButton,
+  useFormModal
+} from '../components/forms/FormModalProvider';
 import { FormField, useFormField } from '../components/forms/FormField';
 
 // Form Field Components
@@ -85,6 +91,476 @@ const FormTestWrapper = ({ children, formFields, onSubmit, validate }: {
 describe('Form Components Tests', () => {
   afterEach(() => {
     jest.clearAllMocks();
+  });
+
+  describe('FormModalProvider Component', () => {
+    const mockFormFields = {
+      name: {
+        initialValue: '',
+        label: 'Name',
+        required: true,
+        formProps: {},
+      },
+      email: {
+        initialValue: '',
+        label: 'Email',
+        required: false,
+        formProps: { type: 'email' },
+      },
+    };
+
+    const mockInitialState = {
+      name: '',
+      email: '',
+    };
+
+    describe('Basic Functionality', () => {
+      it('should render FormModalProvider without crashing', () => {
+        const mockOnCreate = jest.fn();
+        
+        expect(() => {
+          render(
+            <TestWrapper>
+              <FormModalProvider
+                formFields={mockFormFields}
+                initialState={mockInitialState}
+                onCreate={mockOnCreate}
+              >
+                <div>Test Content</div>
+              </FormModalProvider>
+            </TestWrapper>
+          );
+        }).not.toThrow();
+      });
+
+      it('should provide form modal context', () => {
+        const mockOnCreate = jest.fn();
+        
+        const TestComponent = () => {
+          const { hasProvider, showCreateModal } = useFormModal();
+          return (
+            <div>
+              <span data-testid="has-provider">{hasProvider.toString()}</span>
+              <button onClick={() => showCreateModal()} data-testid="show-create">
+                Show Create Modal
+              </button>
+            </div>
+          );
+        };
+
+        const { getByTestId } = render(
+          <TestWrapper>
+            <FormModalProvider
+              formFields={mockFormFields}
+              initialState={mockInitialState}
+              onCreate={mockOnCreate}
+            >
+              <TestComponent />
+            </FormModalProvider>
+          </TestWrapper>
+        );
+
+        expect(getByTestId('has-provider')).toHaveTextContent('true');
+      });
+
+      it('should handle create modal button', () => {
+        const mockOnCreate = jest.fn();
+        
+        const { getByRole } = render(
+          <TestWrapper>
+            <FormModalProvider
+              formFields={mockFormFields}
+              initialState={mockInitialState}
+              onCreate={mockOnCreate}
+            >
+              <FormCreateModalButton>Create</FormCreateModalButton>
+            </FormModalProvider>
+          </TestWrapper>
+        );
+
+        const button = getByRole('button');
+        expect(button).toBeInTheDocument();
+        fireEvent.click(button);
+        
+        // Modal should appear after clicking
+        expect(document.querySelector('.modal')).toBeInTheDocument();
+      });
+
+      it('should handle edit modal button', () => {
+        const mockOnUpdate = jest.fn();
+        const editState = { name: 'John', email: 'john@example.com' };
+        
+        const { getByRole } = render(
+          <TestWrapper>
+            <FormModalProvider
+              formFields={mockFormFields}
+              initialState={mockInitialState}
+              onUpdate={mockOnUpdate}
+            >
+              <FormEditModalButton state={editState}>Edit</FormEditModalButton>
+            </FormModalProvider>
+          </TestWrapper>
+        );
+
+        const button = getByRole('button');
+        expect(button).toBeInTheDocument();
+        fireEvent.click(button);
+        
+        // Modal should appear after clicking
+        expect(document.querySelector('.modal')).toBeInTheDocument();
+      });
+
+      it('should handle modal with onSave fallback', () => {
+        const mockOnSave = jest.fn();
+        
+        const { getByRole } = render(
+          <TestWrapper>
+            <FormModalProvider
+              formFields={mockFormFields}
+              initialState={mockInitialState}
+              onSave={mockOnSave}
+            >
+              <FormCreateModalButton>Create</FormCreateModalButton>
+            </FormModalProvider>
+          </TestWrapper>
+        );
+
+        const button = getByRole('button');
+        fireEvent.click(button);
+        
+        expect(document.querySelector('.modal')).toBeInTheDocument();
+      });
+
+      it('should handle custom modal titles', () => {
+        const mockOnCreate = jest.fn();
+        
+        const { getByRole, getByText } = render(
+          <TestWrapper>
+            <FormModalProvider
+              formFields={mockFormFields}
+              initialState={mockInitialState}
+              onCreate={mockOnCreate}
+              createModalTitle="Create New Item"
+              editModalTitle="Edit Item"
+            >
+              <FormCreateModalButton>Create</FormCreateModalButton>
+            </FormModalProvider>
+          </TestWrapper>
+        );
+
+        fireEvent.click(getByRole('button'));
+        expect(getByText('Create New Item')).toBeInTheDocument();
+      });
+
+      it('should handle loading state', () => {
+        const mockOnCreate = jest.fn();
+        
+        expect(() => {
+          render(
+            <TestWrapper>
+              <FormModalProvider
+                formFields={mockFormFields}
+                initialState={mockInitialState}
+                onCreate={mockOnCreate}
+                loading={true}
+              >
+                <div>Test Content</div>
+              </FormModalProvider>
+            </TestWrapper>
+          );
+        }).not.toThrow();
+      });
+
+      it('should handle dialog styling props', () => {
+        const mockOnCreate = jest.fn();
+        
+        expect(() => {
+          render(
+            <TestWrapper>
+              <FormModalProvider
+                formFields={mockFormFields}
+                initialState={mockInitialState}
+                onCreate={mockOnCreate}
+                dialogClassName="custom-dialog"
+                width="lg"
+              >
+                <div>Test Content</div>
+              </FormModalProvider>
+            </TestWrapper>
+          );
+        }).not.toThrow();
+      });
+    });
+  });
+
+  describe('FormBadgesSelection Component', () => {
+    const mockFormFields = {
+      tags: {
+        label: 'Tags',
+        required: true,
+        formProps: {},
+      },
+      categories: {
+        label: 'Categories',
+        required: false,
+        formProps: {},
+      },
+    };
+
+    const mockOptions = [
+      { id: 1, name: 'React' },
+      { id: 2, name: 'TypeScript' },
+      { id: 3, name: 'JavaScript' },
+    ];
+
+    const renderWithFormProvider = (
+      ui: React.ReactElement,
+      formValues = { tags: [1], categories: [] },
+      additionalProps = {}
+    ) => {
+      return render(
+        <FormProvider
+          formFields={mockFormFields}
+          initialState={formValues}
+          onSubmit={jest.fn()}
+          {...additionalProps}
+        >
+          {ui}
+        </FormProvider>
+      );
+    };
+
+    describe('Basic Functionality', () => {
+      it('should render badge selection with label', () => {
+        const { getByText } = renderWithFormProvider(
+          <FormBadgesSelection name="tags" list={mockOptions} multiple />
+        );
+
+        expect(getByText('Tags *')).toBeInTheDocument();
+        expect(getByText('React')).toBeInTheDocument();
+        expect(getByText('TypeScript')).toBeInTheDocument();
+        expect(getByText('JavaScript')).toBeInTheDocument();
+      });
+
+      it('should handle single selection', () => {
+        const { getByText } = renderWithFormProvider(
+          <FormBadgesSelection name="tags" list={mockOptions} />,
+          { tags: 1 }
+        );
+
+        const reactBadge = getByText('React');
+        expect(reactBadge).toHaveClass('badge', 'bg-primary');
+      });
+
+      it('should handle multiple selection', () => {
+        const { getByText } = renderWithFormProvider(
+          <FormBadgesSelection name="tags" list={mockOptions} multiple />,
+          { tags: [1, 2] }
+        );
+
+        const reactBadge = getByText('React');
+        const typescriptBadge = getByText('TypeScript');
+        const javascriptBadge = getByText('JavaScript');
+
+        expect(reactBadge).toHaveClass('badge', 'bg-primary');
+        expect(typescriptBadge).toHaveClass('badge', 'bg-primary');
+        expect(javascriptBadge).toHaveClass('badge', 'bg-secondary');
+      });
+
+      it('should handle badge clicks for single selection', () => {
+        const { getByText } = renderWithFormProvider(
+          <FormBadgesSelection name="tags" list={mockOptions} />,
+          { tags: 1 }
+        );
+
+        const typescriptBadge = getByText('TypeScript');
+        fireEvent.click(typescriptBadge);
+
+        // Should change selection
+        expect(typescriptBadge).toBeInTheDocument();
+      });
+
+      it('should handle badge clicks for multiple selection', () => {
+        const { getByText } = renderWithFormProvider(
+          <FormBadgesSelection name="tags" list={mockOptions} multiple />,
+          { tags: [1] }
+        );
+
+        const typescriptBadge = getByText('TypeScript');
+        fireEvent.click(typescriptBadge);
+
+        // Should add to selection
+        expect(typescriptBadge).toBeInTheDocument();
+      });
+
+      it('should handle deselection in multiple mode', () => {
+        const { getByText } = renderWithFormProvider(
+          <FormBadgesSelection name="tags" list={mockOptions} multiple />,
+          { tags: [1, 2] }
+        );
+
+        const reactBadge = getByText('React');
+        fireEvent.click(reactBadge);
+
+        // Should remove from selection
+        expect(reactBadge).toBeInTheDocument();
+      });
+
+      it('should show validation error when invalid', () => {
+        const { getByText } = renderWithFormProvider(
+          <FormBadgesSelection name="tags" list={mockOptions} />,
+          { tags: [] },
+          {
+            pristine: false,
+            validated: false,
+            validationErrors: { tags: 'Tags are required' },
+          }
+        );
+
+        expect(getByText('Tags are required')).toBeInTheDocument();
+      });
+
+      it('should apply isInvalid class when validation fails', () => {
+        const { container } = renderWithFormProvider(
+          <FormBadgesSelection name="tags" list={mockOptions} />,
+          { tags: [] },
+          {
+            pristine: false,
+            validated: false,
+            validationErrors: { tags: 'Tags are required' },
+          }
+        );
+
+        const formControl = container.querySelector('.form-control');
+        expect(formControl).toHaveClass('is-invalid');
+      });
+
+      it('should handle integer values', () => {
+        const { getByText } = renderWithFormProvider(
+          <FormBadgesSelection name="tags" list={mockOptions} multiple integer />,
+          { tags: [1] }
+        );
+
+        const typescriptBadge = getByText('TypeScript');
+        fireEvent.click(typescriptBadge);
+
+        expect(typescriptBadge).toBeInTheDocument();
+      });
+
+      it('should handle disabled state', () => {
+        const { getByText } = renderWithFormProvider(
+          <FormBadgesSelection name="tags" list={mockOptions} disabled />
+        );
+
+        const reactBadge = getByText('React');
+        expect(reactBadge).toBeInTheDocument();
+      });
+
+      it('should handle function-based disabled state', () => {
+        const disabledFn = ({ value }: any) => value === 2;
+        
+        const { getByText } = renderWithFormProvider(
+          <FormBadgesSelection name="tags" list={mockOptions} disabled={disabledFn} />
+        );
+
+        expect(getByText('TypeScript')).toBeInTheDocument();
+      });
+    });
+
+    describe('BadgeSelection Component', () => {
+      it('should render badge with correct styling when selected', () => {
+        const { container } = render(
+          <BadgeSelection selected={true} cursor="pointer">
+            Test Badge
+          </BadgeSelection>
+        );
+
+        const badge = container.querySelector('.badge');
+        expect(badge).toHaveClass('badge', 'bg-primary');
+        expect(badge).toHaveStyle('cursor: pointer');
+      });
+
+      it('should render badge with secondary styling when not selected', () => {
+        const { container } = render(
+          <BadgeSelection selected={false} cursor="pointer">
+            Test Badge
+          </BadgeSelection>
+        );
+
+        const badge = container.querySelector('.badge');
+        expect(badge).toHaveClass('badge', 'bg-secondary');
+      });
+
+      it('should handle custom background color', () => {
+        const { container } = render(
+          <BadgeSelection selected={true} bg="success" cursor="pointer">
+            Test Badge
+          </BadgeSelection>
+        );
+
+        const badge = container.querySelector('.badge');
+        expect(badge).toHaveClass('badge', 'bg-success');
+      });
+
+      it('should handle disabled state', () => {
+        const mockClick = jest.fn();
+        
+        const { getByText } = render(
+          <BadgeSelection 
+            selected={true} 
+            disabled={true} 
+            cursor="pointer"
+            onClick={mockClick}
+          >
+            Test Badge
+          </BadgeSelection>
+        );
+
+        const badge = getByText('Test Badge');
+        fireEvent.click(badge);
+        
+        // Click should not fire when disabled
+        expect(mockClick).not.toHaveBeenCalled();
+      });
+
+      it('should handle click events when not disabled', () => {
+        const mockClick = jest.fn();
+        
+        const { getByText } = render(
+          <BadgeSelection 
+            selected={true} 
+            disabled={false} 
+            cursor="pointer"
+            onClick={mockClick}
+          >
+            Test Badge
+          </BadgeSelection>
+        );
+
+        const badge = getByText('Test Badge');
+        fireEvent.click(badge);
+        
+        expect(mockClick).toHaveBeenCalled();
+      });
+
+      it('should apply custom styles', () => {
+        const customStyle = { fontSize: '14px', margin: '5px' };
+        
+        const { container } = render(
+          <BadgeSelection 
+            selected={true} 
+            cursor="pointer"
+            style={customStyle}
+          >
+            Test Badge
+          </BadgeSelection>
+        );
+
+        const badge = container.querySelector('.badge');
+        expect(badge).toHaveStyle('font-size: 14px');
+        expect(badge).toHaveStyle('margin: 5px');
+      });
+    });
   });
 
   // Comprehensive Form Field Component Tests
@@ -1026,9 +1502,11 @@ describe('Form Components Tests', () => {
     it('should export all core form components as functions', () => {
       expect(typeof FormProvider).toBe('function');
       expect(typeof FormModal).toBe('function');
+      expect(typeof FormModalProvider).toBe('function');
       expect(typeof FormField).toBe('function');
       expect(typeof useForm).toBe('function');
       expect(typeof useFormField).toBe('function');
+      expect(typeof useFormModal).toBe('function');
     });
 
     it('should export all form field components as functions', () => {
