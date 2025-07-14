@@ -10,7 +10,7 @@ module.exports = {
   collectCoverageFrom: [
     'src/**/*.{ts,tsx}',
     '!src/**/*.d.ts',
-    '!src/setupTests.ts',
+    '!src/__tests__/setupTests.ts',
     '!src/index.ts',
     '!src/__tests__/**/*'
   ],
@@ -18,5 +18,5 @@ module.exports = {
   coverageReporters: ['text', 'lcov', 'html'],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
   verbose: true,
-  setupFilesAfterEnv: ['<rootDir>/src/setupTests.ts']
+  setupFilesAfterEnv: ['<rootDir>/src/__tests__/setupTests.ts']
 };

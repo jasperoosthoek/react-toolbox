@@ -326,13 +326,3 @@ jest.mock('react-icons/lu', () => {
   };
 });
 
-// Mock FormModalProvider - using correct path from src/ directory
-jest.mock('./components/forms/FormModalProvider', () => ({
-  useFormModal: () => ({
-    showEditModal: jest.fn(),
-    hasProvider: false,
-  }),
-}));
-
-// Let LocalizationContext tests run against the real implementation
-// Only mock specific tests that need different behavior

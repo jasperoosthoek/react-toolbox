@@ -8,6 +8,26 @@ import { ButtonProps, CreateButton, EditButton } from '../buttons/IconButtons';
 export type ShowCreateModal = (show?: boolean) => void;
 export type ShowEditModal<T extends FormFields> = (state: InitialState<T> | null) => void;
 
+type FormModalContextType<T extends FormFields> = {
+  showCreateModal: ShowCreateModal;
+  showEditModal: ShowEditModal<T>;
+  hasProvider: boolean;
+}
+
+const defaultErrorState: FormModalContextType<any> = {
+  showCreateModal: () => {
+    console.error('The showCreateModal function should only be used in a child of the FormModalProvider component.');
+  },
+  showEditModal: () => {
+    console.error('The showEditModal function should only be used in a child of the FormModalProvider component.');
+  },
+  hasProvider: false,
+};
+
+export const FormModalContext = React.createContext(defaultErrorState);
+
+export const useFormModal = <T extends FormFields>() => useContext(FormModalContext) as FormModalContextType<T>;
+
 export type FormCreateModalButton = ButtonProps;
 export const FormCreateModalButton = ({ onClick, ...props }: ButtonProps) => {
   const { showCreateModal, hasProvider } = useFormModal();
@@ -46,26 +66,6 @@ export const FormEditModalButton = <T extends FormFields>({ state, onClick, ...p
     />
   )
 }
-
-type FormModalContextType<T extends FormFields> = {
-  showCreateModal: ShowCreateModal;
-  showEditModal: ShowEditModal<T>;
-  hasProvider: boolean;
-}
-
-const defaultErrorState: FormModalContextType<any> = {
-  showCreateModal: () => {
-    console.error('The showCreateModal function should only be used in a child of the FormModalProvider component.');
-  },
-  showEditModal: () => {
-    console.error('The showEditModal function should only be used in a child of the FormModalProvider component.');
-  },
-  hasProvider: false,
-};
-
-export const FormModalContext = React.createContext(defaultErrorState);
-
-export const useFormModal = <T extends FormFields>() => useContext(FormModalContext) as FormModalContextType<T>;
 
 export type FormModalProviderProps<T extends FormFields> = {
   formFields: T;
