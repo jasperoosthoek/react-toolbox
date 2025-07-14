@@ -11,7 +11,10 @@ type DisabledProps = {
   initialValue: any;
 }
 
-export interface FormDropdownProps<T> extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'name' | 'value' | 'onChange'> {
+export interface FormDropdownProps<T> extends Omit<
+  React.InputHTMLAttributes<HTMLInputElement>,
+  'name' | 'value' | 'onChange' | 'disabled' | 'list'
+> {
   name: string;
   label?: React.ReactElement | string;
   list?: T[];

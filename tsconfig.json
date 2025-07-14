@@ -6,16 +6,16 @@
     "src/__tests__/**/*",
     "dist"
   ],
-  "include": [
-    "src/**/*",
-  ],
+  "include": ["src/**/*"],
   "compilerOptions": {
     "outDir": "./dist/",
     "noImplicitAny": true,
     "sourceMap": true,
     "declaration": true,
+    "jsx": "react-jsx",
     "module": "es6",
-    "target": "es5",
+    "target": "es2015",
+    "downlevelIteration": true,
     "allowJs": true,
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,

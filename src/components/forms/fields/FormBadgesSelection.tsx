@@ -30,7 +30,10 @@ type DisabledProps = {
   initialValue: any;
 }
 
-export interface FormBadgesSelectionProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'name' | 'value' | 'onChange'> {
+export interface FormBadgesSelectionProps extends Omit<
+  React.InputHTMLAttributes<HTMLInputElement>,
+  'name' | 'value' | 'onChange' | 'disabled' | 'list'
+> {
   name: string;
   label?: React.ReactElement | string;
   list: any[];
@@ -64,9 +67,9 @@ export const FormBadgesSelection = (props: FormBadgesSelectionProps) => {
         </Form.Text>
       )}
       <div className={`form-control ${isInvalid ? 'is-invalid' : ''}`}>
-        {list.map((item, key) => {
+        {list.map((item: any, key) => {
           const selected = isMultiple
-            ? !!value && Array.isArray(value) && value.includes(item[idKey])
+            ? !!value && Array.isArray(value) && (value as Array<any>).includes(item[idKey])
             : value === item[idKey];
           return (
             <BadgeSelection
@@ -81,7 +84,7 @@ export const FormBadgesSelection = (props: FormBadgesSelectionProps) => {
               onClick={() => {
                 if (Array.isArray(value)) {
                   if(selected) {
-                    onChange(value.filter(id => parseInteger(id) !== parseInteger(item[idKey])));
+                    onChange(value.filter(id => parseInteger(id) !== parseInteger(item[idKey])).toString());
                   } else {
                     onChange(
                       integer

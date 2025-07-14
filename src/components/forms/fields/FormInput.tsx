@@ -2,11 +2,12 @@ import React, { ChangeEvent, KeyboardEvent } from 'react';
 import { Form } from 'react-bootstrap';
 import { useFormField } from '../FormField';
 
-export interface FormInputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'name' | 'value' | 'onChange'> {
+export interface FormInputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'name' | 'onChange'> {
   name: string;
   label?: React.ReactElement | string;
   as?: string;         // For textarea, select, etc.
   rows?: number;       // For textarea
+  onChange: (value: string) => void;
 }
 
 export const FormInput = (props: FormInputProps) => {
