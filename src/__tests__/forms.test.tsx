@@ -717,61 +717,117 @@ describe('Form Components Tests', () => {
     });
 
     describe('Validation', () => {
-      it('should NOT show validation error when pristine is true', () => {
+      it('should NOT show validation error before submit is attempted', () => {
+        // When form is pristine (initial state), errors should not be shown
         const { queryByText } = renderWithFormProvider(
           <FormInput name="username" />,
-          { username: '' },
+          { username: '' }, // Invalid value
           {
-            pristine: true,
-            validated: false,
-            validationErrors: { username: 'Username is required' }
+            // No pristine prop - this is internal FormProvider state
+            validate: () => ({ username: 'Username is required' })
           }
         );
 
-        // Errors should be suppressed when pristine === true
+        // Errors should not be visible initially (pristine state)
         expect(queryByText('Username is required')).not.toBeInTheDocument();
       });
 
-      it('should show validation error when pristine is false and has errors', () => {
-        const { getByText } = renderWithFormProvider(
-          <FormInput name="username" />,
-          { username: '' },
-          {
-            pristine: false,
-            validated: false,
-            validationErrors: { username: 'Username is required' }
-          }
+      it('should show validation error after submit attempt with invalid data', () => {
+        const mockSubmit = jest.fn();
+        const mockValidate = jest.fn(() => ({ username: 'Username is required' }));
+        
+        const TestFormWithSubmit = () => {
+          const { submit } = useForm();
+          return (
+            <div>
+              <FormInput name="username" />
+              <button onClick={submit} data-testid="submit-btn">Submit</button>
+            </div>
+          );
+        };
+
+        const { getByTestId, getByText } = render(
+          <FormProvider 
+            formFields={mockFormFields}
+            initialState={{ username: '' }}
+            onSubmit={mockSubmit}
+            validate={mockValidate}
+          >
+            <TestFormWithSubmit />
+          </FormProvider>
         );
 
+        // Try to submit with invalid data
+        fireEvent.click(getByTestId('submit-btn'));
+
+        // Now errors should be visible (no longer pristine)
         expect(getByText('Username is required')).toBeInTheDocument();
+        // Submit should not have been called due to validation error
+        expect(mockSubmit).not.toHaveBeenCalled();
       });
 
-      it('should apply isInvalid class when validation fails and not pristine', () => {
-        const { getByLabelText } = renderWithFormProvider(
-          <FormInput name="username" />,
-          { username: '' },
-          {
-            pristine: false,
-            validated: false,
-            validationErrors: { username: 'Username is required' }
-          }
+      it('should apply isInvalid class after submit attempt with invalid data', () => {
+        const mockSubmit = jest.fn();
+        const mockValidate = jest.fn(() => ({ username: 'Username is required' }));
+        
+        const TestFormWithSubmit = () => {
+          const { submit } = useForm();
+          return (
+            <div>
+              <FormInput name="username" />
+              <button onClick={submit} data-testid="submit-btn">Submit</button>
+            </div>
+          );
+        };
+
+        const { getByTestId, getByLabelText } = render(
+          <FormProvider 
+            formFields={mockFormFields}
+            initialState={{ username: '' }}
+            onSubmit={mockSubmit}
+            validate={mockValidate}
+          >
+            <TestFormWithSubmit />
+          </FormProvider>
         );
 
+        // Try to submit with invalid data
+        fireEvent.click(getByTestId('submit-btn'));
+
+        // Input should have invalid styling
         expect(getByLabelText('Username *')).toHaveClass('is-invalid');
       });
 
-      it('should NOT apply isInvalid class when pristine is true', () => {
-        const { getByLabelText } = renderWithFormProvider(
-          <FormInput name="username" />,
-          { username: '' },
-          {
-            pristine: true,
-            validated: false,
-            validationErrors: { username: 'Username is required' }
-          }
+      it('should allow submit when validation passes', () => {
+        const mockSubmit = jest.fn();
+        const mockValidate = jest.fn(() => ({})); // No errors
+        
+        const TestFormWithSubmit = () => {
+          const { submit } = useForm();
+          return (
+            <div>
+              <FormInput name="username" />
+              <button onClick={submit} data-testid="submit-btn">Submit</button>
+            </div>
+          );
+        };
+
+        const { getByTestId } = render(
+          <FormProvider 
+            formFields={mockFormFields}
+            initialState={{ username: 'validuser' }}
+            onSubmit={mockSubmit}
+            validate={mockValidate}
+          >
+            <TestFormWithSubmit />
+          </FormProvider>
         );
 
-        expect(getByLabelText('Username *')).not.toHaveClass('is-invalid');
+        // Submit with valid data
+        fireEvent.click(getByTestId('submit-btn'));
+
+        // Submit should have been called
+        expect(mockSubmit).toHaveBeenCalled();
       });
 
       it('should set controlId to field name', () => {
@@ -852,61 +908,84 @@ describe('Form Components Tests', () => {
         expect(options[1]).toHaveTextContent('Electronics');
       });
 
-      it('should NOT show validation error when pristine is true', () => {
+      it('should NOT show validation error before submit is attempted', () => {
+        // When form is pristine (initial state), errors should not be shown
         const { queryByText } = renderWithFormProvider(
           <FormDropdown name="category" options={defaultOptions} />,
-          { category: '' },
+          { category: '' }, // Invalid value
           {
-            pristine: true,
-            validated: false,
-            validationErrors: { category: 'Category is required' }
+            validate: () => ({ category: 'Category is required' })
           }
         );
 
-        // Errors should be suppressed when pristine === true
+        // Errors should not be visible initially (pristine state)
         expect(queryByText('Category is required')).not.toBeInTheDocument();
       });
 
-      it('should show validation error when pristine is false and has errors', () => {
-        const { getByText } = renderWithFormProvider(
-          <FormDropdown name="category" options={defaultOptions} />,
-          { category: '' },
-          {
-            pristine: false,
-            validated: false,
-            validationErrors: { category: 'Category is required' }
-          }
+      it('should show validation error after submit attempt with invalid data', () => {
+        const mockSubmit = jest.fn();
+        const mockValidate = jest.fn(() => ({ category: 'Category is required' }));
+        
+        const TestFormWithSubmit = () => {
+          const { submit } = useForm();
+          return (
+            <div>
+              <FormDropdown name="category" options={defaultOptions} />
+              <button onClick={submit} data-testid="submit-btn">Submit</button>
+            </div>
+          );
+        };
+
+        const { getByTestId, getByText } = render(
+          <FormProvider 
+            formFields={mockFormFields}
+            initialState={{ category: '' }}
+            onSubmit={mockSubmit}
+            validate={mockValidate}
+          >
+            <TestFormWithSubmit />
+          </FormProvider>
         );
 
+        // Try to submit with invalid data
+        fireEvent.click(getByTestId('submit-btn'));
+
+        // Now errors should be visible (no longer pristine)
         expect(getByText('Category is required')).toBeInTheDocument();
+        // Submit should not have been called due to validation error
+        expect(mockSubmit).not.toHaveBeenCalled();
       });
 
-      it('should apply isInvalid class when validation fails and not pristine', () => {
-        const { getByLabelText } = renderWithFormProvider(
-          <FormDropdown name="category" options={defaultOptions} />,
-          { category: '' },
-          {
-            pristine: false,
-            validated: false,
-            validationErrors: { category: 'Category is required' }
-          }
+      it('should apply isInvalid class after submit attempt with invalid data', () => {
+        const mockSubmit = jest.fn();
+        const mockValidate = jest.fn(() => ({ category: 'Category is required' }));
+        
+        const TestFormWithSubmit = () => {
+          const { submit } = useForm();
+          return (
+            <div>
+              <FormDropdown name="category" options={defaultOptions} />
+              <button onClick={submit} data-testid="submit-btn">Submit</button>
+            </div>
+          );
+        };
+
+        const { getByTestId, getByLabelText } = render(
+          <FormProvider 
+            formFields={mockFormFields}
+            initialState={{ category: '' }}
+            onSubmit={mockSubmit}
+            validate={mockValidate}
+          >
+            <TestFormWithSubmit />
+          </FormProvider>
         );
 
+        // Try to submit with invalid data
+        fireEvent.click(getByTestId('submit-btn'));
+
+        // Dropdown should have invalid styling
         expect(getByLabelText('Category *')).toHaveClass('is-invalid');
-      });
-
-      it('should NOT apply isInvalid class when pristine is true', () => {
-        const { getByLabelText } = renderWithFormProvider(
-          <FormDropdown name="category" options={defaultOptions} />,
-          { category: '' },
-          {
-            pristine: true,
-            validated: false,
-            validationErrors: { category: 'Category is required' }
-          }
-        );
-
-        expect(getByLabelText('Category *')).not.toHaveClass('is-invalid');
       });
 
       it('should handle string options', () => {
