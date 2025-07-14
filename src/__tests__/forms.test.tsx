@@ -87,6 +87,316 @@ describe('Form Components Tests', () => {
     jest.clearAllMocks();
   });
 
+  // Comprehensive Form Field Component Tests
+  describe('FormInput Component', () => {
+    const mockFormFields = {
+      username: {
+        label: 'Username',
+        required: true,
+        formProps: { placeholder: 'Enter username', 'data-testid': 'input-field' },
+      },
+      email: {
+        label: 'Email',
+        required: false,
+        formProps: { type: 'email' },
+      },
+      password: {
+        label: 'Password',
+        required: true,
+        formProps: { type: 'password' },
+      },
+    };
+
+    const mockFormValues = {
+      username: 'testuser',
+      email: 'test@example.com',
+      password: '',
+    };
+
+    const renderWithFormProvider = (
+      ui: React.ReactElement, 
+      formValues = mockFormValues,
+      additionalProps = {}
+    ) => {
+      return render(
+        <FormProvider 
+          formFields={mockFormFields}
+          initialState={formValues}
+          onSubmit={jest.fn()}
+          {...additionalProps}
+        >
+          {ui}
+        </FormProvider>
+      );
+    };
+
+    describe('Basic Functionality', () => {
+      it('should render input with label', () => {
+        const { getByLabelText } = renderWithFormProvider(
+          <FormInput name="username" />
+        );
+
+        const input = getByLabelText('Username *');
+        expect(input).toBeInTheDocument();
+        expect(input.tagName).toBe('INPUT');
+      });
+
+      it('should show current value', () => {
+        const { getByDisplayValue } = renderWithFormProvider(
+          <FormInput name="username" />
+        );
+
+        expect(getByDisplayValue('testuser')).toBeInTheDocument();
+      });
+
+      it('should handle change events', () => {
+        const { getByLabelText } = renderWithFormProvider(
+          <FormInput name="username" />
+        );
+
+        const input = getByLabelText('Username *');
+        fireEvent.change(input, { target: { value: 'newuser' } });
+
+        expect(input).toHaveValue('newuser');
+      });
+
+      it('should not show asterisk for non-required fields', () => {
+        const { getByLabelText } = renderWithFormProvider(
+          <FormInput name="email" />
+        );
+
+        expect(getByLabelText('Email')).toBeInTheDocument();
+      });
+
+      it('should override required from component props', () => {
+        const { getByLabelText } = renderWithFormProvider(
+          <FormInput name="email" required={true} />
+        );
+
+        expect(getByLabelText('Email *')).toBeInTheDocument();
+      });
+    });
+
+    describe('Input Types', () => {
+      it('should handle password type', () => {
+        const { getByLabelText } = renderWithFormProvider(
+          <FormInput name="password" />
+        );
+
+        const input = getByLabelText('Password *');
+        expect(input).toHaveAttribute('type', 'password');
+      });
+
+      it('should handle email type', () => {
+        const { getByLabelText } = renderWithFormProvider(
+          <FormInput name="email" />
+        );
+
+        const input = getByLabelText('Email');
+        expect(input).toHaveAttribute('type', 'email');
+      });
+
+      it('should default to text type when not specified', () => {
+        const { getByLabelText } = renderWithFormProvider(
+          <FormInput name="username" />
+        );
+
+        const input = getByLabelText('Username *');
+        expect(input).toHaveAttribute('type', 'text');
+      });
+    });
+
+    describe('Validation', () => {
+      it('should show validation error when invalid', () => {
+        const { getByText } = renderWithFormProvider(
+          <FormInput name="username" />,
+          { username: '' },
+          {
+            pristine: false,
+            validated: false,
+            validationErrors: { username: 'Username is required' }
+          }
+        );
+
+        expect(getByText('Username is required')).toBeInTheDocument();
+      });
+
+      it('should apply isInvalid class when validation fails', () => {
+        const { getByLabelText } = renderWithFormProvider(
+          <FormInput name="username" />,
+          { username: '' },
+          {
+            pristine: false,
+            validated: false,
+            validationErrors: { username: 'Username is required' }
+          }
+        );
+
+        expect(getByLabelText('Username *')).toHaveClass('is-invalid');
+      });
+
+      it('should set controlId to field name', () => {
+        const { getByLabelText } = renderWithFormProvider(
+          <FormInput name="username" />
+        );
+
+        const input = getByLabelText('Username *');
+        expect(input).toHaveAttribute('id', 'username');
+      });
+    });
+  });
+
+  describe('FormDropdown Component', () => {
+    const mockFormFields = {
+      category: {
+        label: 'Category',
+        required: true,
+        formProps: { 'data-testid': 'dropdown-select' },
+      },
+      status: {
+        label: 'Status',
+        required: false,
+        formProps: {},
+      },
+    };
+
+    const mockFormValues = {
+      category: 'electronics',
+      status: '',
+    };
+
+    const defaultOptions = [
+      { value: '', label: 'Select a category' },
+      { value: 'electronics', label: 'Electronics' },
+      { value: 'clothing', label: 'Clothing' },
+      { value: 'books', label: 'Books' },
+    ];
+
+    const renderWithFormProvider = (
+      ui: React.ReactElement, 
+      formValues = mockFormValues,
+      additionalProps = {}
+    ) => {
+      return render(
+        <FormProvider 
+          formFields={mockFormFields}
+          initialState={formValues}
+          onSubmit={jest.fn()}
+          {...additionalProps}
+        >
+          {ui}
+        </FormProvider>
+      );
+    };
+
+    describe('Basic Functionality', () => {
+      it('should render dropdown with label', () => {
+        const { getByLabelText } = renderWithFormProvider(
+          <FormDropdown name="category" options={defaultOptions} />
+        );
+
+        const select = getByLabelText('Category *');
+        expect(select).toBeInTheDocument();
+        expect(select.tagName).toBe('SELECT');
+      });
+
+      it('should render all options', () => {
+        const { getByRole } = renderWithFormProvider(
+          <FormDropdown name="category" options={defaultOptions} />
+        );
+
+        const select = getByRole('combobox');
+        const options = select.querySelectorAll('option');
+        
+        expect(options).toHaveLength(4);
+        expect(options[0]).toHaveTextContent('Select a category');
+        expect(options[1]).toHaveTextContent('Electronics');
+      });
+
+      it('should apply isInvalid class when validation fails', () => {
+        const { getByLabelText } = renderWithFormProvider(
+          <FormDropdown name="category" options={defaultOptions} />,
+          { category: '' },
+          {
+            pristine: false,
+            validated: false,
+            validationErrors: { category: 'Category is required' }
+          }
+        );
+
+        expect(getByLabelText('Category *')).toHaveClass('is-invalid');
+      });
+
+      it('should handle string options', () => {
+        const stringOptions = ['red', 'green', 'blue'];
+        const { getByRole } = renderWithFormProvider(
+          <FormDropdown name="category" options={stringOptions} />
+        );
+
+        const select = getByRole('combobox');
+        const options = select.querySelectorAll('option');
+        
+        expect(options).toHaveLength(3);
+        expect(options[0]).toHaveTextContent('red');
+        expect(options[0]).toHaveValue('red');
+      });
+    });
+  });
+
+  describe('FormCheckbox Component', () => {
+    const mockFormFields = {
+      agree: {
+        label: 'I agree to terms',
+        required: true,
+        formProps: { 'data-testid': 'checkbox-field' },
+      },
+    };
+
+    const renderWithFormProvider = (
+      ui: React.ReactElement, 
+      formValues = { agree: false },
+      additionalProps = {}
+    ) => {
+      return render(
+        <FormProvider 
+          formFields={mockFormFields}
+          initialState={formValues}
+          onSubmit={jest.fn()}
+          {...additionalProps}
+        >
+          {ui}
+        </FormProvider>
+      );
+    };
+
+    describe('Basic Functionality', () => {
+      it('should render checkbox with label', () => {
+        const { getByLabelText } = renderWithFormProvider(
+          <FormCheckbox name="agree" />
+        );
+
+        const checkbox = getByLabelText('I agree to terms *');
+        expect(checkbox).toBeInTheDocument();
+        expect(checkbox.tagName).toBe('INPUT');
+        expect(checkbox).toHaveAttribute('type', 'checkbox');
+      });
+
+      it('should apply isInvalid class when validation fails', () => {
+        const { getByLabelText } = renderWithFormProvider(
+          <FormCheckbox name="agree" />,
+          { agree: false },
+          {
+            pristine: false,
+            validated: false,
+            validationErrors: { agree: 'You must agree to terms' }
+          }
+        );
+
+        expect(getByLabelText('I agree to terms *')).toHaveClass('is-invalid');
+      });
+    });
+  });
+
   describe('FormProvider', () => {
     const mockOnSubmit = jest.fn();
     const mockValidate = jest.fn();
