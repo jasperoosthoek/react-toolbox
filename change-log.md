@@ -331,3 +331,6 @@
 
 ##### Version 0.9.1
 - Revert change that made type inference impossible in `FormModalProvider`
+
+##### Version 0.9.2
+- Make types in `FormModalProvider` more flexible 
