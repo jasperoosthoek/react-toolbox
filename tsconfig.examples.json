@@ -1,0 +1,32 @@
+{
+  "extends": "./tsconfig.json",
+  "include": [
+    "src/**/*",
+    "index.html"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "dist-examples"
+  ],
+  "compilerOptions": {
+    "outDir": "./dist-examples/",
+    "noImplicitAny": true,
+    "sourceMap": true,
+    "declaration": false,
+    "jsx": "react-jsx",
+    "module": "esnext",
+    "target": "es2020",
+    "lib": ["dom", "dom.iterable", "es6"],
+    "downlevelIteration": true,
+    "allowJs": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "moduleResolution": "bundler",
+    "skipLibCheck": true,
+    "strict": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "resolveJsonModule": true
+  }
+}

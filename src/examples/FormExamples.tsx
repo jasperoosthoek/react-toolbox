@@ -13,7 +13,7 @@ import {
   useForm, 
   FormModalProvider,
   FormCreateModalButton 
-} from '@jasperoosthoek/react-toolbox';
+} from '../index';
 
 // Example 1: Using FormProvider with custom layout
 const CustomFormExample = () => {

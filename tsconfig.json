@@ -4,7 +4,9 @@
     "**/*.test.ts",
     "**/*.spec.ts",
     "src/__tests__/**/*",
-    "dist"
+    "src/examples/**/*",
+    "dist",
+    "dist-examples"
   ],
   "include": ["src/**/*"],
   "compilerOptions": {

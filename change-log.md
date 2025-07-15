@@ -340,3 +340,6 @@
 
 ##### Version 0.9.4
 - Make `initialState` in `FormModalProvider` optional
+
+##### Version 0.9.5
+- Move examples to src directory and exclude from component build
