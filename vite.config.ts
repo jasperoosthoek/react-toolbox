@@ -2,16 +2,17 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
 
+// Vite config for examples app
 export default defineConfig({
   plugins: [react()],
-  root: '.',
+  root: './src/examples',
   build: {
-    outDir: 'dist-examples',
+    outDir: '../../dist-examples',
     emptyOutDir: true,
   },
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src'),
+      '@': path.resolve(__dirname, '../../src'),
     },
   },
   server: {

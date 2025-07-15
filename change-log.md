@@ -342,4 +342,6 @@
 - Make `initialState` in `FormModalProvider` optional
 
 ##### Version 0.9.5
-- Move examples to src directory and exclude from component build
+- Move examples to src directory and turn into React app using Vite
+- Build module using Vite instead of Webpack
+- Make `onChange` argument of `FormInput` optional as it can get it from the form context

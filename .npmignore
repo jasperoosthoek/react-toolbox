@@ -1,8 +1,8 @@
 .babelrc
-webpack.config.js
 vite.config.ts
+vite.config.lib.ts
 tsconfig.examples.json
-index.html
+tsconfig.lib.json
 src/__tests__/
 src/**/*.test.ts
 src/**/*.test.tsx

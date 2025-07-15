@@ -7,7 +7,7 @@ export interface FormInputProps extends Omit<React.InputHTMLAttributes<HTMLInput
   label?: React.ReactElement | string;
   as?: string;         // For textarea, select, etc.
   rows?: number;       // For textarea
-  onChange: (value: string) => void;
+  onChange?: (value: string) => void;
 }
 
 export const FormInput = (props: FormInputProps) => {
