@@ -5,8 +5,7 @@ import { Card, Button, Form, Alert, Badge, ButtonGroup, Table } from 'react-boot
 import { 
   LocalizationProvider, 
   useLocalization, 
-  combineLocalization,
-  AdditionalLocalization 
+  AdditionalLocalization,
 } from '../localization/LocalizationContext';
 import { 
   defaultLocalization, 
@@ -20,8 +19,9 @@ import {
   DataTable,
   DeleteConfirmButton,
   SaveButton,
-  EditButton
+  EditButton,
 } from '../index';
+import { CodeBlock } from './components/CodeBlock';
 
 // Example 1: Basic localization usage
 export const BasicLocalizationExample = () => {
@@ -108,7 +108,8 @@ export const BasicLocalizationExample = () => {
           <h6 className="mb-0">Code Example</h6>
         </Card.Header>
         <Card.Body>
-          <pre><code>{`import { useLocalization } from '@jasperoosthoek/react-toolbox';
+          <CodeBlock language="typescript">
+{`import { useLocalization } from '@jasperoosthoek/react-toolbox';
 
 const MyComponent = () => {
   const { text, lang, setLanguage } = useLocalization();
@@ -122,7 +123,8 @@ const MyComponent = () => {
       </button>
     </div>
   );
-};`}</code></pre>
+};`}
+          </CodeBlock>
         </Card.Body>
       </Card>
     </div>
@@ -228,7 +230,8 @@ export const CustomLocalizationExample = () => {
           <h6 className="mb-0">Code Example</h6>
         </Card.Header>
         <Card.Body>
-          <pre><code>{`// Define custom localization strings
+          <CodeBlock language="typescript">
+{`// Define custom localization strings
 const customStrings = {
   en: {
     welcome_message: "Welcome to our application!",
@@ -250,7 +253,8 @@ setLocalization(customStrings);
 const getTextInFrench = textByLang('fr');
 <h1>{getTextInFrench\`welcome_message\`}</h1>
 <p>{getTextInFrench\`user_count\${userCount}\`}</p>
-<span>{getTextInFrench\`greeting\${'John'}\`}</span>`}</code></pre>
+<span>{getTextInFrench\`greeting\${'John'}\`}</span>`}
+          </CodeBlock>
         </Card.Body>
       </Card>
     </div>
@@ -397,7 +401,8 @@ export const LanguageSwitcherExample = () => {
           <h6 className="mb-0">Code Example</h6>
         </Card.Header>
         <Card.Body>
-          <pre><code>{`import { useLocalization } from '@jasperoosthoek/react-toolbox';
+          <pre><CodeBlock language="typescript">
+            {`import { useLocalization } from '@jasperoosthoek/react-toolbox';
 
 const LanguageSwitcher = () => {
   const { lang, languages, setLanguage } = useLocalization();
@@ -414,7 +419,8 @@ const LanguageSwitcher = () => {
       ))}
     </Form.Select>
   );
-};`}</code></pre>
+};`}
+          </CodeBlock></pre>
         </Card.Body>
       </Card>
     </div>

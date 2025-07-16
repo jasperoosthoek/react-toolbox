@@ -1,6 +1,7 @@
 // Example usage of the new FormProvider architecture
 
 import React from 'react';
+import { Button } from 'react-bootstrap';
 import { 
   FormProvider, 
   FormModal, 
@@ -12,7 +13,8 @@ import {
   FormDropdown,
   useForm, 
   FormModalProvider,
-  FormCreateModalButton 
+  FormCreateModalButton,
+  FormFieldsRenderer,
 } from '../index';
 
 // Example 1: Using FormProvider with custom layout
@@ -88,12 +90,12 @@ const CustomSubmitButton = () => {
   const { submit, loading, validated } = useForm();
   
   return (
-    <button 
+    <Button 
       onClick={submit} 
       disabled={loading || !validated}
     >
       {loading ? 'Submitting...' : 'Submit'}
-    </button>
+    </Button>
   );
 };
 
@@ -172,9 +174,9 @@ const FlexibleFormExample = () => {
 
   return (
     <div>
-      <button onClick={() => setShowModal(true)}>
+      <Button onClick={() => setShowModal(true)}>
         Show Login Modal
-      </button>
+      </Button>
       
       {showModal && (
         <FormProvider
@@ -238,13 +240,6 @@ const RendererFormExample = () => {
     setTimeout(() => {
       if (callback) callback();
     }, 1000);
-  };
-
-  // Note: FormFieldsRenderer is available from FormModal exports
-  const FormFieldsRenderer = () => {
-    const { formFields, hasProvider } = useForm();
-    // Implementation would be the same as in FormModal
-    return null; // Placeholder for example
   };
 
   return (

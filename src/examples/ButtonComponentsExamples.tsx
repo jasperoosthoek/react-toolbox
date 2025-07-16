@@ -13,6 +13,7 @@ import {
   MoveButton,
   SyncButton
 } from '../index';
+import { CodeBlock } from './components/CodeBlock';
 
 // Example 1: ConfirmButton with different configurations
 export const ConfirmButtonExample = () => {
@@ -118,7 +119,8 @@ export const ConfirmButtonExample = () => {
           <h6 className="mb-0">Code Example</h6>
         </Card.Header>
         <Card.Body>
-          <pre><code>{`import { ConfirmButton, SaveButton } from '@jasperoosthoek/react-toolbox';
+          <CodeBlock language="typescript">
+{`import { ConfirmButton, SaveButton } from '@jasperoosthoek/react-toolbox';
 
 const handleSave = (callback) => {
   // Perform save operation
@@ -138,7 +140,8 @@ const handleSave = (callback) => {
   onConfirm={handleSave}
   loading={saveLoading}
   buttonComponent={SaveButton}
-/>`}</code></pre>
+/>`}
+          </CodeBlock>
         </Card.Body>
       </Card>
     </div>
@@ -204,7 +207,8 @@ export const DeleteConfirmButtonExample = () => {
           <h6 className="mb-0">Code Example</h6>
         </Card.Header>
         <Card.Body>
-          <pre><code>{`import { DeleteConfirmButton } from '@jasperoosthoek/react-toolbox';
+          <CodeBlock language="typescript">
+{`import { DeleteConfirmButton } from '@jasperoosthoek/react-toolbox';
 
 const handleDelete = (itemId) => {
   setLoadingStates(prev => ({ ...prev, [itemId]: true }));
@@ -220,7 +224,8 @@ const handleDelete = (itemId) => {
   onDelete={() => handleDelete(item.id)}
   loading={loadingStates[item.id]}
   size="sm"
-/>`}</code></pre>
+/>`}
+          </CodeBlock>
         </Card.Body>
       </Card>
     </div>

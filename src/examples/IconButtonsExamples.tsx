@@ -18,6 +18,7 @@ import {
 // Import some additional icons for custom button examples
 import { AiOutlineHeart, AiOutlineStar, AiOutlineBell } from 'react-icons/ai';
 import { FiSettings, FiUser, FiMail } from 'react-icons/fi';
+import { CodeBlock } from './components/CodeBlock';
 
 // Example 1: All Available IconButtons
 export const AllIconButtonsExample = () => {
@@ -252,7 +253,8 @@ export const CustomIconButtonsExample = () => {
           <h6 className="mb-0">Code Example</h6>
         </Card.Header>
         <Card.Body>
-          <pre><code>{`import { makeIconButton } from '@jasperoosthoek/react-toolbox';
+          <CodeBlock language="typescript">
+{`import { makeIconButton } from '@jasperoosthoek/react-toolbox';
 import { AiOutlineHeart } from 'react-icons/ai';
 
 const HeartButton = makeIconButton(AiOutlineHeart);
@@ -261,7 +263,8 @@ const HeartButton = makeIconButton(AiOutlineHeart);
   variant="outline-danger" 
   loading={favoriteLoading}
   onClick={handleFavorite}
-/>`}</code></pre>
+/>`}
+          </CodeBlock>
         </Card.Body>
       </Card>
     </div>
@@ -440,7 +443,8 @@ export const UploadTextButtonExample = () => {
           <h6 className="mb-0">Code Example</h6>
         </Card.Header>
         <Card.Body>
-          <pre><code>{`import { UploadTextButton } from '@jasperoosthoek/react-toolbox';
+          <CodeBlock language="typescript">
+{`import { UploadTextButton } from '@jasperoosthoek/react-toolbox';
 
 <UploadTextButton
   accept=".txt,.md,.json"
@@ -452,7 +456,8 @@ export const UploadTextButtonExample = () => {
   variant="outline-primary"
 >
   Upload Text File
-</UploadTextButton>`}</code></pre>
+</UploadTextButton>`}
+          </CodeBlock>
         </Card.Body>
       </Card>
     </div>
