@@ -12,8 +12,8 @@ import {
   CreateButton,
   MoveButton,
   SyncButton
-} from '../index';
-import { CodeBlock } from './components/CodeBlock';
+} from '../../index';
+import { CodeBlock } from './CodeBlock';
 
 // Example 1: ConfirmButton with different configurations
 export const ConfirmButtonExample = () => {

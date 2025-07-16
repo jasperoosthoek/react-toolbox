@@ -6,12 +6,12 @@ import {
   LocalizationProvider, 
   useLocalization, 
   AdditionalLocalization,
-} from '../localization/LocalizationContext';
+} from '../../localization/LocalizationContext';
 import { 
   defaultLocalization, 
   defaultLanguages,
   LocalizationStrings 
-} from '../localization/localization';
+} from '../../localization/localization';
 import { 
   FormProvider, 
   FormInput, 
@@ -20,8 +20,8 @@ import {
   DeleteConfirmButton,
   SaveButton,
   EditButton,
-} from '../index';
-import { CodeBlock } from './components/CodeBlock';
+} from '../../index';
+import { CodeBlock } from './CodeBlock';
 
 // Example 1: Basic localization usage
 export const BasicLocalizationExample = () => {

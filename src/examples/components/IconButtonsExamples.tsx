@@ -13,12 +13,12 @@ import {
   QuestionnaireButton, DropdownButton, ResetButton,
   // Additional components
   IconButton, makeIconButton, UploadTextButton
-} from '../index';
+} from '../../index';
 
 // Import some additional icons for custom button examples
 import { AiOutlineHeart, AiOutlineStar, AiOutlineBell } from 'react-icons/ai';
 import { FiSettings, FiUser, FiMail } from 'react-icons/fi';
-import { CodeBlock } from './components/CodeBlock';
+import { CodeBlock } from './CodeBlock';
 
 // Example 1: All Available IconButtons
 export const AllIconButtonsExample = () => {

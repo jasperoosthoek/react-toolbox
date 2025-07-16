@@ -98,15 +98,23 @@ export const FormFieldsRenderer = () => {
   return (
     <Form>
       {Object.entries(formFields).map(([name, config]) => {
+        // Common props for all field types
+        const commonProps = {
+          key: name,
+          name,
+          label: config.label,
+          placeholder: config.placeholder,
+          required: config.required,
+          ...config.formProps
+        };
+
         // Renderer decides which component to use based on config
         if (config.component) {
           // Custom component specified in config
           const Component = config.component;
           return (
             <Component 
-              key={name} 
-              name={name} 
-              {...config.formProps}
+              {...commonProps}
             />
           );
         }
@@ -115,10 +123,8 @@ export const FormFieldsRenderer = () => {
         if (config.type === 'select' && config.options) {
           return (
             <FormSelect 
-              key={name} 
-              name={name} 
-              options={config.options}
-              {...config.formProps}
+              {...commonProps}
+              options={config.options || []}
             />
           );
         }
@@ -126,12 +132,10 @@ export const FormFieldsRenderer = () => {
         if (config.type === 'dropdown' && config.list) {
           return (
             <FormDropdown 
-              key={name} 
-              name={name} 
-              list={config.list}
+              {...commonProps}
+              list={config.list || []}
               idKey={config.idKey}
               nameKey={config.nameKey}
-              {...config.formProps}
             />
           );
         }
@@ -139,19 +143,26 @@ export const FormFieldsRenderer = () => {
         if (config.type === 'checkbox' || config.type === 'boolean') {
           return (
             <FormCheckbox 
-              key={name} 
-              name={name} 
-              {...config.formProps}
+              {...commonProps}
             />
           );
         }
         
-        // Default to FormInput for most cases
+        if (config.type === 'textarea') {
+          return (
+            <FormInput 
+              {...commonProps}
+              as="textarea"
+              rows={config.rows || 3}
+            />
+          );
+        }
+        
+        // Default to FormInput for most cases (text, number, email, etc.)
         return (
           <FormInput 
-            key={name} 
-            name={name} 
-            {...config.formProps}
+            {...commonProps}
+            type={config.type === 'number' ? 'number' : 'text'}
           />
         );
       })}

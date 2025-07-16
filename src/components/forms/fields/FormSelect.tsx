@@ -11,7 +11,7 @@ export interface FormSelectProps extends Omit<React.SelectHTMLAttributes<HTMLSel
 
 export const FormSelect = (props: FormSelectProps) => {
   const { value, onChange, isInvalid, error, label, required, mergedProps } = useFormField(props);
-  const { options, placeholder = "Choose..." } = props;
+  const { options = [], placeholder = "Choose..." } = props;
 
   return (
     <Form.Group controlId={props.name}>

@@ -16,8 +16,8 @@ import {
   FormEditModalButton,
   FormCreateModalButton,
   DeleteConfirmButton
-} from '../index';
-import { mockUsers, mockProducts, mockOrders, User, Product, Order, getStatusBadge, formatCurrency, formatDate } from './data/mockData';
+} from '../../index';
+import { mockUsers, mockProducts, mockOrders, User, Product, Order, getStatusBadge, formatCurrency, formatDate } from '../data/mockData';
 
 // Example 1: Basic DataTable with sorting
 export const BasicDataTableExample = () => {
@@ -487,9 +487,7 @@ export const IntegratedFormDataTableExample = () => {
     ) },
     { name: 'Actions', className: 'text-center', selector: (user: User) => (
       <ButtonGroup size="sm">
-        <FormEditModalButton state={user}>
-          <EditButton />
-        </FormEditModalButton>
+        <FormEditModalButton state={user} variant="outline-primary" size="sm" />
         <DeleteConfirmButton 
           onDelete={() => handleDelete(user.id)}
           size="sm"
@@ -535,8 +533,8 @@ export const IntegratedFormDataTableExample = () => {
         
         <div className="d-flex justify-content-between mb-3">
           <h5>Employee Management</h5>
-          <FormCreateModalButton>
-            <CreateButton>Add Employee</CreateButton>
+          <FormCreateModalButton variant="primary">
+            Add Employee
           </FormCreateModalButton>
         </div>
         

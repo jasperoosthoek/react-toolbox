@@ -12,10 +12,12 @@ export type FormFieldConfig = {
   component?: any;
   onChange?: (value: FormValue, formData?: any) => any;
   label?: React.ReactElement | string;
+  placeholder?: string;
   options?: Array<{ value: string | number; label: string; disabled?: boolean }>; // For select fields
   list?: any[]; // For dropdown fields
   idKey?: string; // For dropdown fields
   nameKey?: string; // For dropdown fields
+  rows?: number; // For textarea fields
 }
 
 export type FormFields = { [key: string]: FormFieldConfig };

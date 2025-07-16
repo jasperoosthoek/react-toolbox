@@ -12,7 +12,7 @@ import {
   FlexibleFormExample,
   RendererFormExample,
   MixedFormExample
-} from './FormExamples';
+} from './components/FormExamples';
 
 // DataTable Examples
 import {
@@ -22,7 +22,7 @@ import {
   DragDropDataTableExample,
   CustomRendererDataTableExample,
   IntegratedFormDataTableExample,
-} from './DataTableExamples';
+} from './components/DataTableExamples';
 
 // IconButton Examples
 import {
@@ -32,14 +32,14 @@ import {
   IconButtonWithTextExample,
   ButtonGroupsExample,
   UploadTextButtonExample,
-} from './IconButtonsExamples';
+} from './components/IconButtonsExamples';
 
 // Button Component Examples
 import {
   ConfirmButtonExample,
   DeleteConfirmButtonExample,
   AdvancedConfirmButtonExample,
-} from './ButtonComponentsExamples';
+} from './components/ButtonComponentsExamples';
 
 // Localization Examples
 import {
@@ -49,7 +49,7 @@ import {
   DataTableLocalizationExample,
   LanguageSwitcherExample,
   LocalizationReferenceExample,
-} from './LocalizationExamples';
+} from './components/LocalizationExamples';
 
 function App() {
   const [activeTab, setActiveTab] = useState('datatable');
