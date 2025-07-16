@@ -270,12 +270,6 @@ export const DataTable = <D extends any[]>({
                     setRowsPerPage(e.target.value === 'everything' ? null : parseInt(e.target.value))
                   }
                 >
-                  <option
-                    value="everything"
-                    disabled={rowsPerPage !== null}
-                  >
-                    {strings.getString('select')}
-                  </option>
                   {rowsPerPageOptions.map((option, index) => (
                     <option key={index} value={option === null ? 'everything' : option}>
                       {option === null ? strings.getString('everything') : option}
@@ -370,7 +364,7 @@ export const DataTable = <D extends any[]>({
                             )}
                             active={key === optionsDropdown.selected}
                           >
-                            {text}
+                            {text === null ? strings.getString('everything') : text}
                           </Dropdown.Item>
                         )
                       }
