@@ -18,10 +18,11 @@ import {
 // Import some additional icons for custom button examples
 import { AiOutlineHeart, AiOutlineStar, AiOutlineBell } from 'react-icons/ai';
 import { FiSettings, FiUser, FiMail } from 'react-icons/fi';
-import { CodeBlock } from './CodeBlock';
+// Import ExampleSection
+import { ExampleSection } from './ExampleSection';
 
 // Example 1: All Available IconButtons
-export const AllIconButtonsExample = () => {
+const AllIconButtonsExampleComponent = () => {
   const [loadingStates, setLoadingStates] = useState<{[key: string]: boolean}>({});
 
   const toggleLoading = (buttonName: string) => {
@@ -107,7 +108,6 @@ export const AllIconButtonsExample = () => {
 
   return (
     <div>
-      <h4>All Available IconButtons</h4>
       <p>Click any button to toggle its loading state. All buttons support loading, different sizes, and variants.</p>
       
       <ButtonSection title="Action Buttons" buttons={actionButtons} />
@@ -115,14 +115,14 @@ export const AllIconButtonsExample = () => {
       <ButtonSection title="Navigation Buttons" buttons={navigationButtons} />
       <ButtonSection title="Utility Buttons" buttons={utilityButtons} />
       <ButtonSection title="Sort Buttons" buttons={sortButtons} />
-      
-      <Card className="mb-4">
-        <Card.Header>
-          <h6 className="mb-0">Code Example</h6>
-        </Card.Header>
-        <Card.Body>
-          <CodeBlock language="typescript">
-{`import { 
+    </div>
+  );
+};
+
+export const AllIconButtonsExample = () => {
+  const code = `import React, { useState } from 'react';
+import { Card, ButtonGroup } from 'react-bootstrap';
+import { 
   CheckButton, SaveButton, EditButton, DeleteButton, 
   CreateButton, DownloadButton, UploadButton, 
   SearchButton, SortButton, SyncButton 
@@ -164,16 +164,28 @@ const MyComponent = () => {
       </ButtonGroup>
     </div>
   );
-};`}
-          </CodeBlock>
-        </Card.Body>
-      </Card>
-    </div>
+};`;
+
+  return (
+    <ExampleSection
+      title="All Available IconButtons"
+      description="Comprehensive collection of pre-built IconButtons with loading states, variants, and sizes"
+      code={code}
+      features={['30+ Pre-built Icons', 'Loading States', 'All Bootstrap Variants', 'Customizable']} 
+      notes={[
+        'All buttons support loading, disabled, and custom styling',
+        'Import only the buttons you need to optimize bundle size',
+        'Each button includes appropriate accessibility attributes',
+        'Compatible with all react-bootstrap Button props'
+      ]}
+    >
+      <AllIconButtonsExampleComponent />
+    </ExampleSection>
   );
 };
 
 // Example 2: Button sizes and variants
-export const ButtonSizesAndVariantsExample = () => {
+const ButtonSizesAndVariantsExampleComponent = () => {
   const [loading, setLoading] = useState(false);
 
   const toggleLoading = () => {
@@ -183,9 +195,6 @@ export const ButtonSizesAndVariantsExample = () => {
 
   return (
     <div>
-      <h4>Button Sizes and Variants</h4>
-      <p>IconButtons support all react-bootstrap Button props including size, variant, and disabled states.</p>
-      
       <Card className="mb-4">
         <Card.Header>
           <h6 className="mb-0">Sizes</h6>
@@ -253,8 +262,60 @@ export const ButtonSizesAndVariantsExample = () => {
   );
 };
 
+export const ButtonSizesAndVariantsExample = () => {
+  const code = `import React, { useState } from 'react';
+import { SaveButton, EditButton, CheckButton } from '@jasperoosthoek/react-toolbox';
+
+const ButtonStatesExample = () => {
+  const [loading, setLoading] = useState(false);
+
+  const handleAction = () => {
+    setLoading(true);
+    setTimeout(() => setLoading(false), 2000);
+  };
+
+  return (
+    <div>
+      {/* Different sizes */}
+      <EditButton size="sm" />
+      <EditButton /> {/* default size */}
+      <EditButton size="lg" />
+      
+      {/* Different variants */}
+      <SaveButton variant="primary" />
+      <SaveButton variant="secondary" />
+      <SaveButton variant="success" />
+      <SaveButton variant="danger" />
+      <SaveButton variant="outline-primary" />
+      
+      {/* Different states */}
+      <CheckButton />
+      <CheckButton loading={loading} onClick={handleAction} />
+      <CheckButton disabled />
+    </div>
+  );
+};`;
+
+  return (
+    <ExampleSection
+      title="Button Sizes and Variants"
+      description="IconButtons support all react-bootstrap Button props including size, variant, and disabled states"
+      code={code}
+      features={['Multiple Sizes', 'Bootstrap Variants', 'Loading States', 'Disabled States']}
+      notes={[
+        'All IconButtons inherit react-bootstrap Button props',
+        'Loading state automatically disables the button',
+        'Variants follow Bootstrap color scheme',
+        'Sizes: sm, default, lg available'
+      ]}
+    >
+      <ButtonSizesAndVariantsExampleComponent />
+    </ExampleSection>
+  );
+};
+
 // Example 3: Custom IconButtons
-export const CustomIconButtonsExample = () => {
+const CustomIconButtonsExampleComponent = () => {
   const [favoriteLoading, setFavoriteLoading] = useState(false);
   const [notificationLoading, setNotificationLoading] = useState(false);
 
@@ -268,9 +329,6 @@ export const CustomIconButtonsExample = () => {
 
   return (
     <div>
-      <h4>Custom IconButtons</h4>
-      <p>Use <code>makeIconButton</code> to create custom buttons with any react-icons icon.</p>
-      
       <Card className="mb-4">
         <Card.Header>
           <h6 className="mb-0">Custom Buttons</h6>
@@ -300,32 +358,68 @@ export const CustomIconButtonsExample = () => {
           </div>
         </Card.Body>
       </Card>
-
-      <Card className="mb-4">
-        <Card.Header>
-          <h6 className="mb-0">Code Example</h6>
-        </Card.Header>
-        <Card.Body>
-          <CodeBlock language="typescript">
-{`import { makeIconButton } from '@jasperoosthoek/react-toolbox';
-import { AiOutlineHeart } from 'react-icons/ai';
-
-const HeartButton = makeIconButton(AiOutlineHeart);
-
-<HeartButton 
-  variant="outline-danger" 
-  loading={favoriteLoading}
-  onClick={handleFavorite}
-/>`}
-          </CodeBlock>
-        </Card.Body>
-      </Card>
     </div>
   );
 };
 
+export const CustomIconButtonsExample = () => {
+  const code = `import React, { useState } from 'react';
+import { makeIconButton } from '@jasperoosthoek/react-toolbox';
+import { AiOutlineHeart, AiOutlineStar } from 'react-icons/ai';
+import { FiSettings, FiUser, FiMail } from 'react-icons/fi';
+
+const MyCustomButtons = () => {
+  const [favoriteLoading, setFavoriteLoading] = useState(false);
+  
+  // Create custom buttons using makeIconButton
+  const HeartButton = makeIconButton(AiOutlineHeart);
+  const StarButton = makeIconButton(AiOutlineStar);
+  const SettingsButton = makeIconButton(FiSettings);
+  const UserButton = makeIconButton(FiUser);
+  const MailButton = makeIconButton(FiMail);
+
+  const handleFavorite = () => {
+    setFavoriteLoading(true);
+    // Your favorite logic here
+    setTimeout(() => setFavoriteLoading(false), 1500);
+  };
+
+  return (
+    <div>
+      <HeartButton 
+        variant="outline-danger" 
+        loading={favoriteLoading}
+        onClick={handleFavorite}
+        title="Add to favorites"
+      />
+      <StarButton variant="outline-warning" />
+      <SettingsButton variant="outline-secondary" />
+      <UserButton variant="outline-primary" />
+      <MailButton variant="outline-success" />
+    </div>
+  );
+};`;
+
+  return (
+    <ExampleSection
+      title="Custom IconButtons"
+      description="Use makeIconButton to create custom buttons with any react-icons icon"
+      code={code}
+      features={['Any React Icon', 'makeIconButton Helper', 'Full Customization', 'Loading Support']}
+      notes={[
+        'Use makeIconButton with any icon from react-icons',
+        'Custom buttons inherit all IconButton functionality',
+        'Supports loading states, variants, and sizes',
+        'Perfect for brand-specific or unique icons'
+      ]}
+    >
+      <CustomIconButtonsExampleComponent />
+    </ExampleSection>
+  );
+};
+
 // Example 4: IconButton with text
-export const IconButtonWithTextExample = () => {
+const IconButtonWithTextExampleComponent = () => {
   const [saveLoading, setSaveLoading] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
 
@@ -341,9 +435,6 @@ export const IconButtonWithTextExample = () => {
 
   return (
     <div>
-      <h4>IconButtons with Text</h4>
-      <p>IconButtons can include text alongside icons by passing children to the component.</p>
-      
       <Card className="mb-4">
         <Card.Header>
           <h6 className="mb-0">Buttons with Text</h6>
@@ -380,8 +471,82 @@ export const IconButtonWithTextExample = () => {
   );
 };
 
+export const IconButtonWithTextExample = () => {
+  const code = `import React, { useState } from 'react';
+import { 
+  SaveButton, EditButton, DeleteButton, 
+  DownloadButton, UploadButton 
+} from '@jasperoosthoek/react-toolbox';
+
+const ButtonsWithText = () => {
+  const [saveLoading, setSaveLoading] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+
+  const handleSave = () => {
+    setSaveLoading(true);
+    // Your save logic here
+    setTimeout(() => setSaveLoading(false), 2000);
+  };
+
+  const handleDelete = () => {
+    setDeleteLoading(true);
+    // Your delete logic here
+    setTimeout(() => setDeleteLoading(false), 2000);
+  };
+
+  return (
+    <div>
+      <SaveButton 
+        variant="primary" 
+        loading={saveLoading}
+        onClick={handleSave}
+      >
+        Save Document
+      </SaveButton>
+      
+      <EditButton variant="outline-secondary">
+        Edit Profile
+      </EditButton>
+      
+      <DeleteButton 
+        variant="outline-danger"
+        loading={deleteLoading}
+        onClick={handleDelete}
+      >
+        Delete Item
+      </DeleteButton>
+      
+      <DownloadButton variant="outline-success">
+        Download File
+      </DownloadButton>
+      
+      <UploadButton variant="outline-info">
+        Upload Image
+      </UploadButton>
+    </div>
+  );
+};`;
+
+  return (
+    <ExampleSection
+      title="IconButtons with Text"
+      description="IconButtons can include text alongside icons by passing children to the component"
+      code={code}
+      features={['Text + Icon', 'Loading States', 'Flexible Layout', 'Accessibility']}
+      notes={[
+        'Add text by passing children to IconButton components',
+        'Text appears alongside the icon automatically',
+        'Loading states work with both icon and text',
+        'Maintains proper accessibility with both icon and text'
+      ]}
+    >
+      <IconButtonWithTextExampleComponent />
+    </ExampleSection>
+  );
+};
+
 // Example 5: ButtonGroups and Toolbars
-export const ButtonGroupsExample = () => {
+const ButtonGroupsExampleComponent = () => {
   const [activeSort, setActiveSort] = useState<'none' | 'asc' | 'desc'>('none');
 
   const handleSort = (direction: 'asc' | 'desc') => {
@@ -390,9 +555,6 @@ export const ButtonGroupsExample = () => {
 
   return (
     <div>
-      <h4>IconButtons in ButtonGroups</h4>
-      <p>IconButtons work seamlessly with react-bootstrap ButtonGroups and toolbars.</p>
-      
       <Card className="mb-4">
         <Card.Header>
           <h6 className="mb-0">Editor Toolbar</h6>
@@ -448,8 +610,88 @@ export const ButtonGroupsExample = () => {
   );
 };
 
+export const ButtonGroupsExample = () => {
+  const code = `import React, { useState } from 'react';
+import { ButtonGroup, Badge } from 'react-bootstrap';
+import { 
+  SaveButton, EditButton, CopyButton, PasteButton, DeleteButton,
+  CreateButton, CreateFolderButton, CreateFileButton,
+  SortButton, SortUpButton, SortDownButton 
+} from '@jasperoosthoek/react-toolbox';
+
+const ToolbarExample = () => {
+  const [activeSort, setActiveSort] = useState('none');
+
+  const handleSort = (direction) => {
+    setActiveSort(direction);
+  };
+
+  return (
+    <div>
+      {/* Editor Toolbar */}
+      <ButtonGroup className="mb-3">
+        <SaveButton title="Save" />
+        <EditButton title="Edit" />
+        <CopyButton title="Copy" />
+        <PasteButton title="Paste" />
+        <DeleteButton title="Delete" />
+      </ButtonGroup>
+      
+      {/* Create Actions */}
+      <ButtonGroup className="mb-3">
+        <CreateButton title="Create" />
+        <CreateFolderButton title="Create Folder" />
+        <CreateFileButton title="Create File" />
+      </ButtonGroup>
+      
+      {/* Sort Controls */}
+      <div className="d-flex align-items-center gap-3">
+        <span>Sort:</span>
+        <ButtonGroup>
+          <SortButton 
+            variant={activeSort === 'none' ? 'primary' : 'outline-primary'}
+            onClick={() => setActiveSort('none')}
+            title="No sorting"
+          />
+          <SortUpButton 
+            variant={activeSort === 'asc' ? 'primary' : 'outline-primary'}
+            onClick={() => handleSort('asc')}
+            title="Sort ascending"
+          />
+          <SortDownButton 
+            variant={activeSort === 'desc' ? 'primary' : 'outline-primary'}
+            onClick={() => handleSort('desc')}
+            title="Sort descending"
+          />
+        </ButtonGroup>
+        <Badge bg="info">
+          Active: {activeSort === 'none' ? 'No sorting' : activeSort}
+        </Badge>
+      </div>
+    </div>
+  );
+};`;
+
+  return (
+    <ExampleSection
+      title="IconButtons in ButtonGroups"
+      description="IconButtons work seamlessly with react-bootstrap ButtonGroups and toolbars"
+      code={code}
+      features={['ButtonGroup Compatible', 'Toolbar Creation', 'Toggle States', 'Grouped Actions']}
+      notes={[
+        'IconButtons integrate perfectly with ButtonGroups',
+        'Great for creating toolbars and action groups',
+        'Supports toggle states and active indicators',
+        'Maintains spacing and alignment automatically'
+      ]}
+    >
+      <ButtonGroupsExampleComponent />
+    </ExampleSection>
+  );
+};
+
 // Example 6: UploadTextButton
-export const UploadTextButtonExample = () => {
+const UploadTextButtonExampleComponent = () => {
   const [fileContent, setFileContent] = useState<string>('');
   const [fileName, setFileName] = useState<string>('');
 
@@ -462,9 +704,6 @@ export const UploadTextButtonExample = () => {
 
   return (
     <div>
-      <h4>UploadTextButton</h4>
-      <p>Special button component for uploading and reading text files.</p>
-      
       <Card className="mb-4">
         <Card.Header>
           <h6 className="mb-0">File Upload</h6>
@@ -490,31 +729,68 @@ export const UploadTextButtonExample = () => {
           )}
         </Card.Body>
       </Card>
-
-      <Card className="mb-4">
-        <Card.Header>
-          <h6 className="mb-0">Code Example</h6>
-        </Card.Header>
-        <Card.Body>
-          <CodeBlock language="typescript">
-{`import { UploadTextButton } from '@jasperoosthoek/react-toolbox';
-
-<UploadTextButton
-  accept=".txt,.md,.json"
-  onLoadFile={(result) => {
-    if (typeof result === 'string') {
-      setFileContent(result);
-    }
-  }}
-  variant="outline-primary"
->
-  Upload Text File
-</UploadTextButton>`}
-          </CodeBlock>
-        </Card.Body>
-      </Card>
     </div>
   );
 };
 
+export const UploadTextButtonExample = () => {
+  const code = `import React, { useState } from 'react';
+import { UploadTextButton } from '@jasperoosthoek/react-toolbox';
 
+const FileUploadExample = () => {
+  const [fileContent, setFileContent] = useState('');
+  const [fileName, setFileName] = useState('');
+
+  const handleFileLoad = (result) => {
+    if (typeof result === 'string') {
+      setFileContent(result);
+      setFileName('Uploaded file');
+    }
+  };
+
+  const handleError = (error) => {
+    console.error('File upload error:', error);
+    alert('Error uploading file');
+  };
+
+  return (
+    <div>
+      <UploadTextButton
+        accept=".txt,.md,.json,.csv"
+        onLoadFile={handleFileLoad}
+        onError={handleError}
+        variant="outline-primary"
+        loading={false}
+      >
+        Upload Text File
+      </UploadTextButton>
+      
+      {fileContent && (
+        <div className="mt-3">
+          <h6>File Content:</h6>
+          <pre className="bg-light p-3 rounded" style={{ maxHeight: '200px', overflow: 'auto' }}>
+            {fileContent}
+          </pre>
+        </div>
+      )}
+    </div>
+  );
+};`;
+
+  return (
+    <ExampleSection
+      title="UploadTextButton"
+      description="Special button component for uploading and reading text files with built-in file handling"
+      code={code}
+      features={['File Upload', 'Text Reading', 'Error Handling', 'Loading States']}
+      notes={[
+        'Automatically reads file content and returns as string',
+        'Supports multiple file types via accept prop',
+        'Built-in error handling for file operations',
+        'Loading states during file processing'
+      ]}
+    >
+      <UploadTextButtonExampleComponent />
+    </ExampleSection>
+  );
+};
