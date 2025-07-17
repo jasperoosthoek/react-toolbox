@@ -49,6 +49,7 @@ import {
   DataTableLocalizationExample,
   LanguageSwitcherExample,
   LocalizationReferenceExample,
+  customStrings,
 } from './components/LocalizationExamples';
 
 function App() {
@@ -56,7 +57,7 @@ function App() {
 
   return (
     <DndProvider backend={HTML5Backend}>
-      <LocalizationProvider lang="en">
+      <LocalizationProvider lang="en" localization={customStrings}>
         <Container fluid className="py-4">
           <div className="mb-4">
             <h1>React Toolbox Examples</h1>

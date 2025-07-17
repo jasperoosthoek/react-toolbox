@@ -1,6 +1,6 @@
 // Comprehensive examples for localization system
 
-import React, { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, Button, Form, Alert, Badge, ButtonGroup, Table } from 'react-bootstrap';
 import { 
   LocalizationProvider, 
@@ -135,36 +135,6 @@ const MyComponent = () => {
 export const CustomLocalizationExample = () => {
   const { lang, setLanguage, text, setLocalization, textByLang, languages } = useLocalization();
   const [selectedLanguage, setSelectedLanguage] = useState('en');
-
-  // Custom localization strings
-  const customStrings: AdditionalLocalization = {
-    en: {
-      welcome_message: "Welcome to our application!",
-      user_count: (count: number) => `There ${count === 1 ? 'is' : 'are'} ${count} user${count === 1 ? '' : 's'} online`,
-      greeting: (name: string) => `Hello, ${name}!`,
-      notification: (type: string, message: string) => `${type}: ${message}`,
-      product_price: (name: string, price: number) => `${name} costs $${price.toFixed(2)}`,
-    },
-    fr: {
-      welcome_message: "Bienvenue dans notre application!",
-      user_count: (count: number) => `Il y a ${count} utilisateur${count === 1 ? '' : 's'} en ligne`,
-      greeting: (name: string) => `Bonjour, ${name}!`,
-      notification: (type: string, message: string) => `${type}: ${message}`,
-      product_price: (name: string, price: number) => `${name} coûte ${price.toFixed(2)}$`,
-    },
-    nl: {
-      welcome_message: "Welkom bij onze applicatie!",
-      user_count: (count: number) => `Er ${count === 1 ? 'is' : 'zijn'} ${count} gebruiker${count === 1 ? '' : 's'} online`,
-      greeting: (name: string) => `Hallo, ${name}!`,
-      notification: (type: string, message: string) => `${type}: ${message}`,
-      product_price: (name: string, price: number) => `${name} kost €${price.toFixed(2)}`,
-    },
-  };
-
-  // Add custom strings to localization
-  React.useEffect(() => {
-    setLocalization(customStrings);
-  }, []);
 
   // Get text function for selected language
   const getTextInLanguage = textByLang(selectedLanguage);
@@ -354,13 +324,9 @@ export const DataTableLocalizationExample = () => {
           <DataTable
             data={users}
             columns={columns}
-            keyField="id"
-            searchable
-            searchPlaceholder={text`search`}
-            pagination
-            pageSize={2}
-            emptyMessage={text`no_information_to_display`}
-            loadingMessage={text`information_is_being_loaded`}
+            // searchPlaceholder={text`search`}
+            rowsPerPageOptions={[5, 10, 25, null]}
+            rowsPerPage={5}
           />
         </Card.Body>
       </Card>
@@ -568,25 +534,28 @@ export const LocalizationReferenceExample = () => {
   );
 };
 
-// Main wrapper component with LocalizationProvider
-export const LocalizationExamplesWrapper = () => {
-  return (
-    <LocalizationProvider lang="en">
-      <LocalizationExamples />
-    </LocalizationProvider>
-  );
-};
 
-// Internal component that uses localization
-const LocalizationExamples = () => {
-  return (
-    <div>
-      <BasicLocalizationExample />
-      <CustomLocalizationExample />
-      <FormLocalizationExample />
-      <DataTableLocalizationExample />
-      <LanguageSwitcherExample />
-      <LocalizationReferenceExample />
-    </div>
-  );
+// Custom localization strings
+export const customStrings: AdditionalLocalization = {
+  en: {
+    welcome_message: "Welcome to our application!",
+    user_count: (count: number) => `There ${count === 1 ? 'is' : 'are'} ${count} user${count === 1 ? '' : 's'} online`,
+    greeting: (name: string) => `Hello, ${name}!`,
+    notification: (type: string, message: string) => `${type}: ${message}`,
+    product_price: (name: string, price: number) => `${name} costs $${price.toFixed(2)}`,
+  },
+  fr: {
+    welcome_message: "Bienvenue dans notre application!",
+    user_count: (count: number) => `Il y a ${count} utilisateur${count === 1 ? '' : 's'} en ligne`,
+    greeting: (name: string) => `Bonjour, ${name}!`,
+    notification: (type: string, message: string) => `${type}: ${message}`,
+    product_price: (name: string, price: number) => `${name} coûte ${price.toFixed(2)}$`,
+  },
+  nl: {
+    welcome_message: "Welkom bij onze applicatie!",
+    user_count: (count: number) => `Er ${count === 1 ? 'is' : 'zijn'} ${count} gebruiker${count === 1 ? '' : 's'} online`,
+    greeting: (name: string) => `Hallo, ${name}!`,
+    notification: (type: string, message: string) => `${type}: ${message}`,
+    product_price: (name: string, price: number) => `${name} kost €${price.toFixed(2)}`,
+  },
 };
