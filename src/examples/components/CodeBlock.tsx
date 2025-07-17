@@ -35,8 +35,8 @@ export const CodeBlock: React.FC<CodeBlockProps> = ({
         <Button
           variant={copied ? 'success' : 'outline-secondary'}
           size="sm"
-          className="position-absolute top-0 end-0 m-2"
-          style={{ zIndex: 10 }}
+          className="position-absolute top-0 m-2"
+          style={{ zIndex: 10, right: '24px' }}
           onClick={copyToClipboard}
         >
           {copied ? (
@@ -63,6 +63,7 @@ export const CodeBlock: React.FC<CodeBlockProps> = ({
           overflow: 'auto',
           margin: 0,
           border: '1px solid #e9ecef',
+          paddingRight: '60px', // Extra padding to avoid scrollbar overlap
         }}
         showLineNumbers
         wrapLines

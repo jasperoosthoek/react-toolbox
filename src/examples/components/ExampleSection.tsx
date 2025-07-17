@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Card, Nav, Button, Collapse } from 'react-bootstrap';
 import { CodeBlock } from './CodeBlock';
-import { FiCode, FiCopy, FiEye, FiEyeOff } from 'react-icons/fi';
+import { FiCode, FiEye, FiEyeOff } from 'react-icons/fi';
 
 interface ExampleSectionProps {
   title: string;
@@ -27,11 +27,6 @@ export const ExampleSection: React.FC<ExampleSectionProps> = ({
   const [activeTab, setActiveTab] = useState<'preview' | 'code'>('preview');
   const [showCode, setShowCode] = useState(false);
 
-  const copyToClipboard = () => {
-    navigator.clipboard.writeText(code);
-    // You could add a toast notification here
-  };
-
   return (
     <Card className="mb-5 shadow-sm">
       <Card.Header className="bg-light">
@@ -45,16 +40,10 @@ export const ExampleSection: React.FC<ExampleSectionProps> = ({
               variant="outline-secondary"
               size="sm"
               onClick={() => setShowCode(!showCode)}
+              className="d-md-none"
             >
               {showCode ? <FiEyeOff /> : <FiCode />}
               {showCode ? ' Hide Code' : ' Show Code'}
-            </Button>
-            <Button
-              variant="outline-primary"
-              size="sm"
-              onClick={copyToClipboard}
-            >
-              <FiCopy /> Copy
             </Button>
           </div>
         </div>

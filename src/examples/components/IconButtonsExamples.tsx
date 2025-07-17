@@ -115,6 +115,59 @@ export const AllIconButtonsExample = () => {
       <ButtonSection title="Navigation Buttons" buttons={navigationButtons} />
       <ButtonSection title="Utility Buttons" buttons={utilityButtons} />
       <ButtonSection title="Sort Buttons" buttons={sortButtons} />
+      
+      <Card className="mb-4">
+        <Card.Header>
+          <h6 className="mb-0">Code Example</h6>
+        </Card.Header>
+        <Card.Body>
+          <CodeBlock language="typescript">
+{`import { 
+  CheckButton, SaveButton, EditButton, DeleteButton, 
+  CreateButton, DownloadButton, UploadButton, 
+  SearchButton, SortButton, SyncButton 
+} from '@jasperoosthoek/react-toolbox';
+
+const MyComponent = () => {
+  const [loading, setLoading] = useState(false);
+  
+  const handleAction = () => {
+    setLoading(true);
+    // Your action logic here
+    setTimeout(() => setLoading(false), 2000);
+  };
+
+  return (
+    <div>
+      {/* Basic usage */}
+      <SaveButton onClick={handleAction} loading={loading} />
+      <EditButton variant="outline-primary" />
+      <DeleteButton variant="outline-danger" size="sm" />
+      
+      {/* With custom props */}
+      <CreateButton 
+        variant="success" 
+        disabled={loading}
+        title="Create new item"
+      />
+      
+      {/* With text */}
+      <DownloadButton variant="primary">
+        Download File
+      </DownloadButton>
+      
+      {/* In button groups */}
+      <ButtonGroup>
+        <CheckButton />
+        <EditButton />
+        <DeleteButton />
+      </ButtonGroup>
+    </div>
+  );
+};`}
+          </CodeBlock>
+        </Card.Body>
+      </Card>
     </div>
   );
 };
