@@ -196,18 +196,41 @@ const DeleteConfirmButtonExampleComponent = () => {
     { id: 4, name: 'Backup Data', type: 'folder' },
   ]);
   const [loadingStates, setLoadingStates] = useState<{[key: number]: boolean}>({});
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const handleDelete = (itemId: number) => {
     setLoadingStates(prev => ({ ...prev, [itemId]: true }));
+    setIsDeleting(true);
     
     setTimeout(() => {
       setItems(items.filter(item => item.id !== itemId));
       setLoadingStates(prev => ({ ...prev, [itemId]: false }));
+      setIsDeleting(false);
     }, 1500);
   };
 
   return (
     <div>
+      {/* Fixed position loading indicator that doesn't affect layout */}
+      {isDeleting && (
+        <div 
+          className="alert alert-warning" 
+          style={{
+            position: 'fixed',
+            top: '20px',
+            right: '20px',
+            zIndex: 1050,
+            minWidth: '250px',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
+          }}
+        >
+          <div className="d-flex align-items-center">
+            <div className="spinner-border spinner-border-sm me-2" role="status"></div>
+            Deleting item...
+          </div>
+        </div>
+      )}
+      
       <Card className="mb-4">
         <Card.Header>
           <h6 className="mb-0">Delete Items</h6>
@@ -253,19 +276,43 @@ const ItemList = () => {
     { id: 3, name: 'Image.jpg', type: 'file' },
   ]);
   const [loadingStates, setLoadingStates] = useState({});
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const handleDelete = (itemId) => {
     setLoadingStates(prev => ({ ...prev, [itemId]: true }));
+    setIsDeleting(true);
     
     // Perform delete operation
     setTimeout(() => {
       setItems(items.filter(item => item.id !== itemId));
       setLoadingStates(prev => ({ ...prev, [itemId]: false }));
+      setIsDeleting(false);
     }, 1500);
   };
 
   return (
-    <div className="list-group">
+    <div>
+      {/* Fixed position loading indicator */}
+      {isDeleting && (
+        <div 
+          className="alert alert-warning" 
+          style={{
+            position: 'fixed',
+            top: '20px',
+            right: '20px',
+            zIndex: 1050,
+            minWidth: '250px',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
+          }}
+        >
+          <div className="d-flex align-items-center">
+            <div className="spinner-border spinner-border-sm me-2" role="status"></div>
+            Deleting item...
+          </div>
+        </div>
+      )}
+      
+      <div className="list-group">
       {items.map(item => (
         <div key={item.id} className="list-group-item d-flex justify-content-between align-items-center">
           <div>
@@ -281,6 +328,7 @@ const ItemList = () => {
           />
         </div>
       ))}
+      </div>
     </div>
   );
 };`;
@@ -290,11 +338,12 @@ const ItemList = () => {
       title="DeleteConfirmButton"
       description="Specialized confirmation button for delete operations with built-in styling and messaging"
       code={code}
-      features={['Delete Confirmation', 'Built-in Modal', 'Loading States', 'Danger Styling']}
+      features={['Delete Confirmation', 'Built-in Modal', 'Loading States', 'Visual Indicators', 'Danger Styling']}
       notes={[
         'Specifically designed for delete operations',
         'Built-in "Are you sure?" confirmation modal',
         'Automatically styled with danger variant',
+        'Fixed position indicator shows global delete progress',
         'Perfect for item lists and data tables'
       ]}
     >
