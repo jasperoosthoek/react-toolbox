@@ -346,3 +346,4 @@
 - Build module using Vite instead of Webpack
 - Make `onChange` argument of `FormInput` optional as it can get it from the form context
 - No longer show "Select" option in number of rows dropdown of `DataTables` component
+- New `formId` in form context that is used to generate unique `controlIds` in case of multiple forms

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext, ReactNode, createContext } from 'react';
+import React, { useEffect, useState, useContext, ReactNode, createContext, useId } from 'react';
 import { useSetState, usePrevious } from '../../utils/hooks';
 import { isEmpty } from '../../utils/utils';
 import { useLocalization } from '../../localization/LocalizationContext';
@@ -32,6 +32,7 @@ export type Validate = (state: any) => any;
 
 type FormContextType<T extends FormFields> = {
   formFields: T;
+  formId: string;
   formData: { [key in keyof T]: FormValue } | null;
   initialFormData: { [key in keyof T]: FormValue } | null;
   pristine: boolean;
@@ -50,6 +51,7 @@ type FormContextType<T extends FormFields> = {
 
 const defaultFormState: FormContextType<any> = {
   formFields: {},
+  formId: '',
   formData: null,
   initialFormData: null,
   pristine: true,
@@ -90,6 +92,7 @@ export const FormProvider = <T extends FormFields>({
   resetTrigger,
 }: FormProviderProps<T>) => {
   const { strings } = useLocalization();
+  const formId = useId();
 
   if (!formFields) {
     console.error(`Property formFields cannot be empty.`);
@@ -196,6 +199,7 @@ export const FormProvider = <T extends FormFields>({
 
   const contextValue: FormContextType<T> = {
     formFields,
+    formId,
     formData,
     initialFormData,
     pristine,

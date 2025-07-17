@@ -10,11 +10,12 @@ export interface FormSelectProps extends Omit<React.SelectHTMLAttributes<HTMLSel
 }
 
 export const FormSelect = (props: FormSelectProps) => {
-  const { value, onChange, isInvalid, error, label, required, mergedProps } = useFormField(props);
+  const { value, onChange, isInvalid, error, label, required, mergedProps, formId } = useFormField(props);
   const { options = [], placeholder = "Choose..." } = props;
+  const controlId = `${formId}-${props.name}`;
 
   return (
-    <Form.Group controlId={props.name}>
+    <Form.Group controlId={controlId}>
       {label && <Form.Label>{label}{required && ' *'}</Form.Label>}
       {isInvalid && error && (
         <Form.Text className="text-danger">

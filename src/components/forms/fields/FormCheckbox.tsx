@@ -8,12 +8,13 @@ export interface FormCheckboxProps extends Omit<React.InputHTMLAttributes<HTMLIn
 }
 
 export const FormCheckbox = (props: FormCheckboxProps) => {
-  const { value, onChange, isInvalid, error, label, required, mergedProps } = useFormField(props);
+  const { value, onChange, isInvalid, error, label, required, mergedProps, formId } = useFormField(props);
 
-  const errorId = isInvalid && error ? `${props.name}-error` : undefined;
+  const errorId = isInvalid && error ? `${formId}-${props.name}-error` : undefined;
+  const controlId = `${formId}-${props.name}`;
 
   return (
-    <Form.Group controlId={props.name}>
+    <Form.Group controlId={controlId}>
       {isInvalid && error && (
         <Form.Text id={errorId} className="text-danger">
           {error}
@@ -40,12 +41,13 @@ export const FormCheckbox = (props: FormCheckboxProps) => {
 };
 
 export const FormSwitch = (props: FormCheckboxProps) => {
-  const { value, onChange, isInvalid, error, label, required, mergedProps } = useFormField(props);
+  const { value, onChange, isInvalid, error, label, required, mergedProps, formId } = useFormField(props);
 
-  const errorId = isInvalid && error ? `${props.name}-error` : undefined;
+  const errorId = isInvalid && error ? `${formId}-${props.name}-error` : undefined;
+  const controlId = `${formId}-${props.name}`;
 
   return (
-    <Form.Group controlId={props.name}>
+    <Form.Group controlId={controlId}>
       {isInvalid && error && (
         <Form.Text id={errorId} className="text-danger">
           {error}

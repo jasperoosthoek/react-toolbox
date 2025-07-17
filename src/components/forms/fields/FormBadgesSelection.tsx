@@ -53,13 +53,14 @@ export const FormBadgesSelection = (props: FormBadgesSelectionProps) => {
     ...componentProps
   } = props;
   
-  const { value, onChange, isInvalid, error, label, required, mergedProps } = useFormField(componentProps);
+  const { value, onChange, isInvalid, error, label, required, mergedProps, formId } = useFormField(componentProps);
   
   const isMultiple = multiple || multiple === false ? multiple : value instanceof Array;
   const parseInteger = (value: string | number): string | number => integer ? parseInt(`${value}`) : `${value}`;
+  const controlId = `${formId}-${props.name}`;
   
   return (
-    <Form.Group controlId={props.name}>
+    <Form.Group controlId={controlId}>
       {label && <Form.Label>{label}{required && ' *'}</Form.Label>}
       {isInvalid && error && (
         <Form.Text className="text-danger">
