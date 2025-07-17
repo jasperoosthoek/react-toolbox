@@ -94,12 +94,12 @@ const CustomFormExampleComponent = () => {
 
 // Custom submit button that uses the form context
 const CustomSubmitButton = () => {
-  const { submit, loading, validated } = useForm();
+  const { submit, loading } = useForm();
   
   return (
     <Button 
       onClick={submit} 
-      disabled={loading || !validated}
+      disabled={loading} // Only disable during loading
       variant="primary"
     >
       {loading ? 'Submitting...' : 'Submit'}
