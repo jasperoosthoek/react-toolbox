@@ -17,14 +17,13 @@ export const FormInput = (props: FormInputProps) => {
 
   return (
     <Form.Group controlId={props.name}>
-      {label && <Form.Label htmlFor={props.name}>{label}{required && ' *'}</Form.Label>}
+      {label && <Form.Label>{label}{required && ' *'}</Form.Label>}
       {isInvalid && error && (
         <Form.Text id={errorId} className="text-danger">
           {error}
         </Form.Text>
       )}
       <Form.Control
-        id={props.name}
         autoComplete="off"
         {...mergedProps}
         value={value || ''}

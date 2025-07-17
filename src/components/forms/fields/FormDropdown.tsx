@@ -84,7 +84,7 @@ export const FormDropdown = <T,>(props: FormDropdownProps<T>) => {
   
   return (
     <Form.Group controlId={props.name}>
-      {label && <Form.Label htmlFor={props.name}>{label}{required && ' *'}</Form.Label>}
+      {label && <Form.Label>{label}{required && ' *'}</Form.Label>}
       {isInvalid && error && (
         <Form.Text className="text-danger">
           {error}
@@ -92,7 +92,6 @@ export const FormDropdown = <T,>(props: FormDropdownProps<T>) => {
       )}
       
       <Form.Select
-        id={props.name}
         value={value || ''}
         isInvalid={isInvalid}
         onChange={(e) => onChange(e.target.value)}

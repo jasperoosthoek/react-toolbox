@@ -17,6 +17,7 @@ export type FormModalProps = {
   width?: Width;
   submitText?: string;
   cancelText?: string;
+  children?: React.ReactNode;
 }
 
 export const FormModal = ({
@@ -27,6 +28,7 @@ export const FormModal = ({
   width,
   submitText,
   cancelText,
+  children,
 }: FormModalProps) => {
   const {
     formData,
@@ -63,7 +65,7 @@ export const FormModal = ({
       )}
 
       <Modal.Body>
-        <FormFieldsRenderer />
+        {children ? children : <FormFieldsRenderer />}
       </Modal.Body>
 
       <Modal.Footer>

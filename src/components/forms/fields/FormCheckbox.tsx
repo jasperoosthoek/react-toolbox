@@ -11,7 +11,6 @@ export const FormCheckbox = (props: FormCheckboxProps) => {
   const { value, onChange, isInvalid, error, label, required, mergedProps } = useFormField(props);
 
   const errorId = isInvalid && error ? `${props.name}-error` : undefined;
-  const checkboxId = `${props.name}-checkbox`; // Use different ID to avoid conflict
 
   return (
     <Form.Group controlId={props.name}>
@@ -21,7 +20,6 @@ export const FormCheckbox = (props: FormCheckboxProps) => {
         </Form.Text>
       )}
       <Form.Check
-        id={checkboxId}
         type="checkbox"
         {...mergedProps}
         checked={!!value}
@@ -45,7 +43,6 @@ export const FormSwitch = (props: FormCheckboxProps) => {
   const { value, onChange, isInvalid, error, label, required, mergedProps } = useFormField(props);
 
   const errorId = isInvalid && error ? `${props.name}-error` : undefined;
-  const switchId = `${props.name}-switch`; // Use different ID to avoid conflict
 
   return (
     <Form.Group controlId={props.name}>
@@ -55,7 +52,6 @@ export const FormSwitch = (props: FormCheckboxProps) => {
         </Form.Text>
       )}
       <Form.Check
-        id={switchId}
         type="switch"
         {...mergedProps}
         checked={!!value}
