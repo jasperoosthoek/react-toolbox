@@ -13,10 +13,10 @@ import {
   MoveButton,
   SyncButton
 } from '../../index';
-import { CodeBlock } from './CodeBlock';
+import { ExampleSection } from './ExampleSection';
 
 // Example 1: ConfirmButton with different configurations
-export const ConfirmButtonExample = () => {
+const ConfirmButtonExampleComponent = () => {
   const [saveLoading, setSaveLoading] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [downloadLoading, setDownloadLoading] = useState(false);
@@ -61,9 +61,6 @@ export const ConfirmButtonExample = () => {
 
   return (
     <div>
-      <h4>ConfirmButton Examples</h4>
-      <p>ConfirmButton provides a confirmation modal before executing actions. Perfect for operations that need user confirmation.</p>
-      
       <Card className="mb-4">
         <Card.Header>
           <h6 className="mb-0">Basic ConfirmButton Usage</h6>
@@ -113,43 +110,85 @@ export const ConfirmButtonExample = () => {
           )}
         </Card.Body>
       </Card>
-
-      <Card className="mb-4">
-        <Card.Header>
-          <h6 className="mb-0">Code Example</h6>
-        </Card.Header>
-        <Card.Body>
-          <CodeBlock language="typescript">
-{`import { ConfirmButton, SaveButton } from '@jasperoosthoek/react-toolbox';
-
-const handleSave = (callback) => {
-  // Perform save operation
-  setSaveLoading(true);
-  
-  setTimeout(() => {
-    setSaveLoading(false);
-    if (callback) callback(); // Close modal
-  }, 2000);
-};
-
-<ConfirmButton
-  modalTitle="Confirm Save"
-  modalBody="Are you sure you want to save this document?"
-  confirmText="Yes, Save Document"
-  cancelText="Cancel"
-  onConfirm={handleSave}
-  loading={saveLoading}
-  buttonComponent={SaveButton}
-/>`}
-          </CodeBlock>
-        </Card.Body>
-      </Card>
     </div>
   );
 };
 
+export const ConfirmButtonExample = () => {
+  const code = `import React, { useState } from 'react';
+import { ConfirmButton, SaveButton, DeleteButton, DownloadButton } from '@jasperoosthoek/react-toolbox';
+
+const MyComponent = () => {
+  const [saveLoading, setSaveLoading] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+
+  const handleSave = (callback) => {
+    setSaveLoading(true);
+    
+    // Perform save operation
+    setTimeout(() => {
+      setSaveLoading(false);
+      console.log('Save completed!');
+      if (callback) callback(); // Close modal
+    }, 2000);
+  };
+
+  const handleDelete = (callback) => {
+    setDeleteLoading(true);
+    
+    // Perform delete operation
+    setTimeout(() => {
+      setDeleteLoading(false);
+      console.log('Delete completed!');
+      if (callback) callback(); // Close modal
+    }, 1500);
+  };
+
+  return (
+    <div>
+      <ConfirmButton
+        modalTitle="Confirm Save"
+        modalBody="Are you sure you want to save this document? This will overwrite any existing content."
+        confirmText="Yes, Save Document"
+        cancelText="Cancel"
+        onConfirm={handleSave}
+        loading={saveLoading}
+        buttonComponent={SaveButton}
+      />
+
+      <ConfirmButton
+        modalTitle="Confirm Delete"
+        modalBody="This action cannot be undone. Are you sure you want to delete this item?"
+        confirmText="Yes, Delete"
+        cancelText="Keep It"
+        onConfirm={handleDelete}
+        loading={deleteLoading}
+        buttonComponent={DeleteButton}
+      />
+    </div>
+  );
+};`;
+
+  return (
+    <ExampleSection
+      title="ConfirmButton Examples"
+      description="ConfirmButton provides a confirmation modal before executing actions. Perfect for operations that need user confirmation."
+      code={code}
+      features={['Modal Confirmation', 'Custom Messages', 'Loading States', 'Any Button Component']}
+      notes={[
+        'Use onConfirm callback to handle the confirmed action',
+        'The callback parameter closes the modal when called',
+        'Loading states are automatically handled',
+        'Works with any button component via buttonComponent prop'
+      ]}
+    >
+      <ConfirmButtonExampleComponent />
+    </ExampleSection>
+  );
+};
+
 // Example 2: DeleteConfirmButton
-export const DeleteConfirmButtonExample = () => {
+const DeleteConfirmButtonExampleComponent = () => {
   const [items, setItems] = useState([
     { id: 1, name: 'Document 1', type: 'file' },
     { id: 2, name: 'Project Folder', type: 'folder' },
@@ -169,9 +208,6 @@ export const DeleteConfirmButtonExample = () => {
 
   return (
     <div>
-      <h4>DeleteConfirmButton</h4>
-      <p>Specialized confirmation button for delete operations with built-in styling and messaging.</p>
-      
       <Card className="mb-4">
         <Card.Header>
           <h6 className="mb-0">Delete Items</h6>
@@ -201,39 +237,74 @@ export const DeleteConfirmButtonExample = () => {
           </div>
         </Card.Body>
       </Card>
-
-      <Card className="mb-4">
-        <Card.Header>
-          <h6 className="mb-0">Code Example</h6>
-        </Card.Header>
-        <Card.Body>
-          <CodeBlock language="typescript">
-{`import { DeleteConfirmButton } from '@jasperoosthoek/react-toolbox';
-
-const handleDelete = (itemId) => {
-  setLoadingStates(prev => ({ ...prev, [itemId]: true }));
-  
-  // Perform delete operation
-  setTimeout(() => {
-    setItems(items.filter(item => item.id !== itemId));
-    setLoadingStates(prev => ({ ...prev, [itemId]: false }));
-  }, 1500);
-};
-
-<DeleteConfirmButton
-  onDelete={() => handleDelete(item.id)}
-  loading={loadingStates[item.id]}
-  size="sm"
-/>`}
-          </CodeBlock>
-        </Card.Body>
-      </Card>
     </div>
   );
 };
 
+export const DeleteConfirmButtonExample = () => {
+  const code = `import React, { useState } from 'react';
+import { DeleteConfirmButton } from '@jasperoosthoek/react-toolbox';
+import { Badge } from 'react-bootstrap';
+
+const ItemList = () => {
+  const [items, setItems] = useState([
+    { id: 1, name: 'Document 1', type: 'file' },
+    { id: 2, name: 'Project Folder', type: 'folder' },
+    { id: 3, name: 'Image.jpg', type: 'file' },
+  ]);
+  const [loadingStates, setLoadingStates] = useState({});
+
+  const handleDelete = (itemId) => {
+    setLoadingStates(prev => ({ ...prev, [itemId]: true }));
+    
+    // Perform delete operation
+    setTimeout(() => {
+      setItems(items.filter(item => item.id !== itemId));
+      setLoadingStates(prev => ({ ...prev, [itemId]: false }));
+    }, 1500);
+  };
+
+  return (
+    <div className="list-group">
+      {items.map(item => (
+        <div key={item.id} className="list-group-item d-flex justify-content-between align-items-center">
+          <div>
+            <strong>{item.name}</strong>
+            <Badge bg={item.type === 'folder' ? 'primary' : 'secondary'} className="ms-2">
+              {item.type}
+            </Badge>
+          </div>
+          <DeleteConfirmButton
+            onDelete={() => handleDelete(item.id)}
+            loading={loadingStates[item.id]}
+            size="sm"
+          />
+        </div>
+      ))}
+    </div>
+  );
+};`;
+
+  return (
+    <ExampleSection
+      title="DeleteConfirmButton"
+      description="Specialized confirmation button for delete operations with built-in styling and messaging"
+      code={code}
+      features={['Delete Confirmation', 'Built-in Modal', 'Loading States', 'Danger Styling']}
+      notes={[
+        'Specifically designed for delete operations',
+        'Built-in "Are you sure?" confirmation modal',
+        'Automatically styled with danger variant',
+        'Perfect for item lists and data tables'
+      ]}
+    >
+      <DeleteConfirmButtonExampleComponent />
+    </ExampleSection>
+  );
+};
+
 // Example 3: Advanced ConfirmButton patterns
-export const AdvancedConfirmButtonExample = () => {
+const AdvancedConfirmButtonExampleComponent = () => {
   const [operations, setOperations] = useState<{[key: string]: { loading: boolean; result?: string }}>({});
 
   const createOperation = (key: string) => ({
@@ -275,9 +346,6 @@ export const AdvancedConfirmButtonExample = () => {
 
   return (
     <div>
-      <h4>Advanced ConfirmButton Patterns</h4>
-      <p>Complex confirmation scenarios with different button types and custom messaging.</p>
-      
       <Card className="mb-4">
         <Card.Header>
           <h6 className="mb-0">Complex Operations</h6>
@@ -375,4 +443,117 @@ export const AdvancedConfirmButtonExample = () => {
   );
 };
 
+export const AdvancedConfirmButtonExample = () => {
+  const code = `import React, { useState } from 'react';
+import { Alert, ButtonGroup } from 'react-bootstrap';
+import { 
+  ConfirmButton, DeleteConfirmButton, EditButton, SaveButton,
+  MoveButton, SyncButton, CreateButton 
+} from '@jasperoosthoek/react-toolbox';
 
+const AdvancedOperations = () => {
+  const [operations, setOperations] = useState({});
+
+  const handleMove = (callback) => {
+    setOperations(prev => ({ ...prev, move: { loading: true } }));
+    
+    // Simulate move operation
+    setTimeout(() => {
+      setOperations(prev => ({ 
+        ...prev, 
+        move: { loading: false, result: 'Items moved successfully!' } 
+      }));
+      if (callback) callback();
+    }, 2000);
+  };
+
+  const handleSync = (callback) => {
+    setOperations(prev => ({ ...prev, sync: { loading: true } }));
+    
+    // Simulate sync operation
+    setTimeout(() => {
+      setOperations(prev => ({ 
+        ...prev, 
+        sync: { loading: false, result: 'Sync completed!' } 
+      }));
+      if (callback) callback();
+    }, 3000);
+  };
+
+  return (
+    <div>
+      {/* Complex modal with custom content */}
+      <ConfirmButton
+        modalTitle="Move Items"
+        modalBody={
+          <div>
+            <p>You are about to move 5 items to the archive folder.</p>
+            <Alert variant="warning" className="mb-0">
+              <small>This operation will take a few moments to complete.</small>
+            </Alert>
+          </div>
+        }
+        confirmText="Move Items"
+        cancelText="Cancel"
+        onConfirm={handleMove}
+        loading={operations.move?.loading}
+        buttonComponent={MoveButton}
+      />
+      
+      {/* Sync with detailed instructions */}
+      <ConfirmButton
+        modalTitle="Sync Data"
+        modalBody={
+          <div>
+            <p>This will sync all your data with the remote server.</p>
+            <ul>
+              <li>Upload local changes</li>
+              <li>Download remote updates</li>
+              <li>Resolve any conflicts</li>
+            </ul>
+            <Alert variant="info" className="mb-0">
+              <small>Make sure you have a stable internet connection.</small>
+            </Alert>
+          </div>
+        }
+        confirmText="Start Sync"
+        cancelText="Not Now"
+        onConfirm={handleSync}
+        loading={operations.sync?.loading}
+        buttonComponent={SyncButton}
+      />
+      
+      {/* Button groups */}
+      <ButtonGroup>
+        <EditButton />
+        <ConfirmButton
+          modalTitle="Save Changes"
+          modalBody="Save all pending changes?"
+          confirmText="Save"
+          cancelText="Cancel"
+          onConfirm={handleSave}
+          buttonComponent={SaveButton}
+        />
+        <DeleteConfirmButton onDelete={handleDelete} />
+      </ButtonGroup>
+    </div>
+  );
+};`;
+
+  return (
+    <ExampleSection
+      title="Advanced ConfirmButton Patterns"
+      description="Complex confirmation scenarios with custom modal content, multiple operations, and button combinations"
+      code={code}
+      features={['Custom Modal Content', 'JSX in modalBody', 'Button Groups', 'Complex Operations']}
+      notes={[
+        'modalBody can accept JSX elements for complex content',
+        'Perfect for operations with detailed instructions',
+        'Works seamlessly with ButtonGroups and toolbars',
+        'Can include alerts, lists, and formatted content in modals'
+      ]}
+    >
+      <AdvancedConfirmButtonExampleComponent />
+    </ExampleSection>
+  );
+};

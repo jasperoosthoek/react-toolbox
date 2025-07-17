@@ -3,16 +3,12 @@
 import { useState, useEffect } from 'react';
 import { Card, Button, Form, Alert, Badge, ButtonGroup, Table } from 'react-bootstrap';
 import { 
+  defaultLocalization, 
+  defaultLanguages,
+  LocalizationStrings,
   LocalizationProvider, 
   useLocalization, 
   AdditionalLocalization,
-} from '../../localization/LocalizationContext';
-import { 
-  defaultLocalization, 
-  defaultLanguages,
-  LocalizationStrings 
-} from '../../localization/localization';
-import { 
   FormProvider, 
   FormInput, 
   FormSelect, 
@@ -23,17 +19,15 @@ import {
   useForm,
 } from '../../index';
 import { CodeBlock } from './CodeBlock';
+import { ExampleSection } from './ExampleSection';
 import { FormActions } from './FormExamples';
 
 // Example 1: Basic localization usage
-export const BasicLocalizationExample = () => {
+const BasicLocalizationExampleComponent = () => {
   const { lang, languages, setLanguage, text, strings } = useLocalization();
 
   return (
     <div>
-      <h4>Basic Localization Usage</h4>
-      <p>Demonstrate basic localization with built-in strings and the <code>text`localization_string`</code> pattern.</p>
-      
       <Card className="mb-4">
         <Card.Header>
           <div className="d-flex justify-content-between align-items-center">
@@ -104,45 +98,88 @@ export const BasicLocalizationExample = () => {
           </div>
         </Card.Body>
       </Card>
-
-      <Card className="mb-4">
-        <Card.Header>
-          <h6 className="mb-0">Code Example</h6>
-        </Card.Header>
-        <Card.Body>
-          <CodeBlock language="typescript">
-{`import { useLocalization } from '@jasperoosthoek/react-toolbox';
-
-const MyComponent = () => {
-  const { text, lang, setLanguage } = useLocalization();
-
-  return (
-    <div>
-      <h1>{text\`save\`}</h1>
-      <p>{text\`are_you_sure\`}</p>
-      <button onClick={() => setLanguage('fr')}>
-        Switch to French
-      </button>
-    </div>
-  );
-};`}
-          </CodeBlock>
-        </Card.Body>
-      </Card>
     </div>
   );
 };
 
+export const BasicLocalizationExample = () => {
+  const code = `import React from 'react';
+import { ButtonGroup, Button, Badge } from 'react-bootstrap';
+import { 
+  useLocalization, 
+  defaultLanguages 
+} from '@jasperoosthoek/react-toolbox';
+
+const MyLocalizationDemo = () => {
+  const { lang, languages, setLanguage, text } = useLocalization();
+
+  return (
+    <div>
+      {/* Language switcher */}
+      <div className="d-flex align-items-center gap-3 mb-3">
+        <span>Current Language:</span>
+        <Badge bg="primary">{lang.toUpperCase()}</Badge>
+      </div>
+      
+      <ButtonGroup className="mb-3">
+        {languages.map(language => (
+          <Button
+            key={language}
+            variant={lang === language ? 'primary' : 'outline-primary'}
+            onClick={() => setLanguage(language)}
+          >
+            {defaultLanguages[language] || language}
+          </Button>
+        ))}
+      </ButtonGroup>
+
+      {/* Using localized strings */}
+      <div>
+        <h3>{text\`save\`}</h3>
+        <p>{text\`are_you_sure\`}</p>
+        <button>{text\`cancel\`}</button>
+        <button>{text\`delete\`}</button>
+      </div>
+      
+      {/* Form strings */}
+      <div>
+        <label>{text\`your_email\`}</label>
+        <input placeholder={text\`enter_email\`} />
+        
+        <label>{text\`your_password\`}</label>
+        <input placeholder={text\`enter_password\`} type="password" />
+        
+        <button>{text\`login\`}</button>
+      </div>
+    </div>
+  );
+};`;
+
+  return (
+    <ExampleSection
+      title="Basic Localization Usage"
+      description="Demonstrate basic localization with built-in strings and the text\`localization_string\` pattern"
+      code={code}
+      features={['Template String Syntax', 'Built-in Translations', 'Language Switching', 'Default Strings']}
+      notes={[
+        'Use text\`key\` syntax for clean, readable localization',
+        'Built-in support for English, French, and Dutch',
+        'Language switching updates all strings automatically',
+        'Over 20 common UI strings included by default'
+      ]}
+    >
+      <BasicLocalizationExampleComponent />
+    </ExampleSection>
+  );
+};
+
 // Example 2: Custom localization strings
-export const CustomLocalizationExample = () => {
+const CustomLocalizationExampleComponent = () => {
   const { lang, setLanguage, text, setLocalization, textByLang, languages } = useLocalization();
   const [selectedLanguage, setSelectedLanguage] = useState('en');
 
   return (
     <div>
-      <h4>Custom Localization Strings</h4>
-      <p>Add your own localization strings with support for function interpolation.</p>
-      
       <Card className="mb-4">
         <Card.Header>
           <div className="d-flex justify-content-between align-items-center">
@@ -193,40 +230,87 @@ export const CustomLocalizationExample = () => {
           </div>
         </Card.Body>
       </Card>
-
-      <Card className="mb-4">
-        <Card.Header>
-          <h6 className="mb-0">Code Example</h6>
-        </Card.Header>
-        <Card.Body>
-          <CodeBlock language="typescript">
-{`// Define custom localization strings
-const customStrings = {
-  en: {
-    welcome_message: "Welcome to our application!",
-    user_count: (count) => \`There \${count === 1 ? 'is' : 'are'} \${count} user\${count === 1 ? '' : 's'} online\`,
-    greeting: (name) => \`Hello, \${name}!\`,
-  },
-  fr: {
-    welcome_message: "Bienvenue dans notre application!",
-    user_count: (count) => \`Il y a \${count} utilisateur\${count === 1 ? '' : 's'} en ligne\`,
-    greeting: (name) => \`Bonjour, \${name}!\`,
-  },
+    </div>
+  );
 };
 
-// Add to localization context
-const { setLocalization, textByLang } = useLocalization();
-setLocalization(customStrings);
+export const CustomLocalizationExample = () => {
+  const code = `import React, { useState } from 'react';
+import { useLocalization } from '@jasperoosthoek/react-toolbox';
 
-// Use specific language
-const getTextInFrench = textByLang('fr');
-<h1>{getTextInFrench\`welcome_message\`}</h1>
-<p>{getTextInFrench\`user_count\${userCount}\`}</p>
-<span>{getTextInFrench\`greeting\${'John'}\`}</span>`}
-          </CodeBlock>
-        </Card.Body>
-      </Card>
+const CustomStringsDemo = () => {
+  const { text, setLocalization, textByLang } = useLocalization();
+  
+  // Define custom localization strings
+  const customStrings = {
+    en: {
+      welcome_message: "Welcome to our application!",
+      user_count: (count) => \`There \${count === 1 ? 'is' : 'are'} \${count} user\${count === 1 ? '' : 's'} online\`,
+      greeting: (name) => \`Hello, \${name}!\`,
+      notification: (type, message) => \`\${type}: \${message}\`,
+      product_price: (name, price) => \`\${name} costs $\${price.toFixed(2)}\`,
+    },
+    fr: {
+      welcome_message: "Bienvenue dans notre application!",
+      user_count: (count) => \`Il y a \${count} utilisateur\${count === 1 ? '' : 's'} en ligne\`,
+      greeting: (name) => \`Bonjour, \${name}!\`,
+      notification: (type, message) => \`\${type}: \${message}\`,
+      product_price: (name, price) => \`\${name} coûte \${price.toFixed(2)}$\`,
+    },
+    nl: {
+      welcome_message: "Welkom bij onze applicatie!",
+      user_count: (count) => \`Er \${count === 1 ? 'is' : 'zijn'} \${count} gebruiker\${count === 1 ? '' : 's'} online\`,
+      greeting: (name) => \`Hallo, \${name}!\`,
+      notification: (type, message) => \`\${type}: \${message}\`,
+      product_price: (name, price) => \`\${name} kost €\${price.toFixed(2)}\`,
+    },
+  };
+
+  // Add custom strings to localization
+  React.useEffect(() => {
+    setLocalization(customStrings);
+  }, []);
+
+  return (
+    <div>
+      {/* Simple string usage */}
+      <h2>{text\`welcome_message\`}</h2>
+      
+      {/* Function with single parameter */}
+      <p>{text\`greeting\${'John'}\`}</p>
+      
+      {/* Function with number (pluralization) */}
+      <p>{text\`user_count\${1}\`}</p>
+      <p>{text\`user_count\${5}\`}</p>
+      
+      {/* Multiple parameters */}
+      <div>{text\`notification\${'Error'}\${'Something went wrong'}\`}</div>
+      <div>{text\`notification\${'Success'}\${'Operation completed'}\`}</div>
+      
+      {/* Complex function with multiple types */}
+      <div>{text\`product_price\${'Premium Plan'}\${29.99}\`}</div>
+      
+      {/* Use specific language */}
+      <div>{textByLang('fr')\`greeting\${'Marie'}\`}</div>
     </div>
+  );
+};`;
+
+  return (
+    <ExampleSection
+      title="Custom Localization Strings"
+      description="Add your own localization strings with support for function interpolation and parameters"
+      code={code}
+      features={['Custom Strings', 'Function Interpolation', 'Multiple Parameters', 'Pluralization']}
+      notes={[
+        'Define custom strings with setLocalization()',
+        'Functions can accept multiple parameters for dynamic content',
+        'Perfect for pluralization and complex string formatting',
+        'Use textByLang() to get strings for specific languages'
+      ]}
+    >
+      <CustomLocalizationExampleComponent />
+    </ExampleSection>
   );
 };
 
