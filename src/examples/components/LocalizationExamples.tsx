@@ -20,8 +20,10 @@ import {
   DeleteConfirmButton,
   SaveButton,
   EditButton,
+  useForm,
 } from '../../index';
 import { CodeBlock } from './CodeBlock';
+import { FormActions } from './FormExamples';
 
 // Example 1: Basic localization usage
 export const BasicLocalizationExample = () => {
@@ -136,9 +138,6 @@ export const CustomLocalizationExample = () => {
   const { lang, setLanguage, text, setLocalization, textByLang, languages } = useLocalization();
   const [selectedLanguage, setSelectedLanguage] = useState('en');
 
-  // Get text function for selected language
-  const getTextInLanguage = textByLang(selectedLanguage);
-
   return (
     <div>
       <h4>Custom Localization Strings</h4>
@@ -167,30 +166,30 @@ export const CustomLocalizationExample = () => {
         <Card.Body>
           <div className="mb-3">
             <strong>Simple String:</strong>
-            <div className="text-success">{getTextInLanguage`welcome_message`}</div>
+            <div className="text-success">{text`welcome_message`}</div>
           </div>
 
           <div className="mb-3">
             <strong>Function with Single Parameter:</strong>
-            <div className="text-info">{getTextInLanguage`greeting${'John'}`}</div>
+            <div className="text-info">{text`greeting${'John'}`}</div>
           </div>
 
           <div className="mb-3">
             <strong>Function with Number (Pluralization):</strong>
-            <div className="text-warning">{getTextInLanguage`user_count${1}`}</div>
-            <div className="text-warning">{getTextInLanguage`user_count${5}`}</div>
+            <div className="text-warning">{text`user_count${1}`}</div>
+            <div className="text-warning">{text`user_count${5}`}</div>
           </div>
 
           <div className="mb-3">
             <strong>Function with Multiple Parameters:</strong>
-            <div className="text-danger">{getTextInLanguage`notification${'Error'}${'Something went wrong'}`}</div>
-            <div className="text-success">{getTextInLanguage`notification${'Success'}${'Operation completed'}`}</div>
+            <div className="text-danger">{text`notification${'Error'}${'Something went wrong'}`}</div>
+            <div className="text-success">{text`notification${'Success'}${'Operation completed'}`}</div>
           </div>
 
           <div className="mb-3">
             <strong>Complex Function:</strong>
-            <div className="text-primary">{getTextInLanguage`product_price${'Premium Plan'}${29.99}`}</div>
-            <div className="text-primary">{getTextInLanguage`product_price${'Basic Plan'}${9.99}`}</div>
+            <div className="text-primary">{text`product_price${'Premium Plan'}${29.99}`}</div>
+            <div className="text-primary">{text`product_price${'Basic Plan'}${9.99}`}</div>
           </div>
         </Card.Body>
       </Card>
@@ -234,28 +233,66 @@ const getTextInFrench = textByLang('fr');
 // Example 3: Localization with forms
 export const FormLocalizationExample = () => {
   const { text, lang } = useLocalization();
+  const [loginResult, setLoginResult] = useState<string>('');
 
   const formFields = {
     email: {
+      type: 'string' as const,
       label: text`your_email`,
       placeholder: text`enter_email`,
       required: true,
       initialValue: '',
+      formProps: { type: 'email' }
     },
     password: {
+      type: 'string' as const,
       label: text`your_password`,
       placeholder: text`enter_password`,
       required: true,
       initialValue: '',
-    },
-    remember: {
-      label: text`save`,
-      initialValue: false,
+      formProps: { type: 'password' }
     },
   };
 
-  const handleSubmit = (data: any) => {
-    alert(`${text`login`}: ${JSON.stringify(data)}`);
+  const handleSubmit = (data: any, callback?: () => void) => {
+    console.log('Login attempt:', data);
+    // Simulate login process
+    setLoginResult(`${text`login`} attempted with: ${data.email}`);
+    
+    // Simulate API call
+    setTimeout(() => {
+      setLoginResult(`${text`login`} successful for: ${data.email}`);
+      if (callback) callback();
+      
+      // Clear result after 3 seconds
+      setTimeout(() => setLoginResult(''), 3000);
+    }, 1000);
+  };
+
+  const validate = (data: any) => {
+    const errors: any = {};
+    if (data.email && !data.email.includes('@')) {
+      errors.email = 'Please enter a valid email address';
+    }
+    if (data.password && data.password.length < 6) {
+      errors.password = 'Password must be at least 6 characters';
+    }
+    return errors;
+  };
+
+  // Custom submit button that uses form context
+  const LoginButton = () => {
+    const { submit, loading } = useForm();
+    
+    return (
+      <Button 
+        onClick={submit} 
+        disabled={loading}
+        variant="primary"
+      >
+        {loading ? 'Logging in...' : text`login`}
+      </Button>
+    );
   };
 
   return (
@@ -263,23 +300,92 @@ export const FormLocalizationExample = () => {
       <h4>Localization with Forms</h4>
       <p>Forms automatically use localized strings for labels, placeholders, and validation messages.</p>
       
+      {loginResult && (
+        <Alert variant="success" className="mb-3">
+          {loginResult}
+        </Alert>
+      )}
+      
       <Card className="mb-4">
         <Card.Header>
           <h6 className="mb-0">{text`login`} Form</h6>
         </Card.Header>
         <Card.Body>
-          <FormProvider formFields={formFields} onSubmit={handleSubmit}>
-            <FormInput name="email" type="email" />
-            <FormInput name="password" type="password" />
-            <div className="d-flex justify-content-between">
-              <Button type="submit" variant="primary">
-                {text`login`}
-              </Button>
-              <Button type="button" variant="outline-secondary">
+          <FormProvider 
+            formFields={formFields} 
+            onSubmit={handleSubmit}
+            validate={validate}
+          >
+            <FormInput name="email" />
+            <FormInput name="password" />
+            <FormActions className="justify-content-between">
+              <LoginButton />
+              <Button 
+                type="button" 
+                variant="outline-secondary"
+                onClick={() => setLoginResult('')}
+              >
                 {text`cancel`}
               </Button>
-            </div>
+            </FormActions>
           </FormProvider>
+        </Card.Body>
+      </Card>
+
+      <Card className="mb-4">
+        <Card.Header>
+          <h6 className="mb-0">Code Example</h6>
+        </Card.Header>
+        <Card.Body>
+          <CodeBlock language="typescript">
+{`import { FormProvider, FormInput, useForm } from '@jasperoosthoek/react-toolbox';
+
+const LoginForm = () => {
+  const { text } = useLocalization();
+  
+  const formFields = {
+    email: {
+      type: 'string',
+      label: text\`your_email\`,
+      placeholder: text\`enter_email\`,
+      required: true,
+      initialValue: '',
+      formProps: { type: 'email' }
+    },
+    password: {
+      type: 'string', 
+      label: text\`your_password\`,
+      placeholder: text\`enter_password\`,
+      required: true,
+      initialValue: '',
+      formProps: { type: 'password' }
+    }
+  };
+
+  const handleSubmit = (data, callback) => {
+    console.log('Login:', data);
+    // Your login logic here
+    setTimeout(callback, 1000);
+  };
+
+  const LoginButton = () => {
+    const { submit, loading } = useForm();
+    return (
+      <Button onClick={submit} disabled={loading}>
+        {loading ? 'Logging in...' : text\`login\`}
+      </Button>
+    );
+  };
+
+  return (
+    <FormProvider formFields={formFields} onSubmit={handleSubmit}>
+      <FormInput name="email" />
+      <FormInput name="password" />
+      <LoginButton />
+    </FormProvider>
+  );
+};`}
+          </CodeBlock>
         </Card.Body>
       </Card>
     </div>

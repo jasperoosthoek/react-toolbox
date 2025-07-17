@@ -17,6 +17,20 @@ import {
 import { ExampleSection } from './ExampleSection';
 import { mockUsers, User } from '../data/mockData';
 
+// FormActions component for consistent button spacing
+interface FormActionsProps {
+  children: React.ReactNode;
+  className?: string;
+}
+
+export const FormActions: React.FC<FormActionsProps> = ({ children, className = '' }) => {
+  return (
+    <div className={`d-flex gap-2 align-items-center mt-3 ${className}`}>
+      {children}
+    </div>
+  );
+};
+
 // Example 1: Using FormProvider with custom layout
 const CustomFormExampleComponent = () => {
   const formFields = {
@@ -97,13 +111,15 @@ const CustomSubmitButton = () => {
   const { submit, loading } = useForm();
   
   return (
-    <Button 
-      onClick={submit} 
-      disabled={loading} // Only disable during loading
-      variant="primary"
-    >
-      {loading ? 'Submitting...' : 'Submit'}
-    </Button>
+    <FormActions>
+      <Button 
+        onClick={submit} 
+        disabled={loading} // Only disable during loading
+        variant="primary"
+      >
+        {loading ? 'Submitting...' : 'Submit'}
+      </Button>
+    </FormActions>
   );
 };
 
