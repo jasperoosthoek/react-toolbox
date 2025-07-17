@@ -926,7 +926,8 @@ describe('Form Components Tests', () => {
         );
 
         const input = getByLabelText('Username *');
-        expect(input).toHaveAttribute('id', 'username');
+        // The id should now be formId-fieldName due to useId() implementation
+        expect(input).toHaveAttribute('id', expect.stringMatching(/^test-id-\d+-username$/));
       });
     });
   });

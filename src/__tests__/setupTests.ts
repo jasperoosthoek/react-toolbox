@@ -10,6 +10,19 @@ global.console = {
   warn: jest.fn(),
 };
 
+// Mock React's useId hook to return consistent values for testing
+jest.mock('react', () => {
+  const actualReact = jest.requireActual('react');
+  let idCounter = 0;
+  return {
+    ...actualReact,
+    useId: jest.fn(() => {
+      idCounter++;
+      return `test-id-${idCounter}`;
+    })
+  };
+});
+
 // Mock react-localization
 jest.mock('react-localization', () => {
   return jest.fn().mockImplementation((translations) => {
@@ -51,6 +64,10 @@ jest.mock('react-dnd-html5-backend', () => ({
 // Mock react-bootstrap with proper React elements
 jest.mock('react-bootstrap', () => {
   const mockReact = require('react');
+  
+  // Create a context for Form controlId
+  const FormContext = mockReact.createContext({ controlId: null });
+  
   return {
     Button: mockReact.forwardRef((props, ref) => {
       const { variant, size, className = '', ...restProps } = props;
@@ -132,26 +149,36 @@ jest.mock('react-bootstrap', () => {
       {
         Group: (props) => {
           const { controlId, ...restProps } = props;
-          return mockReact.createElement('div', { 
-            ...restProps, 
-            className: 'form-group'
+          const contextValue = { controlId: controlId || null };
+          
+          return mockReact.createElement(FormContext.Provider, { value: contextValue },
+            mockReact.createElement('div', { 
+              ...restProps, 
+              className: 'form-group'
+            }, props.children)
+          );
+        },
+        Label: (props) => {
+          const context = mockReact.useContext(FormContext);
+          const htmlFor = props.htmlFor || context.controlId || undefined;
+          
+          return mockReact.createElement('label', { 
+            ...props,
+            htmlFor: htmlFor
           }, props.children);
         },
-        Label: (props) => mockReact.createElement('label', { 
-          ...props,
-          htmlFor: props.htmlFor || undefined
-        }, props.children),
         Control: mockReact.forwardRef((props, ref) => {
+          const context = mockReact.useContext(FormContext);
           const element = props.as || (props.type === 'textarea' ? 'textarea' : 'input');
           const { isInvalid, className = '', ...restProps } = props;
           let classes = className;
           if (isInvalid) {
             classes += (classes ? ' ' : '') + 'is-invalid';
-          }
+          } 
           const controlProps = { 
             ...restProps, 
             ref,
-            id: props.id || undefined,
+            id: props.id || context.controlId || undefined,
             className: classes.trim() || undefined
           };
           // Add default type="text" for input elements if not specified
@@ -161,6 +188,7 @@ jest.mock('react-bootstrap', () => {
           return mockReact.createElement(element, controlProps);
         }),
         Select: mockReact.forwardRef((props, ref) => {
+          const context = mockReact.useContext(FormContext);
           const { isInvalid, className = '', ...restProps } = props;
           let classes = className;
           if (isInvalid) {
@@ -169,10 +197,12 @@ jest.mock('react-bootstrap', () => {
           return mockReact.createElement('select', { 
             ...restProps, 
             ref,
+            id: props.id || context.controlId || undefined,
             className: classes.trim() || undefined
           }, props.children);
         }),
         Check: mockReact.forwardRef((props, ref) => {
+          const context = mockReact.useContext(FormContext);
           const { label, type, checked, isInvalid, className = '', id, ...restProps } = props;
           let classes = 'form-check-input';
           if (isInvalid) {
@@ -182,7 +212,7 @@ jest.mock('react-bootstrap', () => {
             classes += ` ${className}`;
           }
           
-          const checkboxId = id || 'checkbox';
+          const checkboxId = id || context.controlId || 'checkbox';
           
           return mockReact.createElement('div', { className: 'form-check' }, [
             mockReact.createElement('input', {
