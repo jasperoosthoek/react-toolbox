@@ -1,5 +1,4 @@
 import React from 'react';
-import { render, fireEvent } from '@testing-library/react';
 import { LocalizationProvider } from '../localization/LocalizationContext';
 
 // Core Form Components
@@ -33,62 +32,29 @@ import {
   BadgeSelection 
 } from '../components/forms/fields/FormBadgesSelection';
 
-// Test wrapper with all required providers
-const TestWrapper = ({ children }: { children: React.ReactNode }) => (
-  <LocalizationProvider>
-    {children}
-  </LocalizationProvider>
-);
+// Import test utilities
+import {
+  TestWrapper,
+  FormTestWrapper,
+  renderWithLocalization,
+  renderWithFormProvider,
+  MOCK_FORM_FIELDS,
+  MOCK_FORM_VALUES,
+  MOCK_OPTIONS,
+  MOCK_MODAL_DATA,
+  formHelpers,
+  validationHelpers,
+  modalHelpers,
+  badgeHelpers,
+  a11yHelpers,
+  renderHelpers,
+  render,
+  fireEvent,
+  waitFor,
+  screen
+} from './utils';
 
-// Comprehensive form wrapper for field testing
-const FormTestWrapper = ({ children, formFields, onSubmit, validate }: {
-  children: React.ReactNode;
-  formFields?: any;
-  onSubmit?: any;
-  validate?: any;
-}) => {
-  const defaultFormFields = {
-    'test-input': { initialValue: '', required: false, type: 'string' },
-    'test-checkbox': { initialValue: false, required: false, type: 'boolean' },
-    'test-select': { 
-      initialValue: '', 
-      required: false,
-      type: 'select',
-      options: [
-        { value: '1', label: 'Option 1' },
-        { value: '2', label: 'Option 2' },
-      ]
-    },
-    'test-dropdown': {
-      initialValue: '',
-      required: false,
-      type: 'dropdown',
-      list: [
-        { id: 1, name: 'Item 1' },
-        { id: 2, name: 'Item 2' },
-      ]
-    },
-    'test-badges': {
-      initialValue: [],
-      required: false,
-      type: 'badges'
-    }
-  };
-
-  const defaultSubmit = jest.fn();
-
-  return (
-    <LocalizationProvider>
-      <FormProvider 
-        formFields={formFields || defaultFormFields}
-        onSubmit={onSubmit || defaultSubmit}
-        validate={validate}
-      >
-        {children}
-      </FormProvider>
-    </LocalizationProvider>
-  );
-};
+// Using imported test utilities - no need to redefine
 
 describe('Form Components Tests', () => {
   afterEach(() => {
@@ -96,44 +62,21 @@ describe('Form Components Tests', () => {
   });
 
   describe('FormModalProvider Component', () => {
-
-    const mockFormFields = {
-      name: {
-        initialValue: '',
-        label: 'Name',
-        required: true,
-        formProps: {},
-      },
-      email: {
-        initialValue: '',
-        label: 'Email',
-        required: false,
-        formProps: { type: 'email' },
-      },
-    };
-
-    const mockInitialState = {
-      name: '',
-      email: '',
-    };
-
     describe('Basic Functionality', () => {
       it('should render FormModalProvider without crashing', () => {
         const mockOnCreate = jest.fn();
         
-        expect(() => {
-          render(
-            <TestWrapper>
-              <FormModalProvider
-                formFields={mockFormFields}
-                initialState={mockInitialState}
-                onCreate={mockOnCreate}
-              >
-                <div>Test Content</div>
-              </FormModalProvider>
-            </TestWrapper>
+        renderHelpers.expectNoRenderError(() => {
+          renderWithLocalization(
+            <FormModalProvider
+              formFields={MOCK_MODAL_DATA.formFields}
+              initialState={MOCK_MODAL_DATA.initialState}
+              onCreate={mockOnCreate}
+            >
+              <div>Test Content</div>
+            </FormModalProvider>
           );
-        }).not.toThrow();
+        });
       });
 
       it('should provide form modal context', () => {
@@ -151,16 +94,14 @@ describe('Form Components Tests', () => {
           );
         };
 
-        const { getByTestId } = render(
-          <TestWrapper>
-            <FormModalProvider
-              formFields={mockFormFields}
-              initialState={mockInitialState}
-              onCreate={mockOnCreate}
-            >
-              <TestComponent />
-            </FormModalProvider>
-          </TestWrapper>
+        const { getByTestId } = renderWithLocalization(
+          <FormModalProvider
+            formFields={MOCK_MODAL_DATA.formFields}
+            initialState={MOCK_MODAL_DATA.initialState}
+            onCreate={mockOnCreate}
+          >
+            <TestComponent />
+          </FormModalProvider>
         );
 
         expect(getByTestId('has-provider')).toHaveTextContent('true');
@@ -169,128 +110,115 @@ describe('Form Components Tests', () => {
       it('should handle create modal button', () => {
         const mockOnCreate = jest.fn();
         
-        const { getByRole } = render(
-          <TestWrapper>
-            <FormModalProvider
-              formFields={mockFormFields}
-              initialState={mockInitialState}
-              onCreate={mockOnCreate}
-            >
-              <FormCreateModalButton>Create</FormCreateModalButton>
-            </FormModalProvider>
-          </TestWrapper>
+        const { getByRole } = renderWithLocalization(
+          <FormModalProvider
+            formFields={MOCK_MODAL_DATA.formFields}
+            initialState={MOCK_MODAL_DATA.initialState}
+            onCreate={mockOnCreate}
+          >
+            <FormCreateModalButton>Create</FormCreateModalButton>
+          </FormModalProvider>
         );
 
         const button = getByRole('button');
         expect(button).toBeInTheDocument();
         
-        expect(() => {
+        renderHelpers.expectNoRenderError(() => {
           fireEvent.click(button);
-        }).not.toThrow();
+        });
       });
 
       it('should handle edit modal button', () => {
         const mockOnUpdate = jest.fn();
-        const editState = { name: 'John', email: 'john@example.com' };
         
-        const { getByRole } = render(
-          <TestWrapper>
-            <FormModalProvider
-              formFields={mockFormFields}
-              initialState={mockInitialState}
-              onUpdate={mockOnUpdate}
-            >
-              <FormEditModalButton state={editState}>Edit</FormEditModalButton>
-            </FormModalProvider>
-          </TestWrapper>
+        const { getByRole } = renderWithLocalization(
+          <FormModalProvider
+            formFields={MOCK_MODAL_DATA.formFields}
+            initialState={MOCK_MODAL_DATA.initialState}
+            onUpdate={mockOnUpdate}
+          >
+            <FormEditModalButton state={MOCK_MODAL_DATA.editStates.user1}>Edit</FormEditModalButton>
+          </FormModalProvider>
         );
 
         const button = getByRole('button');
         expect(button).toBeInTheDocument();
         
-        expect(() => {
+        renderHelpers.expectNoRenderError(() => {
           fireEvent.click(button);
-        }).not.toThrow();
+        });
       });
 
       it('should handle modal with onSave fallback', () => {
         const mockOnSave = jest.fn();
         
-        const { getByRole } = render(
-          <TestWrapper>
-            <FormModalProvider
-              formFields={mockFormFields}
-              initialState={mockInitialState}
-              onSave={mockOnSave}
-            >
-              <FormCreateModalButton>Create</FormCreateModalButton>
-            </FormModalProvider>
-          </TestWrapper>
+        const { getByRole } = renderWithLocalization(
+          <FormModalProvider
+            formFields={MOCK_MODAL_DATA.formFields}
+            initialState={MOCK_MODAL_DATA.initialState}
+            onSave={mockOnSave}
+          >
+            <FormCreateModalButton>Create</FormCreateModalButton>
+          </FormModalProvider>
         );
 
         const button = getByRole('button');
-        expect(() => {
+        renderHelpers.expectNoRenderError(() => {
           fireEvent.click(button);
-        }).not.toThrow();
+        });
       });
 
       it('should handle custom modal titles', () => {
         const mockOnCreate = jest.fn();
         
-        expect(() => {
-          render(
-            <TestWrapper>
-              <FormModalProvider
-                formFields={mockFormFields}
-                initialState={mockInitialState}
-                onCreate={mockOnCreate}
-                createModalTitle="Create New Item"
-                editModalTitle="Edit Item"
-              >
-                <FormCreateModalButton>Create</FormCreateModalButton>
-              </FormModalProvider>
-            </TestWrapper>
+        renderHelpers.expectNoRenderError(() => {
+          renderWithLocalization(
+            <FormModalProvider
+              formFields={MOCK_MODAL_DATA.formFields}
+              initialState={MOCK_MODAL_DATA.initialState}
+              onCreate={mockOnCreate}
+              createModalTitle="Create New Item"
+              editModalTitle="Edit Item"
+            >
+              <FormCreateModalButton>Create</FormCreateModalButton>
+            </FormModalProvider>
           );
-        }).not.toThrow();
+        });
       });
 
       it('should handle loading state', () => {
         const mockOnCreate = jest.fn();
         
-        expect(() => {
-          render(
-            <TestWrapper>
-              <FormModalProvider
-                formFields={mockFormFields}
-                initialState={mockInitialState}
-                onCreate={mockOnCreate}
-                loading={true}
-              >
-                <div>Test Content</div>
-              </FormModalProvider>
-            </TestWrapper>
+        renderHelpers.expectNoRenderError(() => {
+          renderWithLocalization(
+            <FormModalProvider
+              formFields={MOCK_MODAL_DATA.formFields}
+              initialState={MOCK_MODAL_DATA.initialState}
+              onCreate={mockOnCreate}
+              loading={true}
+            >
+              <div>Test Content</div>
+            </FormModalProvider>
           );
-        }).not.toThrow();
+        });
       });
 
       it('should handle dialog styling props', () => {
         const mockOnCreate = jest.fn();
         
-        expect(() => {
-          render(
-            <TestWrapper>
-              <FormModalProvider
-                formFields={mockFormFields}
-                initialState={mockInitialState}
-                onCreate={mockOnCreate}
-                dialogClassName="custom-dialog"
-                width={75}
-              >
-                <div>Test Content</div>
-              </FormModalProvider>
-            </TestWrapper>
+        renderHelpers.expectNoRenderError(() => {
+          renderWithLocalization(
+            <FormModalProvider
+              formFields={MOCK_MODAL_DATA.formFields}
+              initialState={MOCK_MODAL_DATA.initialState}
+              onCreate={mockOnCreate}
+              dialogClassName="custom-dialog"
+              width={75}
+            >
+              <div>Test Content</div>
+            </FormModalProvider>
           );
-        }).not.toThrow();
+        });
       });
     });
   });
@@ -645,119 +573,76 @@ describe('Form Components Tests', () => {
 
   // Comprehensive Form Field Component Tests
   describe('FormInput Component', () => {
-    const mockFormFields = {
-      username: {
-        label: 'Username',
-        required: true,
-        formProps: { placeholder: 'Enter username', 'data-testid': 'input-field' },
-      },
-      email: {
-        label: 'Email',
-        required: false,
-        formProps: { type: 'email' },
-      },
-      password: {
-        label: 'Password',
-        required: true,
-        formProps: { type: 'password' },
-      },
-    };
-
-    const mockFormValues = {
-      username: 'testuser',
-      email: 'test@example.com',
-      password: '',
-    };
-
     const renderWithFormProvider = (
       ui: React.ReactElement, 
-      formValues = mockFormValues,
+      formValues = MOCK_FORM_VALUES.basic,
       additionalProps = {}
     ) => {
       return render(
-        <FormProvider 
-          formFields={mockFormFields}
+        <FormTestWrapper 
+          formFields={MOCK_FORM_FIELDS}
           initialState={formValues}
-          onSubmit={jest.fn()}
           {...additionalProps}
         >
           {ui}
-        </FormProvider>
+        </FormTestWrapper>
       );
     };
 
     describe('Basic Functionality', () => {
       it('should render input with label', () => {
-        const { getByLabelText } = renderWithFormProvider(
-          <FormInput name="username" />
-        );
-
-        const input = getByLabelText('Username *');
-        expect(input).toBeInTheDocument();
+        renderWithFormProvider(<FormInput name="username" />);
+        
+        a11yHelpers.expectProperLabelAssociation('Username *');
+        const input = screen.getByLabelText('Username *');
         expect(input.tagName).toBe('INPUT');
       });
 
       it('should show current value', () => {
-        const { getByDisplayValue } = renderWithFormProvider(
-          <FormInput name="username" />
-        );
-
-        expect(getByDisplayValue('testuser')).toBeInTheDocument();
+        renderWithFormProvider(<FormInput name="username" />);
+        
+        expect(screen.getByDisplayValue('testuser')).toBeInTheDocument();
       });
 
       it('should handle change events', () => {
-        const { getByLabelText } = renderWithFormProvider(
-          <FormInput name="username" />
-        );
-
-        const input = getByLabelText('Username *');
-        fireEvent.change(input, { target: { value: 'newuser' } });
-
+        renderWithFormProvider(<FormInput name="username" />);
+        
+        const input = formHelpers.fillField('Username *', 'newuser');
         expect(input).toHaveValue('newuser');
       });
 
       it('should not show asterisk for non-required fields', () => {
-        const { getByLabelText } = renderWithFormProvider(
-          <FormInput name="email" />
-        );
-
-        expect(getByLabelText('Email')).toBeInTheDocument();
+        renderWithFormProvider(<FormInput name="email" />);
+        
+        a11yHelpers.expectProperLabelAssociation('Email');
       });
 
       it('should override required from component props', () => {
-        const { getByLabelText } = renderWithFormProvider(
-          <FormInput name="email" required={true} />
-        );
-
-        expect(getByLabelText('Email *')).toBeInTheDocument();
+        renderWithFormProvider(<FormInput name="email" required={true} />);
+        
+        a11yHelpers.expectProperLabelAssociation('Email *');
       });
     });
 
     describe('Input Types', () => {
       it('should handle password type', () => {
-        const { getByLabelText } = renderWithFormProvider(
-          <FormInput name="password" />
-        );
-
-        const input = getByLabelText('Password *');
+        renderWithFormProvider(<FormInput name="password" />);
+        
+        const input = screen.getByLabelText('Password *');
         expect(input).toHaveAttribute('type', 'password');
       });
 
       it('should handle email type', () => {
-        const { getByLabelText } = renderWithFormProvider(
-          <FormInput name="email" />
-        );
-
-        const input = getByLabelText('Email');
+        renderWithFormProvider(<FormInput name="email" />);
+        
+        const input = screen.getByLabelText('Email');
         expect(input).toHaveAttribute('type', 'email');
       });
 
       it('should default to text type when not specified', () => {
-        const { getByLabelText } = renderWithFormProvider(
-          <FormInput name="username" />
-        );
-
-        const input = getByLabelText('Username *');
+        renderWithFormProvider(<FormInput name="username" />);
+        
+        const input = screen.getByLabelText('Username *');
         expect(input).toHaveAttribute('type', 'text');
       });
     });
@@ -793,7 +678,7 @@ describe('Form Components Tests', () => {
 
         const { getByTestId, getByText } = render(
           <FormProvider 
-            formFields={mockFormFields}
+            formFields={MOCK_FORM_FIELDS}
             initialState={{ username: '' }}
             onSubmit={mockSubmit}
           >
@@ -826,7 +711,7 @@ describe('Form Components Tests', () => {
 
         const { getByTestId, getByText, getByLabelText } = render(
           <FormProvider 
-            formFields={mockFormFields}
+            formFields={MOCK_FORM_FIELDS}
             initialState={{ username: '' }}
             onSubmit={mockSubmit}
             validate={mockValidate}
@@ -864,7 +749,7 @@ describe('Form Components Tests', () => {
 
         const { getByTestId, getByLabelText } = render(
           <FormProvider 
-            formFields={mockFormFields}
+            formFields={MOCK_FORM_FIELDS}
             initialState={{ username: '' }}
             onSubmit={mockSubmit}
             validate={mockValidate}
@@ -884,6 +769,20 @@ describe('Form Components Tests', () => {
         const mockSubmit = jest.fn();
         const mockValidate = jest.fn(() => ({})); // No errors
         
+        // Use minimal form fields for this focused test
+        const minimalFormFields = {
+          username: {
+            label: 'Username',
+            required: true,
+            formProps: { placeholder: 'Enter username' },
+          },
+          password: {
+            label: 'Password',
+            required: true,
+            formProps: { type: 'password' },
+          },
+        };
+        
         const TestFormWithSubmit = () => {
           const { submit } = useForm();
           return (
@@ -895,10 +794,10 @@ describe('Form Components Tests', () => {
           );
         };
 
-        const { getByTestId, getByLabelText } = render(
+        const { getByTestId } = render(
           <FormProvider 
-            formFields={mockFormFields}
-            initialState={{ username: '', password: '' }}
+            formFields={minimalFormFields}
+            initialState={{ username: 'validuser', password: 'validpassword' }}
             onSubmit={mockSubmit}
             validate={mockValidate}
           >
@@ -906,14 +805,7 @@ describe('Form Components Tests', () => {
           </FormProvider>
         );
 
-        // Fill all required fields with valid data
-        const usernameInput = getByLabelText('Username *');
-        const passwordInput = getByLabelText('Password *');
-        
-        fireEvent.change(usernameInput, { target: { value: 'validuser' } });
-        fireEvent.change(passwordInput, { target: { value: 'validpassword' } });
-
-        // Submit with valid data
+        // Submit with valid data already filled
         fireEvent.click(getByTestId('submit-btn'));
 
         // Submit should have been called
@@ -933,52 +825,37 @@ describe('Form Components Tests', () => {
   });
 
   describe('FormDropdown Component', () => {
-    const mockFormFields = {
-      category: {
-        label: 'Category',
-        required: true,
-        formProps: { 'data-testid': 'dropdown-select' },
-      },
-      status: {
-        label: 'Status',
-        required: false,
-        formProps: {},
-      },
-    };
-
-    const mockFormValues = {
-      category: 'electronics',
-      status: '',
-    };
-
-    const defaultOptions = [
-      { value: '', label: 'Select a category' },
-      { value: 'electronics', label: 'Electronics' },
-      { value: 'clothing', label: 'Clothing' },
-      { value: 'books', label: 'Books' },
-    ];
-
     const renderWithFormProvider = (
       ui: React.ReactElement, 
-      formValues = mockFormValues,
+      formValues = { category: 'electronics', status: '' },
       additionalProps = {}
     ) => {
       return render(
-        <FormProvider 
-          formFields={mockFormFields}
+        <FormTestWrapper 
+          formFields={{
+            category: {
+              label: 'Category',
+              required: true,
+              formProps: { 'data-testid': 'dropdown-select' },
+            },
+            status: {
+              label: 'Status',
+              required: false,
+              formProps: {},
+            },
+          }}
           initialState={formValues}
-          onSubmit={jest.fn()}
           {...additionalProps}
         >
           {ui}
-        </FormProvider>
+        </FormTestWrapper>
       );
     };
 
     describe('Basic Functionality', () => {
       it('should render dropdown with label', () => {
         const { getByLabelText } = renderWithFormProvider(
-          <FormDropdown name="category" options={defaultOptions} />
+          <FormDropdown name="category" options={MOCK_OPTIONS.categories} />
         );
 
         const select = getByLabelText('Category *');
@@ -988,7 +865,7 @@ describe('Form Components Tests', () => {
 
       it('should render all options', () => {
         const { getByRole } = renderWithFormProvider(
-          <FormDropdown name="category" options={defaultOptions} />
+          <FormDropdown name="category" options={MOCK_OPTIONS.categories} />
         );
 
         const select = getByRole('combobox');
@@ -1002,7 +879,7 @@ describe('Form Components Tests', () => {
       it('should NOT show validation error before submit is attempted', () => {
         // When form is pristine (initial state), errors should not be shown
         const { queryByText } = renderWithFormProvider(
-          <FormDropdown name="category" options={defaultOptions} />,
+          <FormDropdown name="category" options={MOCK_OPTIONS.categories} />,
           { category: '' }, // Invalid value
           {
             validate: () => ({ category: 'Category is required' })
@@ -1030,7 +907,7 @@ describe('Form Components Tests', () => {
           const { submit } = useForm();
           return (
             <div>
-              <FormDropdown name="category" options={defaultOptions} />
+              <FormDropdown name="category" options={MOCK_OPTIONS.categories} />
               <button onClick={submit} data-testid="submit-btn">Submit</button>
             </div>
           );
@@ -1068,7 +945,7 @@ describe('Form Components Tests', () => {
           const { submit } = useForm();
           return (
             <div>
-              <FormDropdown name="category" options={defaultOptions} />
+              <FormDropdown name="category" options={MOCK_OPTIONS.categories} />
               <button onClick={submit} data-testid="submit-btn">Submit</button>
             </div>
           );
@@ -1076,7 +953,7 @@ describe('Form Components Tests', () => {
 
         const { getByTestId, getByLabelText } = render(
           <FormProvider 
-            formFields={mockFormFields}
+            formFields={MOCK_FORM_FIELDS}
             initialState={{ category: '' }}
             onSubmit={mockSubmit}
             validate={mockValidate}
@@ -1093,9 +970,8 @@ describe('Form Components Tests', () => {
       });
 
       it('should handle string options', () => {
-        const stringOptions = ['red', 'green', 'blue'];
         const { getByRole } = renderWithFormProvider(
-          <FormDropdown name="category" options={stringOptions} />
+          <FormDropdown name="category" options={MOCK_OPTIONS.stringOptions} />
         );
 
         const select = getByRole('combobox');
