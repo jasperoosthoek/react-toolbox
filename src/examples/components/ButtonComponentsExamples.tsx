@@ -14,6 +14,7 @@ import {
   SyncButton
 } from '../../index';
 import { ExampleSection } from './ExampleSection';
+import { FixedLoadingIndicator } from './FixedLoadingIndicator';
 
 // Example 1: ConfirmButton with different configurations
 const ConfirmButtonExampleComponent = () => {
@@ -211,25 +212,11 @@ const DeleteConfirmButtonExampleComponent = () => {
 
   return (
     <div>
-      {/* Fixed position loading indicator that doesn't affect layout */}
-      {isDeleting && (
-        <div 
-          className="alert alert-warning" 
-          style={{
-            position: 'fixed',
-            top: '20px',
-            right: '20px',
-            zIndex: 1050,
-            minWidth: '250px',
-            boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
-          }}
-        >
-          <div className="d-flex align-items-center">
-            <div className="spinner-border spinner-border-sm me-2" role="status"></div>
-            Deleting item...
-          </div>
-        </div>
-      )}
+      <FixedLoadingIndicator 
+        show={isDeleting}
+        message="Deleting item..."
+        variant="warning"
+      />
       
       <Card className="mb-4">
         <Card.Header>
@@ -268,6 +255,7 @@ export const DeleteConfirmButtonExample = () => {
   const code = `import React, { useState } from 'react';
 import { DeleteConfirmButton } from '@jasperoosthoek/react-toolbox';
 import { Badge } from 'react-bootstrap';
+import { FixedLoadingIndicator } from './FixedLoadingIndicator';
 
 const ItemList = () => {
   const [items, setItems] = useState([
@@ -292,42 +280,28 @@ const ItemList = () => {
 
   return (
     <div>
-      {/* Fixed position loading indicator */}
-      {isDeleting && (
-        <div 
-          className="alert alert-warning" 
-          style={{
-            position: 'fixed',
-            top: '20px',
-            right: '20px',
-            zIndex: 1050,
-            minWidth: '250px',
-            boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
-          }}
-        >
-          <div className="d-flex align-items-center">
-            <div className="spinner-border spinner-border-sm me-2" role="status"></div>
-            Deleting item...
-          </div>
-        </div>
-      )}
+      <FixedLoadingIndicator 
+        show={isDeleting}
+        message="Deleting item..."
+        variant="warning"
+      />
       
       <div className="list-group">
-      {items.map(item => (
-        <div key={item.id} className="list-group-item d-flex justify-content-between align-items-center">
-          <div>
-            <strong>{item.name}</strong>
-            <Badge bg={item.type === 'folder' ? 'primary' : 'secondary'} className="ms-2">
-              {item.type}
-            </Badge>
+        {items.map(item => (
+          <div key={item.id} className="list-group-item d-flex justify-content-between align-items-center">
+            <div>
+              <strong>{item.name}</strong>
+              <Badge bg={item.type === 'folder' ? 'primary' : 'secondary'} className="ms-2">
+                {item.type}
+              </Badge>
+            </div>
+            <DeleteConfirmButton
+              onDelete={() => handleDelete(item.id)}
+              loading={loadingStates[item.id]}
+              size="sm"
+            />
           </div>
-          <DeleteConfirmButton
-            onDelete={() => handleDelete(item.id)}
-            loading={loadingStates[item.id]}
-            size="sm"
-          />
-        </div>
-      ))}
+        ))}
       </div>
     </div>
   );

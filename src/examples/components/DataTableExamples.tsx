@@ -18,6 +18,7 @@ import {
   DeleteConfirmButton
 } from '../../index';
 import { mockUsers, mockProducts, mockOrders, User, Product, Order, getStatusBadge, formatCurrency, formatDate } from '../data/mockData';
+import { FixedLoadingIndicator } from './FixedLoadingIndicator';
 
 // Example 1: Basic DataTable with sorting
 export const BasicDataTableExample = () => {
@@ -281,25 +282,11 @@ export const DragDropDataTableExample = () => {
       <h4>DataTable with Drag & Drop Reordering</h4>
       <p>Drag rows to reorder them. The order is saved to the server with error handling.</p>
       
-      {/* Fixed position loading indicator that doesn't affect layout */}
-      {isMoving && (
-        <div 
-          className="alert alert-info" 
-          style={{
-            position: 'fixed',
-            top: '20px',
-            right: '20px',
-            zIndex: 1050,
-            minWidth: '250px',
-            boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
-          }}
-        >
-          <div className="d-flex align-items-center">
-            <div className="spinner-border spinner-border-sm me-2" role="status"></div>
-            Saving new order...
-          </div>
-        </div>
-      )}
+      <FixedLoadingIndicator 
+        show={isMoving}
+        message="Saving new order..."
+        variant="info"
+      />
       
       <DataTable
         data={products}
