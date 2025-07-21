@@ -14,7 +14,7 @@ export const FormCheckbox = (props: FormCheckboxProps) => {
   const controlId = `${formId}-${props.name}`;
 
   return (
-    <Form.Group controlId={controlId} className={`mt-2${className ? ` ${className}` : ''}`}>
+    <Form.Group controlId={controlId} className={`mt-2 mb-2${className ? ` ${className}` : ''}`}>
       {isInvalid && error && (
         <Form.Text id={errorId} className="text-danger">
           {error}

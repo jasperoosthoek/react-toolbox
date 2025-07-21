@@ -11,8 +11,10 @@ import {
   FormTextarea,
   FormDropdown,
   FormBadgesSelection,
+  FormFieldsRenderer,
   useForm,
-  useFormModal
+  useFormModal,
+  BadgeSelection
 } from '../../index';
 import { ExampleSection } from './ExampleSection';
 import { mockUsers, User } from '../data/mockData';
@@ -368,7 +370,7 @@ const FlexibleFormExampleComponent = () => {
           <FormSelect 
             name="contactMethod" 
             label="Preferred Contact Method" 
-            list={contactMethodOptions} 
+            options={contactMethodOptions} 
           />
           <FormTextarea 
             name="message" 
@@ -392,21 +394,21 @@ const RendererFormExampleComponent = () => {
 
   const surveyFormFields = {
     name: { 
-      type: 'text' as const,
+      type: 'text',
       required: true, 
       initialValue: '',
       label: 'Full Name',
       placeholder: 'Enter your full name'
     },
     age: { 
-      type: 'number' as const,
+      type: 'number',
       initialValue: 0,
       label: 'Age',
       min: 18,
       max: 100
     },
     experience: {
-      type: 'select' as const,
+      type: 'select',
       required: true,
       initialValue: '',
       label: 'Experience Level',
@@ -417,25 +419,28 @@ const RendererFormExampleComponent = () => {
       ]
     },
     skills: {
-      type: 'badges' as const,
-      initialValue: [],
+      component: FormBadgesSelection,
+      initialValue: ['react'],
       label: 'Skills',
-      options: [
-        { value: 'react', label: 'React' },
-        { value: 'typescript', label: 'TypeScript' },
-        { value: 'node', label: 'Node.js' },
-        { value: 'python', label: 'Python' },
-        { value: 'design', label: 'UI/UX Design' },
-        { value: 'testing', label: 'Testing' }
-      ]
+      idKey: 'value',
+      formProps: {
+        list: [
+          { value: 'react', label: 'React' },
+          { value: 'typescript', label: 'TypeScript' },
+          { value: 'node', label: 'Node.js' },
+          { value: 'python', label: 'Python' },
+          { value: 'design', label: 'UI/UX Design' },
+          { value: 'testing', label: 'Testing' }
+        ],
+      }
     },
     remote: {
-      type: 'checkbox' as const,
+      component: FormCheckbox,
       initialValue: false,
       label: 'Open to remote work'
     },
     comments: {
-      type: 'textarea' as const,
+      type: 'textarea',
       initialValue: '',
       label: 'Additional Comments',
       placeholder: 'Tell us anything else we should know...',
@@ -451,63 +456,6 @@ const RendererFormExampleComponent = () => {
     }, 1000);
   };
 
-  // Simple field renderer
-  const renderField = (name: string, config: any) => {
-    const commonProps = {
-      name,
-      label: config.label,
-      placeholder: config.placeholder,
-      required: config.required
-    };
-
-    switch (config.type) {
-      case 'text':
-      case 'number':
-        return (
-          <FormInput
-            key={name}
-            {...commonProps}
-            type={config.type}
-            min={config.min}
-            max={config.max}
-          />
-        );
-      case 'select':
-        return (
-          <FormSelect
-            key={name}
-            {...commonProps}
-            list={config.options}
-          />
-        );
-      case 'badges':
-        return (
-          <FormBadgesSelection
-            key={name}
-            {...commonProps}
-            list={config.options}
-          />
-        );
-      case 'checkbox':
-        return (
-          <FormCheckbox
-            key={name}
-            name={name}
-            label={config.label}
-          />
-        );
-      case 'textarea':
-        return (
-          <FormTextarea
-            key={name}
-            {...commonProps}
-            rows={config.rows}
-          />
-        );
-      default:
-        return null;
-    }
-  };
 
   return (
     <div>
@@ -521,9 +469,7 @@ const RendererFormExampleComponent = () => {
             Help us understand your background and preferences
           </p>
 
-          {Object.entries(surveyFormFields).map(([name, config]) =>
-            renderField(name, config)
-          )}
+          <FormFieldsRenderer />
 
           <CustomSubmitButton />
         </div>
@@ -656,7 +602,7 @@ const MixedFormExampleComponent = () => {
               <FormSelect 
                 name="priority" 
                 label="Shipping Priority"
-                list={priorityOptions}
+                options={priorityOptions}
               />
             </Card.Body>
           </Card>
@@ -1009,7 +955,7 @@ const ContactForm = () => {
           <FormSelect 
             name="contactMethod" 
             label="Contact Method" 
-            list={contactMethods} 
+            options={contactMethods} 
           />
           <FormTextarea 
             name="message" 
@@ -1108,7 +1054,7 @@ const SurveyForm = () => {
       case 'text':
         return <FormInput key={name} {...props} />;
       case 'select':
-        return <FormSelect key={name} {...props} list={config.options} />;
+        return <FormSelect key={name} {...props} options={config.options} />;
       case 'badges':
         return <FormBadgesSelection key={name} {...props} list={config.options} />;
       case 'checkbox':
@@ -1215,7 +1161,7 @@ const OrderForm = () => {
               <FormInput name="quantity" label="Quantity" type="number" />
             </Col>
             <Col md={6}>
-              <FormSelect name="priority" label="Priority" list={priorityOptions} />
+              <FormSelect name="priority" label="Priority" options={priorityOptions} />
             </Col>
           </Row>
         </Card.Body>

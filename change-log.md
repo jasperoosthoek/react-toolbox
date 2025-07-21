@@ -351,3 +351,4 @@
 ##### Version 0.9.6
 - All form input components accept `className` prop that is given to `Form.Group` component
 - Add 'mt-2' class to `FormCheckbox` improve vertical spacing
+- `FormBadgesSelection` uses same value/label inputs as `FormSelect`

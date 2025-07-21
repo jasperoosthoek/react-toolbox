@@ -240,9 +240,9 @@ describe('Form Components Tests', () => {
     };
 
     const mockOptions = [
-      { id: 1, name: 'React' },
-      { id: 2, name: 'TypeScript' },
-      { id: 3, name: 'JavaScript' },
+      { value: 1, label: 'React' },
+      { value: 2, label: 'TypeScript' },
+      { value: 3, label: 'JavaScript' },
     ];
 
     const renderWithFormProvider = (

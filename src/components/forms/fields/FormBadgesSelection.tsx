@@ -17,6 +17,7 @@ export const BadgeSelection = ({ selected = true, disabled, cursor, onClick, sty
       ...cursor ? { cursor } : {},
       ...style || {},
     }}
+    className='mx-1'
     {...disabled ? {} : { onClick }}
     {...restProps}
   />
@@ -46,7 +47,7 @@ export interface FormBadgesSelectionProps extends Omit<
 export const FormBadgesSelection = (props: FormBadgesSelectionProps) => {
   const {
     list,
-    idKey = 'id',
+    idKey = 'value',
     multiple,
     integer,
     disabled,
@@ -59,6 +60,9 @@ export const FormBadgesSelection = (props: FormBadgesSelectionProps) => {
   const isMultiple = multiple || multiple === false ? multiple : value instanceof Array;
   const parseInteger = (value: string | number): string | number => integer ? parseInt(`${value}`) : `${value}`;
   const controlId = `${formId}-${props.name}`;
+  if (!list) {
+    console.error('Missing required list property in FormBadgesSelection')
+  }
   
   return (
     <Form.Group controlId={controlId} className={className}>
@@ -100,7 +104,7 @@ export const FormBadgesSelection = (props: FormBadgesSelectionProps) => {
               }}
               {...mergedProps}
             >
-              {item.name}
+              {item.label}
             </BadgeSelection>
           );
         })}
