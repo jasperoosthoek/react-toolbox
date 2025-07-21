@@ -71,12 +71,160 @@ const BasicDataTableExample = () => {
 
   return (
     <DataTable
-      data={users}
+      data={mockUsers}
       columns={columns}
       orderByDefault="name"
       orderByDefaultDirection="asc"
     />
   );
+};
+
+// Mock data from src/examples/data/mockData.ts
+interface User {
+  id: number;
+  name: string;
+  email: string;
+  role: string;
+  department: string;
+  joinDate: string;
+  status: 'active' | 'inactive' | 'pending';
+  salary: number;
+  avatar?: string;
+}
+
+const mockUsers: User[] = [
+  {
+    id: 1,
+    name: 'John Doe',
+    email: 'john.doe@example.com',
+    role: 'Admin',
+    department: 'Engineering',
+    joinDate: '2023-01-15',
+    status: 'active',
+    salary: 85000,
+  },
+  {
+    id: 2,
+    name: 'Jane Smith',
+    email: 'jane.smith@example.com',
+    role: 'Developer',
+    department: 'Engineering',
+    joinDate: '2023-03-20',
+    status: 'active',
+    salary: 75000,
+  },
+  {
+    id: 3,
+    name: 'Bob Johnson',
+    email: 'bob.johnson@example.com',
+    role: 'Designer',
+    department: 'Design',
+    joinDate: '2023-02-10',
+    status: 'active',
+    salary: 70000,
+  },
+  {
+    id: 4,
+    name: 'Alice Brown',
+    email: 'alice.brown@example.com',
+    role: 'Manager',
+    department: 'Marketing',
+    joinDate: '2022-11-05',
+    status: 'active',
+    salary: 90000,
+  },
+  {
+    id: 5,
+    name: 'Charlie Wilson',
+    email: 'charlie.wilson@example.com',
+    role: 'Developer',
+    department: 'Engineering',
+    joinDate: '2023-04-12',
+    status: 'pending',
+    salary: 72000,
+  },
+  {
+    id: 6,
+    name: 'Diana Davis',
+    email: 'diana.davis@example.com',
+    role: 'Analyst',
+    department: 'Finance',
+    joinDate: '2023-01-30',
+    status: 'active',
+    salary: 68000,
+  },
+  {
+    id: 7,
+    name: 'Eva Garcia',
+    email: 'eva.garcia@example.com',
+    role: 'Developer',
+    department: 'Engineering',
+    joinDate: '2023-05-15',
+    status: 'inactive',
+    salary: 76000,
+  },
+  {
+    id: 8,
+    name: 'Frank Miller',
+    email: 'frank.miller@example.com',
+    role: 'Designer',
+    department: 'Design',
+    joinDate: '2023-03-08',
+    status: 'active',
+    salary: 71000,
+  },
+  {
+    id: 9,
+    name: 'Grace Lee',
+    email: 'grace.lee@example.com',
+    role: 'Manager',
+    department: 'HR',
+    joinDate: '2022-12-01',
+    status: 'active',
+    salary: 85000,
+  },
+  {
+    id: 10,
+    name: 'Henry Taylor',
+    email: 'henry.taylor@example.com',
+    role: 'Developer',
+    department: 'Engineering',
+    joinDate: '2023-06-01',
+    status: 'pending',
+    salary: 74000,
+  },
+  {
+    id: 11,
+    name: 'Ivy Anderson',
+    email: 'ivy.anderson@example.com',
+    role: 'Analyst',
+    department: 'Finance',
+    joinDate: '2023-02-20',
+    status: 'active',
+    salary: 69000,
+  },
+  {
+    id: 12,
+    name: 'Jack Thompson',
+    email: 'jack.thompson@example.com',
+    role: 'Designer',
+    department: 'Design',
+    joinDate: '2023-04-05',
+    status: 'active',
+    salary: 73000,
+  },
+];
+
+const getStatusBadge = (status: string) => {
+  const statusClasses = {
+    active: 'badge bg-success',
+    inactive: 'badge bg-secondary',
+    pending: 'badge bg-warning',
+    delivered: 'badge bg-success',
+    shipped: 'badge bg-info',
+    processing: 'badge bg-warning',
+  };
+  return statusClasses[status as keyof typeof statusClasses] || 'badge bg-secondary';
 };`;
 
   return (
@@ -120,7 +268,6 @@ const PaginatedDataTableExampleComponent = () => {
 export const PaginatedDataTableExample = () => {
   const code = `import React from 'react';
 import { DataTable } from '@jasperoosthoek/react-toolbox';
-import { formatCurrency, formatDate } from './utils';
 
 const PaginatedDataTableExample = () => {
   const columns = [
@@ -141,12 +288,164 @@ const PaginatedDataTableExample = () => {
 
   return (
     <DataTable
-      data={users}
+      data={mockUsers}
       columns={columns}
       rowsPerPageOptions={[5, 10, 25, null]}
       rowsPerPage={5}
     />
   );
+};
+
+// Types and Mock Data
+interface User {
+  id: number;
+  name: string;
+  email: string;
+  role: string;
+  department: string;
+  joinDate: string;
+  status: 'active' | 'inactive' | 'pending';
+  salary: number;
+  avatar?: string;
+}
+
+const mockUsers: User[] = [
+  {
+    id: 1,
+    name: 'John Doe',
+    email: 'john.doe@example.com',
+    role: 'Admin',
+    department: 'Engineering',
+    joinDate: '2023-01-15',
+    status: 'active',
+    salary: 85000,
+  },
+  {
+    id: 2,
+    name: 'Jane Smith',
+    email: 'jane.smith@example.com',
+    role: 'Developer',
+    department: 'Engineering',
+    joinDate: '2023-03-20',
+    status: 'active',
+    salary: 75000,
+  },
+  {
+    id: 3,
+    name: 'Bob Johnson',
+    email: 'bob.johnson@example.com',
+    role: 'Designer',
+    department: 'Design',
+    joinDate: '2023-02-10',
+    status: 'active',
+    salary: 70000,
+  },
+  {
+    id: 4,
+    name: 'Alice Brown',
+    email: 'alice.brown@example.com',
+    role: 'Manager',
+    department: 'Marketing',
+    joinDate: '2022-11-05',
+    status: 'active',
+    salary: 90000,
+  },
+  {
+    id: 5,
+    name: 'Charlie Wilson',
+    email: 'charlie.wilson@example.com',
+    role: 'Developer',
+    department: 'Engineering',
+    joinDate: '2023-04-12',
+    status: 'pending',
+    salary: 72000,
+  },
+  {
+    id: 6,
+    name: 'Diana Davis',
+    email: 'diana.davis@example.com',
+    role: 'Analyst',
+    department: 'Finance',
+    joinDate: '2023-01-30',
+    status: 'active',
+    salary: 68000,
+  },
+  {
+    id: 7,
+    name: 'Eva Garcia',
+    email: 'eva.garcia@example.com',
+    role: 'Developer',
+    department: 'Engineering',
+    joinDate: '2023-05-15',
+    status: 'inactive',
+    salary: 76000,
+  },
+  {
+    id: 8,
+    name: 'Frank Miller',
+    email: 'frank.miller@example.com',
+    role: 'Designer',
+    department: 'Design',
+    joinDate: '2023-03-08',
+    status: 'active',
+    salary: 71000,
+  },
+  {
+    id: 9,
+    name: 'Grace Lee',
+    email: 'grace.lee@example.com',
+    role: 'Manager',
+    department: 'HR',
+    joinDate: '2022-12-01',
+    status: 'active',
+    salary: 85000,
+  },
+  {
+    id: 10,
+    name: 'Henry Taylor',
+    email: 'henry.taylor@example.com',
+    role: 'Developer',
+    department: 'Engineering',
+    joinDate: '2023-06-01',
+    status: 'pending',
+    salary: 74000,
+  },
+  {
+    id: 11,
+    name: 'Ivy Anderson',
+    email: 'ivy.anderson@example.com',
+    role: 'Analyst',
+    department: 'Finance',
+    joinDate: '2023-02-20',
+    status: 'active',
+    salary: 69000,
+  },
+  {
+    id: 12,
+    name: 'Jack Thompson',
+    email: 'jack.thompson@example.com',
+    role: 'Designer',
+    department: 'Design',
+    joinDate: '2023-04-05',
+    status: 'active',
+    salary: 73000,
+  },
+];
+
+// Helper functions
+const formatCurrency = (amount: number) => {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+  }).format(amount);
+};
+
+const formatDate = (dateString: string) => {
+  return new Date(dateString).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  });
 };`;
 
   return (
@@ -286,7 +585,7 @@ import {
 const EditableDataTableExample = () => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [showModal, setShowModal] = useState(false);
-  const [users, setUsers] = useState(initialUsers);
+  const [users, setUsers] = useState(mockUsers);
 
   const columns = [
     { name: 'Name', orderBy: 'name', selector: 'name' },
@@ -339,6 +638,34 @@ const EditableDataTableExample = () => {
     setUsers(users.filter(user => user.id !== userId));
   };
 
+  const formFields = {
+    name: {
+      label: 'Name',
+      required: true,
+      initialValue: selectedUser?.name || '',
+    },
+    email: {
+      label: 'Email',
+      required: true,
+      initialValue: selectedUser?.email || '',
+    },
+    role: {
+      label: 'Role',
+      required: true,
+      initialValue: selectedUser?.role || '',
+    },
+    status: {
+      label: 'Status',
+      type: 'select',
+      options: [
+        { value: 'active', label: 'Active' },
+        { value: 'inactive', label: 'Inactive' },
+        { value: 'pending', label: 'Pending' },
+      ],
+      initialValue: selectedUser?.status || 'active',
+    },
+  };
+
   return (
     <div>
       <DataTable
@@ -365,6 +692,155 @@ const EditableDataTableExample = () => {
       )}
     </div>
   );
+};
+
+// Types and Mock Data
+interface User {
+  id: number;
+  name: string;
+  email: string;
+  role: string;
+  department: string;
+  joinDate: string;
+  status: 'active' | 'inactive' | 'pending';
+  salary: number;
+  avatar?: string;
+}
+
+const mockUsers: User[] = [
+  {
+    id: 1,
+    name: 'John Doe',
+    email: 'john.doe@example.com',
+    role: 'Admin',
+    department: 'Engineering',
+    joinDate: '2023-01-15',
+    status: 'active',
+    salary: 85000,
+  },
+  {
+    id: 2,
+    name: 'Jane Smith',
+    email: 'jane.smith@example.com',
+    role: 'Developer',
+    department: 'Engineering',
+    joinDate: '2023-03-20',
+    status: 'active',
+    salary: 75000,
+  },
+  {
+    id: 3,
+    name: 'Bob Johnson',
+    email: 'bob.johnson@example.com',
+    role: 'Designer',
+    department: 'Design',
+    joinDate: '2023-02-10',
+    status: 'active',
+    salary: 70000,
+  },
+  {
+    id: 4,
+    name: 'Alice Brown',
+    email: 'alice.brown@example.com',
+    role: 'Manager',
+    department: 'Marketing',
+    joinDate: '2022-11-05',
+    status: 'active',
+    salary: 90000,
+  },
+  {
+    id: 5,
+    name: 'Charlie Wilson',
+    email: 'charlie.wilson@example.com',
+    role: 'Developer',
+    department: 'Engineering',
+    joinDate: '2023-04-12',
+    status: 'pending',
+    salary: 72000,
+  },
+  {
+    id: 6,
+    name: 'Diana Davis',
+    email: 'diana.davis@example.com',
+    role: 'Analyst',
+    department: 'Finance',
+    joinDate: '2023-01-30',
+    status: 'active',
+    salary: 68000,
+  },
+  {
+    id: 7,
+    name: 'Eva Garcia',
+    email: 'eva.garcia@example.com',
+    role: 'Developer',
+    department: 'Engineering',
+    joinDate: '2023-05-15',
+    status: 'inactive',
+    salary: 76000,
+  },
+  {
+    id: 8,
+    name: 'Frank Miller',
+    email: 'frank.miller@example.com',
+    role: 'Designer',
+    department: 'Design',
+    joinDate: '2023-03-08',
+    status: 'active',
+    salary: 71000,
+  },
+  {
+    id: 9,
+    name: 'Grace Lee',
+    email: 'grace.lee@example.com',
+    role: 'Manager',
+    department: 'HR',
+    joinDate: '2022-12-01',
+    status: 'active',
+    salary: 85000,
+  },
+  {
+    id: 10,
+    name: 'Henry Taylor',
+    email: 'henry.taylor@example.com',
+    role: 'Developer',
+    department: 'Engineering',
+    joinDate: '2023-06-01',
+    status: 'pending',
+    salary: 74000,
+  },
+  {
+    id: 11,
+    name: 'Ivy Anderson',
+    email: 'ivy.anderson@example.com',
+    role: 'Analyst',
+    department: 'Finance',
+    joinDate: '2023-02-20',
+    status: 'active',
+    salary: 69000,
+  },
+  {
+    id: 12,
+    name: 'Jack Thompson',
+    email: 'jack.thompson@example.com',
+    role: 'Designer',
+    department: 'Design',
+    joinDate: '2023-04-05',
+    status: 'active',
+    salary: 73000,
+  },
+];
+
+// Helper function
+const getStatusBadge = (status: string) => {
+  const statusClasses = {
+    active: 'badge bg-success',
+    inactive: 'badge bg-secondary',
+    pending: 'badge bg-warning',
+    delivered: 'badge bg-success',
+    shipped: 'badge bg-info',
+    processing: 'badge bg-warning',
+  };
+  return statusClasses[status as keyof typeof statusClasses] || 'badge bg-secondary';
 };`;
 
   return (
@@ -462,12 +938,11 @@ const DragDropDataTableExampleComponent = () => {
 
 export const DragDropDataTableExample = () => {
   const code = `import React, { useState } from 'react';
-import { Badge } from 'react-bootstrap';
+import { Badge, Alert } from 'react-bootstrap';
 import { DataTable } from '@jasperoosthoek/react-toolbox';
-import { FixedLoadingIndicator } from './FixedLoadingIndicator';
 
 const DragDropDataTableExample = () => {
-  const [products, setProducts] = useState(initialProducts);
+  const [products, setProducts] = useState(mockProducts);
   const [isMoving, setIsMoving] = useState(false);
 
   const columns = [
@@ -528,11 +1003,11 @@ const DragDropDataTableExample = () => {
 
   return (
     <div>
-      <FixedLoadingIndicator 
-        show={isMoving}
-        message="Saving new order..."
-        variant="info"
-      />
+      {isMoving && (
+        <Alert variant="info" className="mb-3">
+          Saving new order...
+        </Alert>
+      )}
       
       <DataTable
         data={products}
@@ -542,6 +1017,73 @@ const DragDropDataTableExample = () => {
       />
     </div>
   );
+};
+
+// Types and Mock Data
+interface Product {
+  id: number;
+  name: string;
+  category: string;
+  price: number;
+  stock: number;
+  description: string;
+  tags: string[];
+}
+
+const mockProducts: Product[] = [
+  {
+    id: 1,
+    name: 'Laptop Pro',
+    category: 'Electronics',
+    price: 1299.99,
+    stock: 45,
+    description: 'High-performance laptop for professionals',
+    tags: ['laptop', 'computer', 'work'],
+  },
+  {
+    id: 2,
+    name: 'Wireless Mouse',
+    category: 'Electronics',
+    price: 29.99,
+    stock: 120,
+    description: 'Ergonomic wireless mouse',
+    tags: ['mouse', 'wireless', 'office'],
+  },
+  {
+    id: 3,
+    name: 'Office Chair',
+    category: 'Furniture',
+    price: 249.99,
+    stock: 18,
+    description: 'Comfortable ergonomic office chair',
+    tags: ['chair', 'office', 'furniture'],
+  },
+  {
+    id: 4,
+    name: 'Monitor 27"',
+    category: 'Electronics',
+    price: 329.99,
+    stock: 32,
+    description: '27-inch 4K monitor',
+    tags: ['monitor', 'display', 'screen'],
+  },
+  {
+    id: 5,
+    name: 'Keyboard Mechanical',
+    category: 'Electronics',
+    price: 89.99,
+    stock: 67,
+    description: 'Mechanical keyboard with RGB lighting',
+    tags: ['keyboard', 'mechanical', 'RGB'],
+  },
+];
+
+// Helper function
+const formatCurrency = (amount: number) => {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+  }).format(amount);
 };`;
 
   return (
@@ -652,7 +1194,7 @@ import { Badge, Button, ButtonGroup, Dropdown } from 'react-bootstrap';
 import { DataTable } from '@jasperoosthoek/react-toolbox';
 
 const CustomRendererDataTableExample = () => {
-  const [orders, setOrders] = useState(initialOrders);
+  const [orders, setOrders] = useState(mockOrders);
 
   const statusOptions = {
     pending: 'Pending',
@@ -741,6 +1283,85 @@ const CustomRendererDataTableExample = () => {
       rowsPerPage={5}
     />
   );
+};
+
+// Types and Mock Data
+interface Order {
+  id: number;
+  customerName: string;
+  product: string;
+  quantity: number;
+  total: number;
+  status: 'pending' | 'processing' | 'shipped' | 'delivered';
+  orderDate: string;
+}
+
+const mockOrders: Order[] = [
+  {
+    id: 1001,
+    customerName: 'John Doe',
+    product: 'Laptop Pro',
+    quantity: 1,
+    total: 1299.99,
+    status: 'delivered',
+    orderDate: '2023-06-15',
+  },
+  {
+    id: 1002,
+    customerName: 'Jane Smith',
+    product: 'Wireless Mouse',
+    quantity: 2,
+    total: 59.98,
+    status: 'shipped',
+    orderDate: '2023-06-18',
+  },
+  {
+    id: 1003,
+    customerName: 'Bob Johnson',
+    product: 'Office Chair',
+    quantity: 1,
+    total: 249.99,
+    status: 'processing',
+    orderDate: '2023-06-20',
+  },
+  {
+    id: 1004,
+    customerName: 'Alice Brown',
+    product: 'Monitor 27"',
+    quantity: 2,
+    total: 659.98,
+    status: 'pending',
+    orderDate: '2023-06-22',
+  },
+  {
+    id: 1005,
+    customerName: 'Charlie Wilson',
+    product: 'Keyboard Mechanical',
+    quantity: 1,
+    total: 89.99,
+    status: 'delivered',
+    orderDate: '2023-06-14',
+  },
+];
+
+// Helper functions
+const getStatusBadge = (status: string) => {
+  const statusClasses = {
+    active: 'badge bg-success',
+    inactive: 'badge bg-secondary',
+    pending: 'badge bg-warning',
+    delivered: 'badge bg-success',
+    shipped: 'badge bg-info',
+    processing: 'badge bg-warning',
+  };
+  return statusClasses[status as keyof typeof statusClasses] || 'badge bg-secondary';
+};
+
+const formatCurrency = (amount: number) => {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+  }).format(amount);
 };`;
 
   return (
@@ -895,7 +1516,7 @@ import {
 } from '@jasperoosthoek/react-toolbox';
 
 const IntegratedFormDataTableExample = () => {
-  const [users, setUsers] = useState(initialUsers);
+  const [users, setUsers] = useState(mockUsers);
 
   const formFields = {
     name: {
@@ -1020,6 +1641,155 @@ const IntegratedFormDataTableExample = () => {
       </div>
     </FormModalProvider>
   );
+};
+
+// Types and Mock Data
+interface User {
+  id: number;
+  name: string;
+  email: string;
+  role: string;
+  department: string;
+  joinDate: string;
+  status: 'active' | 'inactive' | 'pending';
+  salary: number;
+  avatar?: string;
+}
+
+const mockUsers: User[] = [
+  {
+    id: 1,
+    name: 'John Doe',
+    email: 'john.doe@example.com',
+    role: 'Admin',
+    department: 'Engineering',
+    joinDate: '2023-01-15',
+    status: 'active',
+    salary: 85000,
+  },
+  {
+    id: 2,
+    name: 'Jane Smith',
+    email: 'jane.smith@example.com',
+    role: 'Developer',
+    department: 'Engineering',
+    joinDate: '2023-03-20',
+    status: 'active',
+    salary: 75000,
+  },
+  {
+    id: 3,
+    name: 'Bob Johnson',
+    email: 'bob.johnson@example.com',
+    role: 'Designer',
+    department: 'Design',
+    joinDate: '2023-02-10',
+    status: 'active',
+    salary: 70000,
+  },
+  {
+    id: 4,
+    name: 'Alice Brown',
+    email: 'alice.brown@example.com',
+    role: 'Manager',
+    department: 'Marketing',
+    joinDate: '2022-11-05',
+    status: 'active',
+    salary: 90000,
+  },
+  {
+    id: 5,
+    name: 'Charlie Wilson',
+    email: 'charlie.wilson@example.com',
+    role: 'Developer',
+    department: 'Engineering',
+    joinDate: '2023-04-12',
+    status: 'pending',
+    salary: 72000,
+  },
+  {
+    id: 6,
+    name: 'Diana Davis',
+    email: 'diana.davis@example.com',
+    role: 'Analyst',
+    department: 'Finance',
+    joinDate: '2023-01-30',
+    status: 'active',
+    salary: 68000,
+  },
+  {
+    id: 7,
+    name: 'Eva Garcia',
+    email: 'eva.garcia@example.com',
+    role: 'Developer',
+    department: 'Engineering',
+    joinDate: '2023-05-15',
+    status: 'inactive',
+    salary: 76000,
+  },
+  {
+    id: 8,
+    name: 'Frank Miller',
+    email: 'frank.miller@example.com',
+    role: 'Designer',
+    department: 'Design',
+    joinDate: '2023-03-08',
+    status: 'active',
+    salary: 71000,
+  },
+  {
+    id: 9,
+    name: 'Grace Lee',
+    email: 'grace.lee@example.com',
+    role: 'Manager',
+    department: 'HR',
+    joinDate: '2022-12-01',
+    status: 'active',
+    salary: 85000,
+  },
+  {
+    id: 10,
+    name: 'Henry Taylor',
+    email: 'henry.taylor@example.com',
+    role: 'Developer',
+    department: 'Engineering',
+    joinDate: '2023-06-01',
+    status: 'pending',
+    salary: 74000,
+  },
+  {
+    id: 11,
+    name: 'Ivy Anderson',
+    email: 'ivy.anderson@example.com',
+    role: 'Analyst',
+    department: 'Finance',
+    joinDate: '2023-02-20',
+    status: 'active',
+    salary: 69000,
+  },
+  {
+    id: 12,
+    name: 'Jack Thompson',
+    email: 'jack.thompson@example.com',
+    role: 'Designer',
+    department: 'Design',
+    joinDate: '2023-04-05',
+    status: 'active',
+    salary: 73000,
+  },
+];
+
+// Helper function
+const getStatusBadge = (status: string) => {
+  const statusClasses = {
+    active: 'badge bg-success',
+    inactive: 'badge bg-secondary',
+    pending: 'badge bg-warning',
+    delivered: 'badge bg-success',
+    shipped: 'badge bg-info',
+    processing: 'badge bg-warning',
+  };
+  return statusClasses[status as keyof typeof statusClasses] || 'badge bg-secondary';
 };`;
 
   return (
@@ -1034,7 +1804,8 @@ const IntegratedFormDataTableExample = () => {
         'FormEditModalButton automatically populates form with selected row data',
         'DeleteConfirmButton provides built-in confirmation with customizable messages',
         'All operations include loading states and error handling',
-        'Perfect pattern for admin panels and data management interfaces'
+        'Perfect pattern for admin panels and data management interfaces',
+        'Copy-paste ready: includes all types, mock data, and helper functions needed'
       ]}
     >
       <IntegratedFormDataTableExampleComponent />
