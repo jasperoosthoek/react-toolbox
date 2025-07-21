@@ -50,6 +50,7 @@ export const FormBadgesSelection = (props: FormBadgesSelectionProps) => {
     multiple,
     integer,
     disabled,
+    className,
     ...componentProps
   } = props;
   
@@ -60,7 +61,7 @@ export const FormBadgesSelection = (props: FormBadgesSelectionProps) => {
   const controlId = `${formId}-${props.name}`;
   
   return (
-    <Form.Group controlId={controlId}>
+    <Form.Group controlId={controlId} className={className}>
       {label && <Form.Label>{label}{required && ' *'}</Form.Label>}
       {isInvalid && error && (
         <Form.Text className="text-danger">

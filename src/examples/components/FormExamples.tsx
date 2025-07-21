@@ -378,7 +378,7 @@ const FlexibleFormExampleComponent = () => {
           />
           <FormCheckbox 
             name="urgent" 
-            label="This is urgent - please prioritize my request" 
+            label="This is urgent - please prioritize my request"
           />
         </FormModal>
       </FormProvider>

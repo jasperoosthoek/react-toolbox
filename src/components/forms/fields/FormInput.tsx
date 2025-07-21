@@ -11,13 +11,13 @@ export interface FormInputProps extends Omit<React.InputHTMLAttributes<HTMLInput
 }
 
 export const FormInput = (props: FormInputProps) => {
-  const { value, onChange, isInvalid, error, label, required, mergedProps, submit, formId } = useFormField(props);
+  const { value, onChange, isInvalid, error, label, required, mergedProps, submit, formId, className } = useFormField(props);
 
   const errorId = isInvalid && error ? `${formId}-${props.name}-error` : undefined;
   const controlId = `${formId}-${props.name}`;
 
   return (
-    <Form.Group controlId={controlId}>
+    <Form.Group controlId={controlId} className={className}>
       {label && <Form.Label>{label}{required && ' *'}</Form.Label>}
       {isInvalid && error && (
         <Form.Text id={errorId} className="text-danger">

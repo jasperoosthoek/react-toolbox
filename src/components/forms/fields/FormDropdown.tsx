@@ -34,8 +34,7 @@ export const FormDropdown = <T,>(props: FormDropdownProps<T>) => {
     ...componentProps
   } = props;
   
-  const { value, onChange, isInvalid, error, label, required, mergedProps, submit, formId } = useFormField(componentProps);
-  const { strings } = useLocalization();
+  const { value, onChange, isInvalid, error, label, required, mergedProps, submit, formId, className } = useFormField(componentProps);
 
   // Use options or list, with options taking precedence
   const listBase = options || listProp;
@@ -84,7 +83,7 @@ export const FormDropdown = <T,>(props: FormDropdownProps<T>) => {
   const controlId = `${formId}-${props.name}`;
   
   return (
-    <Form.Group controlId={controlId}>
+    <Form.Group controlId={controlId} className={className}>
       {label && <Form.Label>{label}{required && ' *'}</Form.Label>}
       {isInvalid && error && (
         <Form.Text className="text-danger">

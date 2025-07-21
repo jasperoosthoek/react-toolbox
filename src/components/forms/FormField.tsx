@@ -37,7 +37,7 @@ export const FormField = ({ children, ...props }: FormFieldProps) => {
 
 // Hook to get form field value and setter for a specific field
 export const useFormField = (componentProps: { name: string; label?: any; required?: boolean; [key: string]: any }) => {
-  const { name, label: propLabel, required: propRequired, ...htmlProps } = componentProps;
+  const { name, label: propLabel, required: propRequired, className, ...htmlProps } = componentProps;
   
   const { 
     getValue, 
@@ -91,5 +91,6 @@ export const useFormField = (componentProps: { name: string; label?: any; requir
     mergedProps,
     submit,
     formId,
+    className,
   };
 };
