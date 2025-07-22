@@ -18,7 +18,6 @@ import {
   EditButton,
   useForm,
 } from '../../index';
-import { CodeBlock } from './CodeBlock';
 import { ExampleSection } from './ExampleSection';
 import { FormActions } from './FormExamples';
 
@@ -235,7 +234,7 @@ const CustomLocalizationExampleComponent = () => {
 };
 
 export const CustomLocalizationExample = () => {
-  const code = `import React, { useState } from 'react';
+  const code = `import React, { useState, useEffect } from 'react';
 import { useLocalization } from '@jasperoosthoek/react-toolbox';
 
 const CustomStringsDemo = () => {
@@ -267,7 +266,7 @@ const CustomStringsDemo = () => {
   };
 
   // Add custom strings to localization
-  React.useEffect(() => {
+  useEffect(() => {
     setLocalization(customStrings);
   }, []);
 
@@ -315,7 +314,7 @@ const CustomStringsDemo = () => {
 };
 
 // Example 3: Localization with forms
-export const FormLocalizationExample = () => {
+const FormLocalizationExampleComponent = () => {
   const { text, lang } = useLocalization();
   const [loginResult, setLoginResult] = useState<string>('');
 
@@ -381,9 +380,6 @@ export const FormLocalizationExample = () => {
 
   return (
     <div>
-      <h4>Localization with Forms</h4>
-      <p>Forms automatically use localized strings for labels, placeholders, and validation messages.</p>
-      
       {loginResult && (
         <Alert variant="success" className="mb-3">
           {loginResult}
@@ -415,17 +411,23 @@ export const FormLocalizationExample = () => {
           </FormProvider>
         </Card.Body>
       </Card>
+    </div>
+  );
+};
 
-      <Card className="mb-4">
-        <Card.Header>
-          <h6 className="mb-0">Code Example</h6>
-        </Card.Header>
-        <Card.Body>
-          <CodeBlock language="typescript">
-{`import { FormProvider, FormInput, useForm } from '@jasperoosthoek/react-toolbox';
+export const FormLocalizationExample = () => {
+  const code = `import React, { useState } from 'react';
+import { Button, Alert, Card } from 'react-bootstrap';
+import { 
+  FormProvider, 
+  FormInput, 
+  useForm, 
+  useLocalization 
+} from '@jasperoosthoek/react-toolbox';
 
 const LoginForm = () => {
   const { text } = useLocalization();
+  const [loginResult, setLoginResult] = useState('');
   
   const formFields = {
     email: {
@@ -448,8 +450,24 @@ const LoginForm = () => {
 
   const handleSubmit = (data, callback) => {
     console.log('Login:', data);
-    // Your login logic here
-    setTimeout(callback, 1000);
+    setLoginResult(\`\${text\`login\`} attempted with: \${data.email}\`);
+    
+    // Simulate API call
+    setTimeout(() => {
+      setLoginResult(\`\${text\`login\`} successful for: \${data.email}\`);
+      callback();
+    }, 1000);
+  };
+
+  const validate = (data) => {
+    const errors = {};
+    if (data.email && !data.email.includes('@')) {
+      errors.email = 'Please enter a valid email address';
+    }
+    if (data.password && data.password.length < 6) {
+      errors.password = 'Password must be at least 6 characters';
+    }
+    return errors;
   };
 
   const LoginButton = () => {
@@ -462,22 +480,49 @@ const LoginForm = () => {
   };
 
   return (
-    <FormProvider formFields={formFields} onSubmit={handleSubmit}>
-      <FormInput name="email" />
-      <FormInput name="password" />
-      <LoginButton />
-    </FormProvider>
-  );
-};`}
-          </CodeBlock>
-        </Card.Body>
-      </Card>
+    <div>
+      {loginResult && (
+        <Alert variant="success">{loginResult}</Alert>
+      )}
+      
+      <FormProvider 
+        formFields={formFields} 
+        onSubmit={handleSubmit}
+        validate={validate}
+      >
+        <FormInput name="email" />
+        <FormInput name="password" />
+        <div className="d-flex gap-2 mt-3">
+          <LoginButton />
+          <Button variant="outline-secondary" onClick={() => setLoginResult('')}>
+            {text\`cancel\`}
+          </Button>
+        </div>
+      </FormProvider>
     </div>
+  );
+};`;
+
+  return (
+    <ExampleSection
+      title="Form Localization"
+      description="Forms automatically use localized strings for labels, placeholders, and validation messages"
+      code={code}
+      features={['Form Integration', 'Dynamic Labels', 'Localized Placeholders', 'Validation Messages']}
+      notes={[
+        'Form labels and placeholders automatically update with language changes',
+        'Use text\`key\` in formFields definitions for dynamic localization',
+        'Validation errors can also be localized',
+        'Custom buttons inside forms can use localized text'
+      ]}
+    >
+      <FormLocalizationExampleComponent />
+    </ExampleSection>
   );
 };
 
 // Example 4: Localization with DataTable
-export const DataTableLocalizationExample = () => {
+const DataTableLocalizationExampleComponent = () => {
   const { text } = useLocalization();
 
   const users = [
@@ -503,9 +548,6 @@ export const DataTableLocalizationExample = () => {
 
   return (
     <div>
-      <h4>DataTable with Localization</h4>
-      <p>DataTable components automatically use localized strings for search, pagination, and empty states.</p>
-      
       <Card className="mb-4">
         <Card.Header>
           <h6 className="mb-0">Users Table</h6>
@@ -514,7 +556,6 @@ export const DataTableLocalizationExample = () => {
           <DataTable
             data={users}
             columns={columns}
-            // searchPlaceholder={text`search`}
             rowsPerPageOptions={[5, 10, 25, null]}
             rowsPerPage={5}
           />
@@ -524,15 +565,76 @@ export const DataTableLocalizationExample = () => {
   );
 };
 
+export const DataTableLocalizationExample = () => {
+  const code = `import React from 'react';
+import { DataTable, EditButton, DeleteConfirmButton, useLocalization } from '@jasperoosthoek/react-toolbox';
+
+const LocalizedDataTable = () => {
+  const { text } = useLocalization();
+
+  const users = [
+    { id: 1, name: 'John Doe', email: 'john@example.com', role: 'Admin' },
+    { id: 2, name: 'Jane Smith', email: 'jane@example.com', role: 'User' },
+    { id: 3, name: 'Bob Johnson', email: 'bob@example.com', role: 'User' },
+  ];
+
+  const columns = [
+    { name: 'Name', orderBy: 'name', selector: 'name' },
+    { name: 'Email', orderBy: 'email', selector: 'email' },
+    { name: 'Role', orderBy: 'role', selector: 'role' },
+    { 
+      name: 'Actions', 
+      selector: (user) => (
+        <span>
+          <EditButton size="sm" title={text\`modal_edit\`} />
+          <DeleteConfirmButton 
+            size="sm" 
+            onDelete={() => console.log('Delete', user.id)}
+          />
+        </span>
+      ) 
+    },
+  ];
+
+  return (
+    <DataTable
+      data={users}
+      columns={columns}
+      // DataTable automatically uses localized strings for:
+      // - Search placeholder (text\`search\`)
+      // - Pagination text (text\`number_of_rows\`)
+      // - Empty state (text\`no_information_to_display\`)
+      // - Loading state (text\`information_is_being_loaded\`)
+      rowsPerPageOptions={[5, 10, 25, null]}
+      rowsPerPage={5}
+    />
+  );
+};`;
+
+  return (
+    <ExampleSection
+      title="DataTable Localization"
+      description="DataTable components automatically use localized strings for search, pagination, and empty states"
+      code={code}
+      features={['Auto Localization', 'Search Placeholder', 'Pagination Text', 'Empty States']}
+      notes={[
+        'DataTable automatically uses localized strings for UI elements',
+        'Search placeholder uses text`search` string',
+        'Pagination uses text`number_of_rows` for row count display',
+        'Empty and loading states are automatically localized'
+      ]}
+    >
+      <DataTableLocalizationExampleComponent />
+    </ExampleSection>
+  );
+};
+
 // Example 5: Language switching component
-export const LanguageSwitcherExample = () => {
+const LanguageSwitcherExampleComponent = () => {
   const { lang, languages, setLanguage } = useLocalization();
 
   return (
     <div>
-      <h4>Language Switcher Component</h4>
-      <p>Build reusable language switcher components.</p>
-      
       <Card className="mb-4">
         <Card.Header>
           <h6 className="mb-0">Language Switcher</h6>
@@ -551,14 +653,14 @@ export const LanguageSwitcherExample = () => {
           </Form.Select>
         </Card.Body>
       </Card>
+    </div>
+  );
+};
 
-      <Card className="mb-4">
-        <Card.Header>
-          <h6 className="mb-0">Code Example</h6>
-        </Card.Header>
-        <Card.Body>
-          <pre><CodeBlock language="typescript">
-            {`import { useLocalization } from '@jasperoosthoek/react-toolbox';
+export const LanguageSwitcherExample = () => {
+  const code = `import React from 'react';
+import { Form } from 'react-bootstrap';
+import { useLocalization, defaultLanguages } from '@jasperoosthoek/react-toolbox';
 
 const LanguageSwitcher = () => {
   const { lang, languages, setLanguage } = useLocalization();
@@ -567,34 +669,90 @@ const LanguageSwitcher = () => {
     <Form.Select 
       value={lang} 
       onChange={(e) => setLanguage(e.target.value)}
+      style={{ width: '200px' }}
     >
       {languages.map(language => (
         <option key={language} value={language}>
-          {defaultLanguages[language]}
+          {defaultLanguages[language] || language}
         </option>
       ))}
     </Form.Select>
   );
-};`}
-          </CodeBlock></pre>
-        </Card.Body>
-      </Card>
-    </div>
+};
+
+// Button Group Version
+const LanguageSwitcherButtons = () => {
+  const { lang, languages, setLanguage } = useLocalization();
+
+  return (
+    <ButtonGroup>
+      {languages.map(language => (
+        <Button
+          key={language}
+          variant={lang === language ? 'primary' : 'outline-primary'}
+          onClick={() => setLanguage(language)}
+        >
+          {defaultLanguages[language]}
+        </Button>
+      ))}
+    </ButtonGroup>
+  );
+};
+
+// Dropdown Version
+const LanguageSwitcherDropdown = () => {
+  const { lang, languages, setLanguage } = useLocalization();
+
+  return (
+    <Dropdown>
+      <Dropdown.Toggle variant="outline-secondary">
+        {defaultLanguages[lang]} 🌐
+      </Dropdown.Toggle>
+      <Dropdown.Menu>
+        {languages.map(language => (
+          <Dropdown.Item
+            key={language}
+            active={lang === language}
+            onClick={() => setLanguage(language)}
+          >
+            {defaultLanguages[language]}
+          </Dropdown.Item>
+        ))}
+      </Dropdown.Menu>
+    </Dropdown>
+  );
+};`;
+
+  return (
+    <ExampleSection
+      title="Language Switcher Components"
+      description="Build reusable language switcher components in various styles"
+      code={code}
+      features={['Multiple Styles', 'Reusable Components', 'Current Language Display', 'Accessible Options']}
+      notes={[
+        'Use defaultLanguages object for display names',
+        'Multiple UI patterns: select, buttons, dropdown',
+        'Always show current language state',
+        'Consider user preferences for language switcher placement'
+      ]}
+    >
+      <LanguageSwitcherExampleComponent />
+    </ExampleSection>
   );
 };
 
 // Example 6: Complete localization reference
-export const LocalizationReferenceExample = () => {
+const LocalizationReferenceExampleComponent = () => {
   const { text, lang } = useLocalization();
 
   return (
     <div>
-      <h4>Complete Localization Reference</h4>
-      <p>All available default localization strings in the current language: <Badge bg="info">{lang.toUpperCase()}</Badge></p>
-      
       <Card className="mb-4">
         <Card.Header>
-          <h6 className="mb-0">Default Localization Strings</h6>
+          <div className="d-flex justify-content-between align-items-center">
+            <h6 className="mb-0">Default Localization Strings</h6>
+            <Badge bg="info">{lang.toUpperCase()}</Badge>
+          </div>
         </Card.Header>
         <Card.Body>
           <Table striped bordered hover size="sm">
@@ -724,6 +882,82 @@ export const LocalizationReferenceExample = () => {
   );
 };
 
+export const LocalizationReferenceExample = () => {
+  const code = `import { useLocalization } from '@jasperoosthoek/react-toolbox';
+
+// All available default localization strings:
+const DefaultStrings = () => {
+  const { text } = useLocalization();
+
+  return (
+    <div>
+      {/* Basic Actions */}
+      <div>{text\`save\`}</div>
+      <div>{text\`cancel\`}</div>
+      <div>{text\`delete\`}</div>
+      <div>{text\`search\`}</div>
+      <div>{text\`select\`}</div>
+      <div>{text\`close\`}</div>
+      <div>{text\`ok\`}</div>
+
+      {/* Authentication */}
+      <div>{text\`login\`}</div>
+      <div>{text\`logout\`}</div>
+      <div>{text\`your_email\`}</div>
+      <div>{text\`enter_email\`}</div>
+      <div>{text\`your_password\`}</div>
+      <div>{text\`enter_password\`}</div>
+
+      {/* Forms */}
+      <div>{text\`required_field\`}</div>
+      <div>{text\`choose_one\`}</div>
+      <div>{text\`everything\`}</div>
+
+      {/* Tables & Data */}
+      <div>{text\`number_of_rows\`}</div>
+      <div>{text\`no_information_to_display\`}</div>
+      <div>{text\`information_is_being_loaded\`}</div>
+
+      {/* Modals */}
+      <div>{text\`modal_create\`}</div>
+      <div>{text\`modal_edit\`}</div>
+      <div>{text\`are_you_sure\`}</div>
+    </div>
+  );
+};
+
+// Language support:
+// - en: English (default)
+// - fr: French
+// - nl: Dutch
+
+// Add custom strings:
+const customStrings = {
+  en: { custom_key: "Custom value" },
+  fr: { custom_key: "Valeur personnalisée" },
+  nl: { custom_key: "Aangepaste waarde" }
+};
+
+const { setLocalization } = useLocalization();
+setLocalization(customStrings);`;
+
+  return (
+    <ExampleSection
+      title="Complete Localization Reference"
+      description="All available default localization strings and how to extend them"
+      code={code}
+      features={['Default Strings', 'Multi-language Support', 'Reference Table', 'Extension Guide']}
+      notes={[
+        'Over 20 default UI strings included out of the box',
+        'Support for English, French, and Dutch by default',
+        'Use setLocalization() to add custom strings',
+        'All components automatically use localized strings where appropriate'
+      ]}
+    >
+      <LocalizationReferenceExampleComponent />
+    </ExampleSection>
+  );
+};
 
 // Custom localization strings
 export const customStrings: AdditionalLocalization = {
