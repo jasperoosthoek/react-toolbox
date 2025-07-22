@@ -1,20 +1,15 @@
 // Comprehensive examples for localization system
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Card, Button, Form, Alert, Badge, ButtonGroup, Table } from 'react-bootstrap';
 import { 
-  defaultLocalization, 
   defaultLanguages,
-  LocalizationStrings,
-  LocalizationProvider, 
   useLocalization, 
   AdditionalLocalization,
   FormProvider, 
   FormInput, 
-  FormSelect, 
   DataTable,
   DeleteConfirmButton,
-  SaveButton,
   EditButton,
   useForm,
 } from '../../index';
@@ -23,7 +18,7 @@ import { FormActions } from './FormExamples';
 
 // Example 1: Basic localization usage
 const BasicLocalizationExampleComponent = () => {
-  const { lang, languages, setLanguage, text, strings } = useLocalization();
+  const { lang, languages, setLanguage, text } = useLocalization();
 
   return (
     <div>
