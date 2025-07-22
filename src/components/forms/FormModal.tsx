@@ -93,7 +93,7 @@ export const FormModal = ({
 export const FormFieldsRenderer = () => {
   const { formFields, hasProvider } = useForm();
 
-  if (!hasProvider || !formFields) {
+  if (!hasProvider || !formFields) { 
     return null;
   }
 

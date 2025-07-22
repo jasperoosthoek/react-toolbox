@@ -394,21 +394,24 @@ const RendererFormExampleComponent = () => {
 
   const surveyFormFields = {
     name: { 
-      type: 'text',
       required: true, 
       initialValue: '',
       label: 'Full Name',
-      placeholder: 'Enter your full name'
+      formProps: {
+        placeholder: 'Enter your full name'
+      },
     },
     age: { 
-      type: 'number',
+      type: 'number' as const,
       initialValue: 0,
       label: 'Age',
-      min: 18,
-      max: 100
+      formProps: {
+        min: 18,
+        max: 100
+      }
     },
     experience: {
-      type: 'select',
+      type: 'select' as const,
       required: true,
       initialValue: '',
       label: 'Experience Level',
@@ -440,10 +443,12 @@ const RendererFormExampleComponent = () => {
       label: 'Open to remote work'
     },
     comments: {
-      type: 'textarea',
+      type: 'textarea' as const,
       initialValue: '',
       label: 'Additional Comments',
-      placeholder: 'Tell us anything else we should know...',
+      formProps: {
+        placeholder: 'Tell us anything else we should know...',
+      },
       rows: 3
     }
   };
@@ -463,7 +468,7 @@ const RendererFormExampleComponent = () => {
         formFields={surveyFormFields}
         onSubmit={handleSubmit}
       >
-        <div>
+        <div> 
           <h5>Developer Survey</h5>
           <p className="text-muted mb-4">
             Help us understand your background and preferences
@@ -1021,7 +1026,6 @@ const SurveyForm = () => {
       ]
     },
     skills: {
-      type: 'badges',
       label: 'Skills',
       initialValue: [],
       options: [
