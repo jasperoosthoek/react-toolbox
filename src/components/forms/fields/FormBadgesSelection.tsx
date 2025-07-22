@@ -44,6 +44,7 @@ export interface FormBadgesSelectionProps extends Omit<
   disabled?: boolean | ((props: DisabledProps) => boolean);
 }
 
+// This component is in serious need of some TLC...
 export const FormBadgesSelection = (props: FormBadgesSelectionProps) => {
   const {
     list,
@@ -56,7 +57,7 @@ export const FormBadgesSelection = (props: FormBadgesSelectionProps) => {
   } = props;
   
   const { value, onChange, isInvalid, error, label, required, mergedProps, formId } = useFormField(componentProps);
-  
+
   const isMultiple = multiple || multiple === false ? multiple : value instanceof Array;
   const parseInteger = (value: string | number): string | number => integer ? parseInt(`${value}`) : `${value}`;
   const controlId = `${formId}-${props.name}`;
@@ -90,12 +91,16 @@ export const FormBadgesSelection = (props: FormBadgesSelectionProps) => {
               onClick={() => {
                 if (Array.isArray(value)) {
                   if(selected) {
-                    onChange(value.filter(id => parseInteger(id) !== parseInteger(item[idKey])).toString());
+                    // The "as string[]" cast is not ideal and use cases need to be reviewed
+                    onChange(value.filter(id => parseInteger(id) !== parseInteger(item[idKey])) as string[]);
                   } else {
                     onChange(
-                      integer
-                        ? [...value.map((v: string | number ) => parseInt(v as string)), parseInt(item[idKey])]
-                        : [...value.map((v: string | number ) => `${v}`), `${item[idKey]}`]
+                      [
+                        ...value,
+                        integer
+                          ? parseInt(item[idKey])
+                          : `${item[idKey]}`
+                      ] as string[]
                      );
                   }
                 } else {

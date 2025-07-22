@@ -40,7 +40,7 @@ export const useFormField = (componentProps: { name: string; label?: any; requir
   const { name, label: propLabel, required: propRequired, className, ...htmlProps } = componentProps;
   
   const { 
-    getValue, 
+    getValue,
     setValue, 
     formFields, 
     formId,

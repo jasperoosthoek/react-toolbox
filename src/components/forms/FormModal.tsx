@@ -102,7 +102,6 @@ export const FormFieldsRenderer = () => {
       {Object.entries(formFields).map(([name, config]) => {
         // Common props for all field types
         const commonProps = {
-          key: name,
           name,
           label: config.label,
           placeholder: config.placeholder,
@@ -127,6 +126,7 @@ export const FormFieldsRenderer = () => {
             <FormSelect 
               {...commonProps}
               options={config.options || []}
+              key={name}
             />
           );
         }
@@ -138,6 +138,7 @@ export const FormFieldsRenderer = () => {
               list={config.list || []}
               idKey={config.idKey}
               nameKey={config.nameKey}
+              key={name}
             />
           );
         }
@@ -146,6 +147,7 @@ export const FormFieldsRenderer = () => {
           return (
             <FormCheckbox 
               {...commonProps}
+              key={name}
             />
           );
         }
@@ -156,6 +158,7 @@ export const FormFieldsRenderer = () => {
               {...commonProps}
               as="textarea"
               rows={config.rows || 3}
+              key={name}
             />
           );
         }
@@ -165,6 +168,7 @@ export const FormFieldsRenderer = () => {
           <FormInput 
             {...commonProps}
             type={config.type === 'number' ? 'number' : 'text'}
+            key={name}
           />
         );
       })}
