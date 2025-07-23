@@ -143,6 +143,8 @@ const BasicDataTableExample = () => {
   );
 };
 
+export default BasicDataTableExample;
+
 // Types and Mock Data
 ${userInterfaceExample}
 
@@ -192,7 +194,7 @@ const PaginatedDataTableExampleComponent = () => {
 export const PaginatedDataTableExample = () => {
   const code = `import React from 'react';
 import { DataTable } from '@jasperoosthoek/react-toolbox';
-
+ 
 const PaginatedDataTableExample = () => {
   const columns = [
     { name: 'Name', orderBy: 'name', selector: 'name' },
@@ -219,6 +221,8 @@ const PaginatedDataTableExample = () => {
     />
   );
 };
+
+export default PaginatedDataTableExample;
 
 // Types and Mock Data
 ${userInterfaceExample}
@@ -476,6 +480,8 @@ const EditableDataTableExample = () => {
   );
 };
 
+export default EditableDataTableExample;
+
 // Types and Mock Data
 ${userInterfaceExample}
 
@@ -659,6 +665,8 @@ const DragDropDataTableExample = () => {
     </div>
   );
 };
+
+export default DragDropDataTableExample;
 
 // Types and Mock Data
 ${productInterfaceExample}
@@ -866,6 +874,8 @@ const CustomRendererDataTableExample = () => {
     />
   );
 };
+
+export default CustomRendererDataTableExample;
 
 // Types and Mock Data
 ${orderInterfaceExample}
@@ -1155,6 +1165,8 @@ const IntegratedFormDataTableExample = () => {
     </FormModalProvider>
   );
 };
+
+export default IntegratedFormDataTableExample;
 
 // Types and Mock Data
 ${userInterfaceExample}
