@@ -88,15 +88,20 @@ export function mockDataFormatter(data: any[]): string {
 // Example 1: Basic DataTable with sorting
 const BasicDataTableExampleComponent = () => {
   const columns = [
-    { name: 'ID', orderBy: 'id', selector: 'id' },
-    { name: 'Name', orderBy: 'name', selector: 'name' },
-    { name: 'Email', orderBy: 'email', selector: 'email' },
-    { name: 'Department', orderBy: 'department', selector: 'department' },
-    { name: 'Status', orderBy: 'status', selector: (user: User) => (
-      <Badge className={getStatusBadge(user.status)}>
-        {user.status}
-      </Badge>
-    ) },
+    { name: 'ID', orderBy: 'id', selector: 'id', search: 'id' },
+    { name: 'Name', orderBy: 'name', selector: 'name', search: 'name' },
+    { name: 'Email', orderBy: 'email', selector: 'email', search: 'email' },
+    { name: 'Department', orderBy: 'department', selector: 'department', search: 'department' },
+    {
+      name: 'Status',
+      orderBy: 'status',
+      selector: (user: User) => (
+        <Badge className={getStatusBadge(user.status)}>
+          {user.status}
+        </Badge>
+      ),
+      search: ({ status }) => status,
+    },
   ];
 
   return (
@@ -174,11 +179,11 @@ ${getStatusBadgeExample}`;
 // Example 2: DataTable with pagination and search
 const PaginatedDataTableExampleComponent = () => {
   const columns = [
-    { name: 'Name', orderBy: 'name', selector: 'name' },
-    { name: 'Email', orderBy: 'email', selector: 'email' },
-    { name: 'Role', orderBy: 'role', selector: 'role' },
-    { name: 'Salary', orderBy: 'salary', selector: (user: User) => formatCurrency(user.salary) },
-    { name: 'Join Date', orderBy: 'joinDate', selector: (user: User) => formatDate(user.joinDate) },
+    { name: 'Name', orderBy: 'name', selector: 'name', search: 'name' },
+    { name: 'Email', orderBy: 'email', selector: 'email', search: 'email' },
+    { name: 'Role', orderBy: 'role', selector: 'role', search: 'role' },
+    { name: 'Salary', orderBy: 'salary', selector: (user: User) => formatCurrency(user.salary), search: ({ salary }) => salary},
+    { name: 'Join Date', orderBy: 'joinDate', selector: (user: User) => formatDate(user.joinDate), search: ({ joinDate }) => joinDate},
   ];
 
   return (
@@ -259,14 +264,19 @@ const EditableDataTableExampleComponent = () => {
   const [users, setUsers] = useState<User[]>(mockUsers);
 
   const columns = [
-    { name: 'Name', orderBy: 'name', selector: 'name' },
-    { name: 'Email', orderBy: 'email', selector: 'email' },
-    { name: 'Role', orderBy: 'role', selector: 'role' },
-    { name: 'Status', orderBy: 'status', selector: (user: User) => (
-      <Badge className={getStatusBadge(user.status)}>
-        {user.status}
-      </Badge>
-    ) },
+    { name: 'Name', orderBy: 'name', selector: 'name', search: 'name' },
+    { name: 'Email', orderBy: 'email', selector: 'email', search: 'email' },
+    { name: 'Role', orderBy: 'role', selector: 'role', search: 'role' },
+    {
+      name: 'Status',
+      orderBy: 'status',
+      selector: (user: User) => (
+        <Badge className={getStatusBadge(user.status)}>
+          {user.status}
+        </Badge>
+      ),
+      search: ({ status }: User) => status,
+    },
     { name: 'Actions', className: 'text-center', selector: (user: User) => (
       <ButtonGroup size="sm">
         <EditButton onClick={() => handleRowClick(user)} />
@@ -515,23 +525,32 @@ const DragDropDataTableExampleComponent = () => {
   const [isMoving, setIsMoving] = useState(false);
 
   const columns = [
-    { name: 'Name', orderBy: 'name', selector: 'name' },
-    { name: 'Category', orderBy: 'category', selector: 'category' },
-    { name: 'Price', orderBy: 'price', selector: (product: Product) => formatCurrency(product.price) },
-    { name: 'Stock', orderBy: 'stock', selector: (product: Product) => (
-      <Badge bg={product.stock > 50 ? 'success' : product.stock > 20 ? 'warning' : 'danger'}>
-        {product.stock}
-      </Badge>
-    ) },
-    { name: 'Tags', selector: (product: Product) => (
-      <span>
-        {product.tags.map((tag, index) => (
-          <Badge key={index} bg="secondary" className="me-1">
-            {tag}
-          </Badge>
-        ))}
-      </span>
-    ) },
+    { name: 'Name', orderBy: 'name', selector: 'name', search: 'name' },
+    { name: 'Category', orderBy: 'category', selector: 'category', search: 'category' },
+    { name: 'Price', orderBy: 'price', selector: (product: Product) => formatCurrency(product.price), search: 'product' },
+    {
+      name: 'Stock',
+      orderBy: 'stock',
+      selector: (product: Product) => (
+        <Badge bg={product.stock > 50 ? 'success' : product.stock > 20 ? 'warning' : 'danger'}>
+          {product.stock}
+        </Badge>
+      ),
+      search: 'stock',
+    },
+    {
+      name: 'Tags',
+      selector: (product: Product) => (
+        <span>
+          {product.tags.map((tag, index) => (
+            <Badge key={index} bg="secondary" className="me-1">
+              {tag}
+            </Badge>
+          ))}
+        </span>
+      ),
+      search: ({ tags }) => tags.join(' '),
+    },
   ];
 
   const handleMove = ({ item, target, reset }: { item: Product; target: Product; reset: () => void }) => {
@@ -715,11 +734,23 @@ const CustomRendererDataTableExampleComponent = () => {
   };
 
   const columns = [
-    { name: 'Order ID', orderBy: 'id', selector: (order: Order) => `#${order.id}` },
-    { name: 'Customer', orderBy: 'customerName', selector: 'customerName' },
-    { name: 'Product', orderBy: 'product', selector: 'product' },
-    { name: 'Quantity', orderBy: 'quantity', selector: 'quantity' },
-    { name: 'Total', orderBy: 'total', selector: (order: Order) => formatCurrency(order.total) },
+    { name: 'Order ID', orderBy: 'id', selector: (order: Order) => `#${order.id}`, search: 'id', formatSum: 'Total' },
+    { name: 'Customer', orderBy: 'customerName', selector: 'customerName', search: 'customerName' },
+    { name: 'Product', orderBy: 'product', selector: 'product', search: 'product' },
+    { name: 'Quantity',
+      orderBy: 'quantity',
+      selector: 'quantity',
+      search: 'quantity',
+      value: 'quantity',
+    },
+    {
+      name: 'Total',
+      orderBy: 'total',
+      selector: (order: Order) => formatCurrency(order.total),
+      search: 'total',
+      value: 'total',
+      formatSum: total => formatCurrency(total),
+    },
     { 
       name: 'Status', 
       orderBy: 'status',
@@ -748,6 +779,7 @@ const CustomRendererDataTableExampleComponent = () => {
           </Dropdown.Menu>
         </Dropdown>
       ),
+      search: 'status',
       optionsDropdown: {
         onSelect: (key: string | null) => {
           console.log('Filter by status:', key);
@@ -774,6 +806,7 @@ const CustomRendererDataTableExampleComponent = () => {
       columns={columns}
       rowsPerPageOptions={[5, 10, 25, null]}
       rowsPerPage={5}
+      showSum
     />
   );
 };
@@ -980,20 +1013,26 @@ const IntegratedFormDataTableExampleComponent = () => {
   };
 
   const columns = [
-    { name: 'Name', orderBy: 'name', selector: 'name' },
-    { name: 'Email', orderBy: 'email', selector: 'email' },
-    { name: 'Role', orderBy: 'role', selector: 'role' },
-    { name: 'Department', orderBy: 'department', selector: 'department' },
-    { name: 'Status', orderBy: 'status', selector: (user: User) => (
-      <Badge className={getStatusBadge(user.status)}>
-        {user.status}
-      </Badge>
-    ) },
+    { name: 'Name', orderBy: 'name', selector: 'name', search: 'name' },
+    { name: 'Email', orderBy: 'email', selector: 'email', search: 'email' },
+    { name: 'Role', orderBy: 'role', selector: 'role', search: 'role' },
+    { name: 'Department', orderBy: 'department', selector: 'department', search: 'department' },
+    {
+      name: 'Status',
+      orderBy: 'status',
+      selector: (user: User) => (
+        <Badge className={getStatusBadge(user.status)}>
+          {user.status}
+        </Badge>
+      ),
+      search: 'status',
+    },
     { name: 'Actions', className: 'text-center', selector: (user: User) => (
       <ButtonGroup size="sm">
         <FormEditModalButton state={user} variant="outline-primary" size="sm" />
         <DeleteConfirmButton 
           onDelete={() => handleDelete(user.id)}
+          variant="outline-primary"
           size="sm"
         />
       </ButtonGroup>
