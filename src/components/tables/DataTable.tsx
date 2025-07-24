@@ -45,7 +45,7 @@ export type DataTableColumn<R> = {
   name: ReactNode | string | number;
   orderBy?: OrderByColumn<R>;
   optionsDropdown?: OptionsDropdown;
-  search?: string | ((row: R) => string);
+  search?: string | ((row: R) => string | number);
   className?: string;
   value?: number | string | ((row: R)  => number);
   formatSum?: ((value: number) => ReactElement | string | number) | ReactElement | string | number;
@@ -120,27 +120,34 @@ export const DataTable = <D extends any[]>({
   if (Object.keys(restProps).length !== 0) console.error('Unrecognised props:', restProps);
   
   const [filterText, setFilterText] = useState('');
-  const [, forceUpdate] = useReducer(x => x + 1, 0);
   const [orderBy, setOrderBy] = useState<{ order: OrderByDirection; column: OrderByColumn<R> } | null>(null);
   const [rowsPerPage, setRowsPerPage] = useState(rowsPerPageDefault);
   const [page, setPage] = useState(0);
+  
   let data = allData && (
-  Object.values(allData).filter(row =>
-    filterText
-      ? (
-          columns.reduce((acc, { search }) => {
-            if (!search) {
-              return acc;
-            } else if (typeof search === 'function') {
-              return acc + ' ' + search(row);
-            } else if (typeof row[search] !== 'undefined') {
-              return acc + ' ' + row[search];
-            }
-            return acc;
-          }, '')
-        ).toString().match(new RegExp(`${filterText}`, 'i'))
-      : true
-    )
+    Object.values(allData).filter(row => {
+      if (!filterText) return true;
+
+      const regex = new RegExp(filterText, 'i');
+
+      for (const { search } of columns) {
+        if (!search) continue;
+
+        let value: any = '';
+
+        if (typeof search === 'function') {
+          value = search(row);
+        } else if (row[search] !== undefined) {
+          value = row[search];
+        }
+
+        if (value && regex.test(String(value))) {
+          return true; // early return on first match
+        }
+      }
+
+      return false;
+    })
   );
 
   const pagesCount = (data && rowsPerPage && Math.ceil(data.length / rowsPerPage));
