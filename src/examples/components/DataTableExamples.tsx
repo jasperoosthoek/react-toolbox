@@ -179,10 +179,17 @@ ${getStatusBadgeExample}`;
 // Example 2: DataTable with pagination and search
 const PaginatedDataTableExampleComponent = () => {
   const columns = [
-    { name: 'Name', orderBy: 'name', selector: 'name', search: 'name' },
+    { name: 'Name', orderBy: 'name', selector: 'name', search: 'name', formatSum: 'Total' },
     { name: 'Email', orderBy: 'email', selector: 'email', search: 'email' },
     { name: 'Role', orderBy: 'role', selector: 'role', search: 'role' },
-    { name: 'Salary', orderBy: 'salary', selector: (user: User) => formatCurrency(user.salary), search: ({ salary }) => salary},
+    {
+      name: 'Salary',
+      orderBy: 'salary',
+      selector: (user: User) => formatCurrency(user.salary),
+      search: ({ salary }) => salary,
+      value: 'salary',
+      formatSum: formatCurrency,
+    },
     { name: 'Join Date', orderBy: 'joinDate', selector: (user: User) => formatDate(user.joinDate), search: ({ joinDate }) => joinDate},
   ];
 
@@ -192,6 +199,7 @@ const PaginatedDataTableExampleComponent = () => {
       columns={columns}
       rowsPerPageOptions={[5, 10, 25, null]}
       rowsPerPage={5}
+      showSum
     />
   );
 };
@@ -525,9 +533,16 @@ const DragDropDataTableExampleComponent = () => {
   const [isMoving, setIsMoving] = useState(false);
 
   const columns = [
-    { name: 'Name', orderBy: 'name', selector: 'name', search: 'name' },
+    { name: 'Name', orderBy: 'name', selector: 'name', search: 'name', formatSum: 'Total' },
     { name: 'Category', orderBy: 'category', selector: 'category', search: 'category' },
-    { name: 'Price', orderBy: 'price', selector: (product: Product) => formatCurrency(product.price), search: 'product' },
+    {
+      name: 'Price',
+      orderBy: 'price',
+      selector: (product: Product) => formatCurrency(product.price),
+      search: 'product',
+      value: 'price',
+      formatSum: formatCurrency,
+    },
     {
       name: 'Stock',
       orderBy: 'stock',
@@ -597,6 +612,7 @@ const DragDropDataTableExampleComponent = () => {
         columns={columns}
         onMove={handleMove}
         moveIsLoading={isMoving}
+        showSum
       />
     </div>
   );
