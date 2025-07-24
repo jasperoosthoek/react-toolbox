@@ -350,6 +350,7 @@
 
 ##### Version 0.10.0
 - **BREAKING**: Replace `filterColumn` argument in `DataTable` component by `search` prop on `columns`
+- Fix: sums row in `DataTable` component does not respond to search box and changes of input data
 - All form input components accept `className` prop that is given to `Form.Group` component
 - Add 'mt-2' class to `FormCheckbox` improve vertical spacing
 - `FormBadgesSelection` uses same value/label inputs as `FormSelect`

@@ -214,7 +214,7 @@ export const DataTable = <D extends any[]>({
     value && data.reduce((sum, row) => (
       sum + (typeof value === 'function' ? value(row) : row[value])
     ), 0)
-  )), [columns])
+  )), [columns, data])
   
   if (!Component) return null;
 
@@ -443,7 +443,6 @@ export const DataTable = <D extends any[]>({
         {showSum && (
           <tfoot>
             <tr>
-
               {columns.map(({ value, formatSum }, index) =>
                 <td
                   key={index}
