@@ -493,7 +493,6 @@ const UserManagement = () => {
     </FormModalProvider>
   );
 };
-
 export default UserManagement;
 
 // Types and Mock Data

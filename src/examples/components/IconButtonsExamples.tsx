@@ -763,7 +763,7 @@ const UploadTextButtonExampleComponent = () => {
     setFileName('');
   };
 
-  const handleError = (error: Error) => {
+  const handleError = (error: any) => {
     console.error('File upload error:', error);
     setUploadLoading(false);
     alert('Error uploading file: ' + error.message);
@@ -826,7 +826,7 @@ const FileUploadExample = () => {
     setFileName('');
   };
 
-  const handleError = (error: Error) => {
+  const handleError = (error: any) => {
     console.error('File upload error:', error);
     setUploadLoading(false);
     alert('Error uploading file: ' + error.message);

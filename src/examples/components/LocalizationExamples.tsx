@@ -15,6 +15,12 @@ import {
 } from '../../index';
 import { ExampleSection } from './ExampleSection';
 import { FormActions } from './FormExamples';
+import {
+  mockUsers,
+  User,
+  mockDataFormatter,
+  userInterfaceExample,
+} from '../data/mockData';
 
 // Example 1: Basic localization usage
 const BasicLocalizationExampleComponent = () => {
@@ -98,7 +104,7 @@ const BasicLocalizationExampleComponent = () => {
 
 export const BasicLocalizationExample = () => {
   const code = `import React from 'react';
-import { ButtonGroup, Button, Badge } from 'react-bootstrap';
+import { ButtonGroup, Button, Badge, Card } from 'react-bootstrap';
 import { 
   useLocalization, 
   defaultLanguages 
@@ -109,45 +115,80 @@ const MyLocalizationDemo = () => {
 
   return (
     <div>
-      {/* Language switcher */}
-      <div className="d-flex align-items-center gap-3 mb-3">
-        <span>Current Language:</span>
-        <Badge bg="primary">{lang.toUpperCase()}</Badge>
-      </div>
-      
-      <ButtonGroup className="mb-3">
-        {languages.map(language => (
-          <Button
-            key={language}
-            variant={lang === language ? 'primary' : 'outline-primary'}
-            onClick={() => setLanguage(language)}
-          >
-            {defaultLanguages[language] || language}
-          </Button>
-        ))}
-      </ButtonGroup>
+      <Card className="mb-4">
+        <Card.Header>
+          <div className="d-flex justify-content-between align-items-center">
+            <h6 className="mb-0">Language Controls</h6>
+            <div>
+              <span className="me-2">Current Language:</span>
+              <Badge bg="primary">{lang.toUpperCase()}</Badge>
+            </div>
+          </div>
+        </Card.Header>
+        <Card.Body>
+          <ButtonGroup className="mb-3">
+            {languages.map(language => (
+              <Button
+                key={language}
+                variant={lang === language ? 'primary' : 'outline-primary'}
+                onClick={() => setLanguage(language)}
+              >
+                {defaultLanguages[language] || language}
+              </Button>
+            ))}
+          </ButtonGroup>
 
-      {/* Using localized strings */}
-      <div>
-        <h3>{text\`save\`}</h3>
-        <p>{text\`are_you_sure\`}</p>
-        <button>{text\`cancel\`}</button>
-        <button>{text\`delete\`}</button>
-      </div>
-      
-      {/* Form strings */}
-      <div>
-        <label>{text\`your_email\`}</label>
-        <input placeholder={text\`enter_email\`} />
-        
-        <label>{text\`your_password\`}</label>
-        <input placeholder={text\`enter_password\`} type="password" />
-        
-        <button>{text\`login\`}</button>
-      </div>
+          <div className="row">
+            <div className="col-md-6">
+              <h6>Basic String Examples</h6>
+              <div className="mb-2">
+                <strong>Save:</strong> {text\`save\`}
+              </div>
+              <div className="mb-2">
+                <strong>Cancel:</strong> {text\`cancel\`}
+              </div>
+              <div className="mb-2">
+                <strong>Delete:</strong> {text\`delete\`}
+              </div>
+              <div className="mb-2">
+                <strong>Search:</strong> {text\`search\`}
+              </div>
+              <div className="mb-2">
+                <strong>Are you sure?:</strong> {text\`are_you_sure\`}
+              </div>
+              <div className="mb-2">
+                <strong>Required field:</strong> {text\`required_field\`}
+              </div>
+            </div>
+
+            <div className="col-md-6">
+              <h6>UI String Examples</h6>
+              <div className="mb-2">
+                <strong>Login:</strong> {text\`login\`}
+              </div>
+              <div className="mb-2">
+                <strong>Your email:</strong> {text\`your_email\`}
+              </div>
+              <div className="mb-2">
+                <strong>Enter password:</strong> {text\`enter_password\`}
+              </div>
+              <div className="mb-2">
+                <strong>Choose one:</strong> {text\`choose_one\`}
+              </div>
+              <div className="mb-2">
+                <strong>Number of rows:</strong> {text\`number_of_rows\`}
+              </div>
+              <div className="mb-2">
+                <strong>No information:</strong> {text\`no_information_to_display\`}
+              </div>
+            </div>
+          </div>
+        </Card.Body>
+      </Card>
     </div>
   );
-};`;
+};
+export default MyLocalizationDemo;`;
 
   return (
     <ExampleSection
@@ -169,7 +210,7 @@ const MyLocalizationDemo = () => {
 
 // Example 2: Custom localization strings
 const CustomLocalizationExampleComponent = () => {
-  const { lang, setLanguage, text, setLocalization, textByLang, languages } = useLocalization();
+  const { text, languages } = useLocalization();
   const [selectedLanguage, setSelectedLanguage] = useState('en');
 
   return (
@@ -288,7 +329,8 @@ const CustomStringsDemo = () => {
       <div>{textByLang('fr')\`greeting\${'Marie'}\`}</div>
     </div>
   );
-};`;
+};
+export default CustomStringsDemo;`;
 
   return (
     <ExampleSection
@@ -414,19 +456,19 @@ export const FormLocalizationExample = () => {
   const code = `import React, { useState } from 'react';
 import { Button, Alert, Card } from 'react-bootstrap';
 import { 
-  FormProvider, 
-  FormInput, 
-  useForm, 
-  useLocalization 
+  FormProvider,
+  FormInput,
+  useForm,
+  useLocalization,
 } from '@jasperoosthoek/react-toolbox';
 
 const LoginForm = () => {
-  const { text } = useLocalization();
-  const [loginResult, setLoginResult] = useState('');
-  
+  const { text, lang } = useLocalization();
+  const [loginResult, setLoginResult] = useState<string>('');
+
   const formFields = {
     email: {
-      type: 'string',
+      type: 'string' as const,
       label: text\`your_email\`,
       placeholder: text\`enter_email\`,
       required: true,
@@ -434,28 +476,32 @@ const LoginForm = () => {
       formProps: { type: 'email' }
     },
     password: {
-      type: 'string', 
+      type: 'string' as const,
       label: text\`your_password\`,
       placeholder: text\`enter_password\`,
       required: true,
       initialValue: '',
       formProps: { type: 'password' }
-    }
+    },
   };
 
-  const handleSubmit = (data, callback) => {
-    console.log('Login:', data);
+  const handleSubmit = (data: any, callback?: () => void) => {
+    console.log('Login attempt:', data);
+    // Simulate login process
     setLoginResult(\`\${text\`login\`} attempted with: \${data.email}\`);
     
     // Simulate API call
     setTimeout(() => {
       setLoginResult(\`\${text\`login\`} successful for: \${data.email}\`);
-      callback();
+      if (callback) callback();
+      
+      // Clear result after 3 seconds
+      setTimeout(() => setLoginResult(''), 3000);
     }, 1000);
   };
 
-  const validate = (data) => {
-    const errors = {};
+  const validate = (data: any) => {
+    const errors: any = {};
     if (data.email && !data.email.includes('@')) {
       errors.email = 'Please enter a valid email address';
     }
@@ -465,10 +511,16 @@ const LoginForm = () => {
     return errors;
   };
 
+  // Custom submit button that uses form context
   const LoginButton = () => {
     const { submit, loading } = useForm();
+    
     return (
-      <Button onClick={submit} disabled={loading}>
+      <Button 
+        onClick={submit} 
+        disabled={loading}
+        variant="primary"
+      >
         {loading ? 'Logging in...' : text\`login\`}
       </Button>
     );
@@ -477,23 +529,50 @@ const LoginForm = () => {
   return (
     <div>
       {loginResult && (
-        <Alert variant="success">{loginResult}</Alert>
+        <Alert variant="success" className="mb-3">
+          {loginResult}
+        </Alert>
       )}
       
-      <FormProvider 
-        formFields={formFields} 
-        onSubmit={handleSubmit}
-        validate={validate}
-      >
-        <FormInput name="email" />
-        <FormInput name="password" />
-        <div className="d-flex gap-2 mt-3">
-          <LoginButton />
-          <Button variant="outline-secondary" onClick={() => setLoginResult('')}>
-            {text\`cancel\`}
-          </Button>
-        </div>
-      </FormProvider>
+      <Card className="mb-4">
+        <Card.Header>
+          <h6 className="mb-0">{text\`login\`} Form</h6>
+        </Card.Header>
+        <Card.Body>
+          <FormProvider 
+            formFields={formFields} 
+            onSubmit={handleSubmit}
+            validate={validate}
+          >
+            <FormInput name="email" />
+            <FormInput name="password" />
+            <FormActions className="justify-content-between">
+              <LoginButton />
+              <Button 
+                type="button" 
+                variant="outline-secondary"
+                onClick={() => setLoginResult('')}
+              >
+                {text\`cancel\`}
+              </Button>
+            </FormActions>
+          </FormProvider>
+        </Card.Body>
+      </Card>
+    </div>
+  );
+};
+export default LoginForm;
+
+interface FormActionsProps {
+  children: React.ReactNode;
+  className?: string;
+}
+
+const FormActions: React.FC<FormActionsProps> = ({ children, className = '' }) => {
+  return (
+    <div className={\`d-flex gap-2 align-items-center mt-3 \${className}\`}>
+      {children}
     </div>
   );
 };`;
@@ -519,12 +598,7 @@ const LoginForm = () => {
 // Example 4: Localization with DataTable
 const DataTableLocalizationExampleComponent = () => {
   const { text } = useLocalization();
-
-  const users = [
-    { id: 1, name: 'John Doe', email: 'john@example.com', role: 'Admin' },
-    { id: 2, name: 'Jane Smith', email: 'jane@example.com', role: 'User' },
-    { id: 3, name: 'Bob Johnson', email: 'bob@example.com', role: 'User' },
-  ];
+  const users = mockUsers.slice(0, 3);
 
   const columns = [
     { name: 'Name', orderBy: 'name', selector: 'name' },
@@ -567,11 +641,7 @@ import { DataTable, EditButton, DeleteConfirmButton, useLocalization } from '@ja
 const LocalizedDataTable = () => {
   const { text } = useLocalization();
 
-  const users = [
-    { id: 1, name: 'John Doe', email: 'john@example.com', role: 'Admin' },
-    { id: 2, name: 'Jane Smith', email: 'jane@example.com', role: 'User' },
-    { id: 3, name: 'Bob Johnson', email: 'bob@example.com', role: 'User' },
-  ];
+  const users = mockUsers;
 
   const columns = [
     { name: 'Name', orderBy: 'name', selector: 'name' },
@@ -579,7 +649,7 @@ const LocalizedDataTable = () => {
     { name: 'Role', orderBy: 'role', selector: 'role' },
     { 
       name: 'Actions', 
-      selector: (user) => (
+      selector: (user: User) => (
         <span>
           <EditButton size="sm" title={text\`modal_edit\`} />
           <DeleteConfirmButton 
@@ -604,7 +674,13 @@ const LocalizedDataTable = () => {
       rowsPerPage={5}
     />
   );
-};`;
+};
+export default LocalizedDataTable;
+
+// Types and Mock Data
+${userInterfaceExample}
+
+const mockUsers: User[] = ${mockDataFormatter(mockUsers.slice(0, 3))}`;
 
   return (
     <ExampleSection
