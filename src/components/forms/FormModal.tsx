@@ -116,6 +116,7 @@ export const FormFieldsRenderer = () => {
           return (
             <Component 
               {...commonProps}
+              key={name}
             />
           );
         }
