@@ -11,16 +11,16 @@ import {
   DownloadButton,
   CreateButton,
   MoveButton,
-  SyncButton
+  SyncButton,
+  FixedLoadingIndicator,
 } from '../../index';
 import { ExampleSection } from './ExampleSection';
-import { FixedLoadingIndicator } from './FixedLoadingIndicator';
 
 // Example 1: ConfirmButton with different configurations
 const ConfirmButtonExampleComponent = () => {
-  const [saveLoading, setSaveLoading] = useState(false);
-  const [deleteLoading, setDeleteLoading] = useState(false);
-  const [downloadLoading, setDownloadLoading] = useState(false);
+  const [saveLoading, setSaveLoading] = useState<boolean>(false);
+  const [deleteLoading, setDeleteLoading] = useState<boolean>(false);
+  const [downloadLoading, setDownloadLoading] = useState<boolean>(false);
   const [results, setResults] = useState<string[]>([]);
 
   const addResult = (message: string) => {
@@ -117,30 +117,40 @@ const ConfirmButtonExampleComponent = () => {
 
 export const ConfirmButtonExample = () => {
   const code = `import React, { useState } from 'react';
-import { ConfirmButton, SaveButton, DeleteButton, DownloadButton } from '@jasperoosthoek/react-toolbox';
+import { Alert } from 'react-bootstrap';
+import { 
+  ConfirmButton, SaveButton, DeleteButton, DownloadButton 
+} from '@jasperoosthoek/react-toolbox';
 
 const MyComponent = () => {
-  const [saveLoading, setSaveLoading] = useState(false);
-  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [saveLoading, setSaveLoading] = useState<boolean>(false);
+  const [deleteLoading, setDeleteLoading] = useState<boolean>(false);
+  const [results, setResults] = useState<string[]>([]);
 
-  const handleSave = (callback) => {
+  const addResult = (message: string) => {
+    setResults(prev => [...prev, \`\${new Date().toLocaleTimeString()}: \${message}\`]);
+  };
+
+  const handleSave = (callback?: () => void) => {
     setSaveLoading(true);
+    addResult('Save operation started...');
     
     // Perform save operation
     setTimeout(() => {
       setSaveLoading(false);
-      console.log('Save completed!');
+      addResult('Save operation completed successfully!');
       if (callback) callback(); // Close modal
     }, 2000);
   };
 
-  const handleDelete = (callback) => {
+  const handleDelete = (callback?: () => void) => {
     setDeleteLoading(true);
+    addResult('Delete operation started...');
     
     // Perform delete operation
     setTimeout(() => {
       setDeleteLoading(false);
-      console.log('Delete completed!');
+      addResult('Delete operation completed!');
       if (callback) callback(); // Close modal
     }, 1500);
   };
@@ -166,9 +176,22 @@ const MyComponent = () => {
         loading={deleteLoading}
         buttonComponent={DeleteButton}
       />
+
+      {results.length > 0 && (
+        <Alert variant="info">
+          <Alert.Heading>Action Results</Alert.Heading>
+          <ul className="mb-0">
+            {results.map((result, index) => (
+              <li key={index}>{result}</li>
+            ))}
+          </ul>
+        </Alert>
+      )}
     </div>
   );
-};`;
+};
+
+export default MyComponent;`;
 
   return (
     <ExampleSection
@@ -190,14 +213,14 @@ const MyComponent = () => {
 
 // Example 2: DeleteConfirmButton
 const DeleteConfirmButtonExampleComponent = () => {
-  const [items, setItems] = useState([
+  const [items, setItems] = useState<Array<{ id: number; name: string; type: string }>>([
     { id: 1, name: 'Document 1', type: 'file' },
     { id: 2, name: 'Project Folder', type: 'folder' },
     { id: 3, name: 'Image.jpg', type: 'file' },
     { id: 4, name: 'Backup Data', type: 'folder' },
   ]);
   const [loadingStates, setLoadingStates] = useState<{[key: number]: boolean}>({});
-  const [isDeleting, setIsDeleting] = useState(false);
+  const [isDeleting, setIsDeleting] = useState<boolean>(false);
 
   const handleDelete = (itemId: number) => {
     setLoadingStates(prev => ({ ...prev, [itemId]: true }));
@@ -210,6 +233,16 @@ const DeleteConfirmButtonExampleComponent = () => {
     }, 1500);
   };
 
+  const resetItems = () => {
+    setItems([
+      { id: 1, name: 'Document 1', type: 'file' },
+      { id: 2, name: 'Project Folder', type: 'folder' },
+      { id: 3, name: 'Image.jpg', type: 'file' },
+      { id: 4, name: 'Backup Data', type: 'folder' },
+    ]);
+    setLoadingStates({});
+  };
+
   return (
     <div>
       <FixedLoadingIndicator 
@@ -220,7 +253,17 @@ const DeleteConfirmButtonExampleComponent = () => {
       
       <Card className="mb-4">
         <Card.Header>
-          <h6 className="mb-0">Delete Items</h6>
+          <div className="d-flex justify-content-between align-items-center">
+            <h6 className="mb-0">Delete Items</h6>
+            {items.length === 0 && (
+              <button 
+                className="btn btn-outline-secondary btn-sm"
+                onClick={resetItems}
+              >
+                Reset Items
+              </button>
+            )}
+          </div>
         </Card.Header>
         <Card.Body>
           <div className="list-group">
@@ -241,7 +284,7 @@ const DeleteConfirmButtonExampleComponent = () => {
             ))}
             {items.length === 0 && (
               <div className="text-center text-muted py-3">
-                All items have been deleted. Refresh to reset.
+                All items have been deleted. Click "Reset Items" to restore them.
               </div>
             )}
           </div>
@@ -253,20 +296,25 @@ const DeleteConfirmButtonExampleComponent = () => {
 
 export const DeleteConfirmButtonExample = () => {
   const code = `import React, { useState } from 'react';
-import { DeleteConfirmButton } from '@jasperoosthoek/react-toolbox';
+import { DeleteConfirmButton, FixedLoadingIndicator } from '@jasperoosthoek/react-toolbox';
 import { Badge } from 'react-bootstrap';
-import { FixedLoadingIndicator } from './FixedLoadingIndicator';
+
+interface Item {
+  id: number;
+  name: string;
+  type: string;
+}
 
 const ItemList = () => {
-  const [items, setItems] = useState([
+  const [items, setItems] = useState<Item[]>([
     { id: 1, name: 'Document 1', type: 'file' },
     { id: 2, name: 'Project Folder', type: 'folder' },
     { id: 3, name: 'Image.jpg', type: 'file' },
   ]);
-  const [loadingStates, setLoadingStates] = useState({});
-  const [isDeleting, setIsDeleting] = useState(false);
+  const [loadingStates, setLoadingStates] = useState<{[key: number]: boolean}>({});
+  const [isDeleting, setIsDeleting] = useState<boolean>(false);
 
-  const handleDelete = (itemId) => {
+  const handleDelete = (itemId: number) => {
     setLoadingStates(prev => ({ ...prev, [itemId]: true }));
     setIsDeleting(true);
     
@@ -288,10 +336,16 @@ const ItemList = () => {
       
       <div className="list-group">
         {items.map(item => (
-          <div key={item.id} className="list-group-item d-flex justify-content-between align-items-center">
+          <div 
+            key={item.id} 
+            className="list-group-item d-flex justify-content-between align-items-center"
+          >
             <div>
               <strong>{item.name}</strong>
-              <Badge bg={item.type === 'folder' ? 'primary' : 'secondary'} className="ms-2">
+              <Badge 
+                bg={item.type === 'folder' ? 'primary' : 'secondary'} 
+                className="ms-2"
+              >
                 {item.type}
               </Badge>
             </div>
@@ -305,7 +359,9 @@ const ItemList = () => {
       </div>
     </div>
   );
-};`;
+};
+
+export default ItemList;`;
 
   return (
     <ExampleSection
@@ -328,7 +384,9 @@ const ItemList = () => {
 
 // Example 3: Advanced ConfirmButton patterns
 const AdvancedConfirmButtonExampleComponent = () => {
-  const [operations, setOperations] = useState<{[key: string]: { loading: boolean; result?: string }}>({});
+  const [operations, setOperations] = useState<{
+    [key: string]: { loading: boolean; result?: string }
+  }>({});
 
   const createOperation = (key: string) => ({
     start: () => setOperations(prev => ({ ...prev, [key]: { loading: true } })),
@@ -365,6 +423,19 @@ const AdvancedConfirmButtonExampleComponent = () => {
       createOperation1.complete('New project created successfully!');
       if (callback) callback();
     }, 1500);
+  };
+
+  const handleSave = (callback?: () => void) => {
+    console.log('Save operation');
+    if (callback) callback();
+  };
+
+  const handleDelete = () => {
+    console.log('Delete operation confirmed');
+  };
+
+  const clearResult = (key: string) => {
+    setOperations(prev => ({ ...prev, [key]: { loading: false } }));
   };
 
   return (
@@ -432,7 +503,8 @@ const AdvancedConfirmButtonExampleComponent = () => {
                   <strong>{key.charAt(0).toUpperCase() + key.slice(1)}:</strong> {op.result}
                   <button 
                     className="btn-close float-end" 
-                    onClick={() => setOperations(prev => ({ ...prev, [key]: { loading: false } }))}
+                    onClick={() => clearResult(key)}
+                    aria-label="Close"
                   />
                 </Alert>
               )
@@ -454,11 +526,11 @@ const AdvancedConfirmButtonExampleComponent = () => {
               modalBody="Save all pending changes?"
               confirmText="Save"
               cancelText="Cancel"
-              onConfirm={handleMove}
-              loading={operations.move?.loading}
+              onConfirm={handleSave}
+              loading={operations.save?.loading}
               buttonComponent={SaveButton}
             />
-            <DeleteConfirmButton onDelete={() => console.log('Delete confirmed')} />
+            <DeleteConfirmButton onDelete={handleDelete} />
           </ButtonGroup>
         </Card.Body>
       </Card>
@@ -474,33 +546,53 @@ import {
   MoveButton, SyncButton, CreateButton 
 } from '@jasperoosthoek/react-toolbox';
 
-const AdvancedOperations = () => {
-  const [operations, setOperations] = useState({});
+interface Operation {
+  loading: boolean;
+  result?: string;
+}
 
-  const handleMove = (callback) => {
-    setOperations(prev => ({ ...prev, move: { loading: true } }));
+const AdvancedOperations = () => {
+  const [operations, setOperations] = useState<{[key: string]: Operation}>({});
+
+  const createOperation = (key: string) => ({
+    start: () => setOperations(prev => ({ ...prev, [key]: { loading: true } })),
+    complete: (result: string) => setOperations(prev => ({ 
+      ...prev, 
+      [key]: { loading: false, result } 
+    })),
+    reset: () => setOperations(prev => ({ ...prev, [key]: { loading: false } }))
+  });
+
+  const moveOperation = createOperation('move');
+  const syncOperation = createOperation('sync');
+
+  const handleMove = (callback?: () => void) => {
+    moveOperation.start();
     
     // Simulate move operation
     setTimeout(() => {
-      setOperations(prev => ({ 
-        ...prev, 
-        move: { loading: false, result: 'Items moved successfully!' } 
-      }));
+      moveOperation.complete('Items moved successfully!');
       if (callback) callback();
     }, 2000);
   };
 
-  const handleSync = (callback) => {
-    setOperations(prev => ({ ...prev, sync: { loading: true } }));
+  const handleSync = (callback?: () => void) => {
+    syncOperation.start();
     
     // Simulate sync operation
     setTimeout(() => {
-      setOperations(prev => ({ 
-        ...prev, 
-        sync: { loading: false, result: 'Sync completed!' } 
-      }));
+      syncOperation.complete('Sync completed - 15 items updated');
       if (callback) callback();
     }, 3000);
+  };
+
+  const handleSave = (callback?: () => void) => {
+    console.log('Save operation');
+    if (callback) callback();
+  };
+
+  const handleDelete = () => {
+    console.log('Delete operation confirmed');
   };
 
   return (
@@ -559,21 +651,38 @@ const AdvancedOperations = () => {
         />
         <DeleteConfirmButton onDelete={handleDelete} />
       </ButtonGroup>
+
+      {/* Display operation results */}
+      {Object.entries(operations).map(([key, op]) => (
+        op.result && (
+          <Alert key={key} variant="success" className="mb-2">
+            <strong>{key.charAt(0).toUpperCase() + key.slice(1)}:</strong> {op.result}
+            <button 
+              className="btn-close float-end" 
+              onClick={() => setOperations(prev => ({ ...prev, [key]: { loading: false } }))}
+              aria-label="Close"
+            />
+          </Alert>
+        )
+      ))}
     </div>
   );
-};`;
+};
+
+export default AdvancedOperations;`;
 
   return (
     <ExampleSection
       title="Advanced ConfirmButton Patterns"
       description="Complex confirmation scenarios with custom modal content, multiple operations, and button combinations"
       code={code}
-      features={['Custom Modal Content', 'JSX in modalBody', 'Button Groups', 'Complex Operations']}
+      features={['Custom Modal Content', 'JSX in modalBody', 'Button Groups', 'Complex Operations', 'Result Tracking']}
       notes={[
         'modalBody can accept JSX elements for complex content',
         'Perfect for operations with detailed instructions',
         'Works seamlessly with ButtonGroups and toolbars',
-        'Can include alerts, lists, and formatted content in modals'
+        'Can include alerts, lists, and formatted content in modals',
+        'Track operation results and display success messages'
       ]}
     >
       <AdvancedConfirmButtonExampleComponent />

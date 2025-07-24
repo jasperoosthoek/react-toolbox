@@ -32,7 +32,10 @@ const AllIconButtonsExampleComponent = () => {
     }));
   };
 
-  const ButtonSection = ({ title, buttons }: { title: string; buttons: Array<{ name: string; component: React.ComponentType<any> }> }) => (
+  const ButtonSection = ({ title, buttons }: { 
+    title: string; 
+    buttons: Array<{ name: string; component: React.ComponentType<any> }> 
+  }) => (
     <Card className="mb-4">
       <Card.Header>
         <h6 className="mb-0">{title}</h6>
@@ -129,7 +132,7 @@ import {
 } from '@jasperoosthoek/react-toolbox';
 
 const MyComponent = () => {
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState<boolean>(false);
   
   const handleAction = () => {
     setLoading(true);
@@ -164,7 +167,9 @@ const MyComponent = () => {
       </ButtonGroup>
     </div>
   );
-};`;
+};
+
+export default MyComponent;`;
 
   return (
     <ExampleSection
@@ -186,7 +191,7 @@ const MyComponent = () => {
 
 // Example 2: Button sizes and variants
 const ButtonSizesAndVariantsExampleComponent = () => {
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState<boolean>(false);
 
   const toggleLoading = () => {
     setLoading(true);
@@ -267,7 +272,7 @@ export const ButtonSizesAndVariantsExample = () => {
 import { SaveButton, EditButton, CheckButton } from '@jasperoosthoek/react-toolbox';
 
 const ButtonStatesExample = () => {
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState<boolean>(false);
 
   const handleAction = () => {
     setLoading(true);
@@ -294,7 +299,9 @@ const ButtonStatesExample = () => {
       <CheckButton disabled />
     </div>
   );
-};`;
+};
+
+export default ButtonStatesExample;`;
 
   return (
     <ExampleSection
@@ -316,8 +323,8 @@ const ButtonStatesExample = () => {
 
 // Example 3: Custom IconButtons
 const CustomIconButtonsExampleComponent = () => {
-  const [favoriteLoading, setFavoriteLoading] = useState(false);
-  const [notificationLoading, setNotificationLoading] = useState(false);
+  const [favoriteLoading, setFavoriteLoading] = useState<boolean>(false);
+  const [notificationLoading, setNotificationLoading] = useState<boolean>(false);
 
   // Create custom buttons using makeIconButton
   const HeartButton = makeIconButton(AiOutlineHeart);
@@ -326,6 +333,16 @@ const CustomIconButtonsExampleComponent = () => {
   const SettingsButton = makeIconButton(FiSettings);
   const UserButton = makeIconButton(FiUser);
   const MailButton = makeIconButton(FiMail);
+
+  const handleFavorite = () => {
+    setFavoriteLoading(true);
+    setTimeout(() => setFavoriteLoading(false), 1500);
+  };
+
+  const handleNotification = () => {
+    setNotificationLoading(true);
+    setTimeout(() => setNotificationLoading(false), 1500);
+  };
 
   return (
     <div>
@@ -338,23 +355,19 @@ const CustomIconButtonsExampleComponent = () => {
             <HeartButton 
               variant="outline-danger" 
               loading={favoriteLoading}
-              onClick={() => {
-                setFavoriteLoading(true);
-                setTimeout(() => setFavoriteLoading(false), 1500);
-              }}
+              onClick={handleFavorite}
+              title="Add to favorites"
             />
-            <StarButton variant="outline-warning" />
+            <StarButton variant="outline-warning" title="Rate this item" />
             <BellButton 
               variant="outline-info"
               loading={notificationLoading}
-              onClick={() => {
-                setNotificationLoading(true);
-                setTimeout(() => setNotificationLoading(false), 1500);
-              }}
+              onClick={handleNotification}
+              title="Toggle notifications"
             />
-            <SettingsButton variant="outline-secondary" />
-            <UserButton variant="outline-primary" />
-            <MailButton variant="outline-success" />
+            <SettingsButton variant="outline-secondary" title="Settings" />
+            <UserButton variant="outline-primary" title="User profile" />
+            <MailButton variant="outline-success" title="Send email" />
           </div>
         </Card.Body>
       </Card>
@@ -365,15 +378,17 @@ const CustomIconButtonsExampleComponent = () => {
 export const CustomIconButtonsExample = () => {
   const code = `import React, { useState } from 'react';
 import { makeIconButton } from '@jasperoosthoek/react-toolbox';
-import { AiOutlineHeart, AiOutlineStar } from 'react-icons/ai';
+import { AiOutlineHeart, AiOutlineStar, AiOutlineBell } from 'react-icons/ai';
 import { FiSettings, FiUser, FiMail } from 'react-icons/fi';
 
 const MyCustomButtons = () => {
-  const [favoriteLoading, setFavoriteLoading] = useState(false);
+  const [favoriteLoading, setFavoriteLoading] = useState<boolean>(false);
+  const [notificationLoading, setNotificationLoading] = useState<boolean>(false);
   
   // Create custom buttons using makeIconButton
   const HeartButton = makeIconButton(AiOutlineHeart);
   const StarButton = makeIconButton(AiOutlineStar);
+  const BellButton = makeIconButton(AiOutlineBell);
   const SettingsButton = makeIconButton(FiSettings);
   const UserButton = makeIconButton(FiUser);
   const MailButton = makeIconButton(FiMail);
@@ -384,6 +399,12 @@ const MyCustomButtons = () => {
     setTimeout(() => setFavoriteLoading(false), 1500);
   };
 
+  const handleNotification = () => {
+    setNotificationLoading(true);
+    // Your notification logic here
+    setTimeout(() => setNotificationLoading(false), 1500);
+  };
+
   return (
     <div>
       <HeartButton 
@@ -392,13 +413,33 @@ const MyCustomButtons = () => {
         onClick={handleFavorite}
         title="Add to favorites"
       />
-      <StarButton variant="outline-warning" />
-      <SettingsButton variant="outline-secondary" />
-      <UserButton variant="outline-primary" />
-      <MailButton variant="outline-success" />
+      <StarButton 
+        variant="outline-warning" 
+        title="Rate this item"
+      />
+      <BellButton 
+        variant="outline-info"
+        loading={notificationLoading}
+        onClick={handleNotification}
+        title="Toggle notifications"
+      />
+      <SettingsButton 
+        variant="outline-secondary" 
+        title="Settings"
+      />
+      <UserButton 
+        variant="outline-primary" 
+        title="User profile"
+      />
+      <MailButton 
+        variant="outline-success" 
+        title="Send email"
+      />
     </div>
   );
-};`;
+};
+
+export default MyCustomButtons;`;
 
   return (
     <ExampleSection
@@ -420,8 +461,8 @@ const MyCustomButtons = () => {
 
 // Example 4: IconButton with text
 const IconButtonWithTextExampleComponent = () => {
-  const [saveLoading, setSaveLoading] = useState(false);
-  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [saveLoading, setSaveLoading] = useState<boolean>(false);
+  const [deleteLoading, setDeleteLoading] = useState<boolean>(false);
 
   const handleSave = () => {
     setSaveLoading(true);
@@ -479,8 +520,8 @@ import {
 } from '@jasperoosthoek/react-toolbox';
 
 const ButtonsWithText = () => {
-  const [saveLoading, setSaveLoading] = useState(false);
-  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [saveLoading, setSaveLoading] = useState<boolean>(false);
+  const [deleteLoading, setDeleteLoading] = useState<boolean>(false);
 
   const handleSave = () => {
     setSaveLoading(true);
@@ -525,7 +566,9 @@ const ButtonsWithText = () => {
       </UploadButton>
     </div>
   );
-};`;
+};
+
+export default ButtonsWithText;`;
 
   return (
     <ExampleSection
@@ -551,6 +594,10 @@ const ButtonGroupsExampleComponent = () => {
 
   const handleSort = (direction: 'asc' | 'desc') => {
     setActiveSort(direction);
+  };
+
+  const resetSort = () => {
+    setActiveSort('none');
   };
 
   return (
@@ -586,7 +633,7 @@ const ButtonGroupsExampleComponent = () => {
             <ButtonGroup>
               <SortButton 
                 variant={activeSort === 'none' ? 'primary' : 'outline-primary'}
-                onClick={() => setActiveSort('none')}
+                onClick={resetSort}
                 title="No sorting"
               />
               <SortUpButton 
@@ -620,10 +667,14 @@ import {
 } from '@jasperoosthoek/react-toolbox';
 
 const ToolbarExample = () => {
-  const [activeSort, setActiveSort] = useState('none');
+  const [activeSort, setActiveSort] = useState<'none' | 'asc' | 'desc'>('none');
 
-  const handleSort = (direction) => {
+  const handleSort = (direction: 'asc' | 'desc') => {
     setActiveSort(direction);
+  };
+
+  const resetSort = () => {
+    setActiveSort('none');
   };
 
   return (
@@ -650,7 +701,7 @@ const ToolbarExample = () => {
         <ButtonGroup>
           <SortButton 
             variant={activeSort === 'none' ? 'primary' : 'outline-primary'}
-            onClick={() => setActiveSort('none')}
+            onClick={resetSort}
             title="No sorting"
           />
           <SortUpButton 
@@ -670,7 +721,9 @@ const ToolbarExample = () => {
       </div>
     </div>
   );
-};`;
+};
+
+export default ToolbarExample;`;
 
   return (
     <ExampleSection
@@ -694,12 +747,26 @@ const ToolbarExample = () => {
 const UploadTextButtonExampleComponent = () => {
   const [fileContent, setFileContent] = useState<string>('');
   const [fileName, setFileName] = useState<string>('');
+  const [uploadLoading, setUploadLoading] = useState<boolean>(false);
 
-  const handleFileLoad = (result: string | ArrayBuffer) => {
+  const handleFileLoad = (result: string | ArrayBuffer | null) => {
     if (typeof result === 'string') {
       setFileContent(result);
       setFileName('Uploaded file');
+      setUploadLoading(false);
     }
+  };
+
+  const handleFileSelect = () => {
+    setUploadLoading(true);
+    setFileContent('');
+    setFileName('');
+  };
+
+  const handleError = (error: Error) => {
+    console.error('File upload error:', error);
+    setUploadLoading(false);
+    alert('Error uploading file: ' + error.message);
   };
 
   return (
@@ -711,9 +778,12 @@ const UploadTextButtonExampleComponent = () => {
         <Card.Body>
           <div className="mb-3">
             <UploadTextButton
-              accept=".txt,.md,.json"
+              accept=".txt,.md,.json,.csv"
               onLoadFile={handleFileLoad}
+              onError={handleError}
               variant="outline-primary"
+              loading={uploadLoading}
+              onClick={handleFileSelect}
             >
               Upload Text File
             </UploadTextButton>
@@ -738,19 +808,28 @@ export const UploadTextButtonExample = () => {
 import { UploadTextButton } from '@jasperoosthoek/react-toolbox';
 
 const FileUploadExample = () => {
-  const [fileContent, setFileContent] = useState('');
-  const [fileName, setFileName] = useState('');
+  const [fileContent, setFileContent] = useState<string>('');
+  const [fileName, setFileName] = useState<string>('');
+  const [uploadLoading, setUploadLoading] = useState<boolean>(false);
 
-  const handleFileLoad = (result) => {
+  const handleFileLoad = (result: string | ArrayBuffer | null) => {
     if (typeof result === 'string') {
       setFileContent(result);
       setFileName('Uploaded file');
+      setUploadLoading(false);
     }
   };
 
-  const handleError = (error) => {
+  const handleFileSelect = () => {
+    setUploadLoading(true);
+    setFileContent('');
+    setFileName('');
+  };
+
+  const handleError = (error: Error) => {
     console.error('File upload error:', error);
-    alert('Error uploading file');
+    setUploadLoading(false);
+    alert('Error uploading file: ' + error.message);
   };
 
   return (
@@ -760,7 +839,8 @@ const FileUploadExample = () => {
         onLoadFile={handleFileLoad}
         onError={handleError}
         variant="outline-primary"
-        loading={false}
+        loading={uploadLoading}
+        onClick={handleFileSelect}
       >
         Upload Text File
       </UploadTextButton>
@@ -768,14 +848,19 @@ const FileUploadExample = () => {
       {fileContent && (
         <div className="mt-3">
           <h6>File Content:</h6>
-          <pre className="bg-light p-3 rounded" style={{ maxHeight: '200px', overflow: 'auto' }}>
+          <pre 
+            className="bg-light p-3 rounded" 
+            style={{ maxHeight: '200px', overflow: 'auto' }}
+          >
             {fileContent}
           </pre>
         </div>
       )}
     </div>
   );
-};`;
+};
+
+export default FileUploadExample;`;
 
   return (
     <ExampleSection

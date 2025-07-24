@@ -10,7 +10,8 @@ import {
   FormModalProvider,
   FormEditModalButton,
   FormCreateModalButton,
-  DeleteConfirmButton
+  DeleteConfirmButton,
+  FixedLoadingIndicator,
 } from '../../index';
 import {
   mockUsers,
@@ -29,7 +30,6 @@ import {
   formatCurrencyExample,
   formatDateExample,
 } from '../data/mockData';
-import { FixedLoadingIndicator } from './FixedLoadingIndicator';
 import { ExampleSection } from './ExampleSection';
 
 const getStatusBadgeExample = `const getStatusBadge = (status: string) => {
@@ -590,7 +590,7 @@ const DragDropDataTableExampleComponent = () => {
 export const DragDropDataTableExample = () => {
   const code = `import React, { useState } from 'react';
 import { Badge, Alert } from 'react-bootstrap';
-import { DataTable } from '@jasperoosthoek/react-toolbox';
+import { DataTable, FixedLoadingIndicator } from '@jasperoosthoek/react-toolbox';
 
 const DragDropDataTableExample = () => {
   const [products, setProducts] = useState(mockProducts);
@@ -662,11 +662,11 @@ const DragDropDataTableExample = () => {
 
   return (
     <div>
-      {isMoving && (
-        <Alert variant="info" className="mb-3">
-          Saving new order...
-        </Alert>
-      )}
+      <FixedLoadingIndicator 
+        show={isMoving}
+        message="Saving new order..."
+        variant="info"
+      />
       
       <DataTable
         data={products}

@@ -13,6 +13,7 @@ export * from './components/forms/fields';
 
 export * from './components/indicators/LoadingIndicator';
 export * from './components/indicators/CheckIndicator';
+export * from './components/indicators/FixedLoadingIndicator';
 
 export * from './components/tables/DataTable';
 export * from './components/tables/DragAndDropList';
