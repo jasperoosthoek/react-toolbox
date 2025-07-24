@@ -1,4 +1,4 @@
-// Mock data for DataTable examples
+// Mock data for DataTable examples and reusable code examples of interfaces
 
 export interface User {
   id: number;
@@ -11,6 +11,17 @@ export interface User {
   salary: number;
   avatar?: string;
 }
+export const userInterfaceExample = `interface User {
+  id: number;
+  name: string;
+  email: string;
+  role: string;
+  department: string;
+  joinDate: string;
+  status: 'active' | 'inactive' | 'pending';
+  salary: number;
+  avatar?: string;
+}`;
 
 export interface Product {
   id: number;
@@ -21,6 +32,15 @@ export interface Product {
   description: string;
   tags: string[];
 }
+export const productInterfaceExample = `interface Product {
+  id: number;
+  name: string;
+  category: string;
+  price: number;
+  stock: number;
+  description: string;
+  tags: string[];
+}`
 
 export interface Order {
   id: number;
@@ -31,6 +51,15 @@ export interface Order {
   status: 'pending' | 'processing' | 'shipped' | 'delivered';
   orderDate: string;
 }
+export const orderInterfaceExample = `interface Order {
+  id: number;
+  customerName: string;
+  product: string;
+  quantity: number;
+  total: number;
+  status: 'pending' | 'processing' | 'shipped' | 'delivered';
+  orderDate: string;
+}`
 
 export const mockUsers: User[] = [
   {
@@ -1122,6 +1151,12 @@ export const formatCurrency = (amount: number) => {
     currency: 'USD',
   }).format(amount);
 };
+export const formatCurrencyExample = `const formatCurrency = (amount: number) => {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+  }).format(amount);
+};`
 
 export const formatDate = (dateString: string) => {
   return new Date(dateString).toLocaleDateString('en-US', {
@@ -1130,3 +1165,29 @@ export const formatDate = (dateString: string) => {
     day: 'numeric',
   });
 };
+export const formatDateExample = `const formatDate = (dateString: string) => {
+  return new Date(dateString).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  });
+}`;
+
+export function mockDataFormatter(data: any[]): string {
+  return JSON.stringify(data, null, 2)
+    // Remove quotes from keys
+    .replace(/"([^"]+)":/g, '$1:')
+    
+    // Replace string values only
+    .replace(/"((?:[^"\\]|\\.)*)"/g, (_, value) =>
+      `'${value
+        .replace(/\\"/g, '"')   // convert \" → "
+        .replace(/'/g, "\\'")   // escape single quote
+        .replace(/\\\\/g, '\\') // convert \\ → \
+      }'`
+    )
+
+    // Add trailing commas
+    .replace(/([^\s,])(\n\s*})/g, '$1,$2')
+    .replace(/([^\s,])(\n\s*])/g, '$1,$2');
+}

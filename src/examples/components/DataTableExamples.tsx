@@ -12,57 +12,25 @@ import {
   FormCreateModalButton,
   DeleteConfirmButton
 } from '../../index';
-import { mockUsers, mockProducts, mockOrders, User, Product, Order, getStatusBadge, formatCurrency, formatDate } from '../data/mockData';
+import {
+  mockUsers,
+  mockProducts,
+  mockOrders,
+  User,
+  Product,
+  Order,
+  getStatusBadge,
+  formatCurrency,
+  formatDate,
+  mockDataFormatter,
+  userInterfaceExample,
+  productInterfaceExample,
+  orderInterfaceExample,
+  formatCurrencyExample,
+  formatDateExample,
+} from '../data/mockData';
 import { FixedLoadingIndicator } from './FixedLoadingIndicator';
 import { ExampleSection } from './ExampleSection';
-
-// Reusable code examples of interfaces and helper functions
-const userInterfaceExample = `interface User {
-  id: number;
-  name: string;
-  email: string;
-  role: string;
-  department: string;
-  joinDate: string;
-  status: 'active' | 'inactive' | 'pending';
-  salary: number;
-  avatar?: string;
-}`;
-
-const productInterfaceExample = `interface Product {
-  id: number;
-  name: string;
-  category: string;
-  price: number;
-  stock: number;
-  description: string;
-  tags: string[];
-}`
-
-const orderInterfaceExample = `interface Order {
-  id: number;
-  customerName: string;
-  product: string;
-  quantity: number;
-  total: number;
-  status: 'pending' | 'processing' | 'shipped' | 'delivered';
-  orderDate: string;
-}`
-
-const formatCurrencyExample = `const formatCurrency = (amount: number) => {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-  }).format(amount);
-};`
-
-const formatDateExample = `const formatDate = (dateString: string) => {
-  return new Date(dateString).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-  });
-}`;
 
 const getStatusBadgeExample = `const getStatusBadge = (status: string) => {
   const statusClasses = {
@@ -75,15 +43,6 @@ const getStatusBadgeExample = `const getStatusBadge = (status: string) => {
   };
   return statusClasses[status as keyof typeof statusClasses] || 'badge bg-secondary';
 };`
-
-// Data formatter to make mock data look like code
-export function mockDataFormatter(data: any[]): string {
-  return JSON.stringify(data, null, 2)
-    .replace(/"([^"]+)":/g, '$1:')           // remove quotes from keys
-    .replace(/"/g, "'")                      // convert double quotes to single
-    .replace(/([^\s,])(\n\s*})/g, '$1,$2')   // add trailing comma before }
-    .replace(/([^\s,])(\n\s*])/g, '$1,$2');  // add trailing comma before ]
-}
 
 // Example 1: Basic DataTable with sorting
 const BasicDataTableExampleComponent = () => {
@@ -100,7 +59,7 @@ const BasicDataTableExampleComponent = () => {
           {user.status}
         </Badge>
       ),
-      search: ({ status }) => status,
+      search: ({ status }: User) => status,
     },
   ];
 
@@ -123,18 +82,19 @@ import { DataTable } from '@jasperoosthoek/react-toolbox';
 
 const BasicDataTableExample = () => {
   const columns = [
-    { name: 'ID', orderBy: 'id', selector: 'id' },
-    { name: 'Name', orderBy: 'name', selector: 'name' },
-    { name: 'Email', orderBy: 'email', selector: 'email' },
-    { name: 'Department', orderBy: 'department', selector: 'department' },
+    { name: 'ID', orderBy: 'id', selector: 'id', search: 'id' },
+    { name: 'Name', orderBy: 'name', selector: 'name', search: 'name' },
+    { name: 'Email', orderBy: 'email', selector: 'email', search: 'email' },
+    { name: 'Department', orderBy: 'department', selector: 'department', search: 'department' },
     { 
       name: 'Status', 
       orderBy: 'status', 
-      selector: (user) => (
+      selector: (user: User) => (
         <Badge className={getStatusBadge(user.status)}>
           {user.status}
         </Badge>
-      ) 
+      ),
+      search: ({ status }: User) => status,
     },
   ];
 
@@ -163,12 +123,13 @@ ${getStatusBadgeExample}`;
       title="Basic DataTable with Sorting"
       description="Simple table with column sorting functionality. Click column headers to sort data."
       code={code}
-      features={['Column Sorting', 'Custom Renderers', 'Badge Components', 'Default Ordering']}
+      features={['Column Sorting', 'Custom Renderers', 'Badge Components', 'Default Ordering', 'Search Support']}
       notes={[
         'Click any column header to sort ascending/descending',
         'Custom selector functions allow for complex rendering',
         'Status column demonstrates Badge component integration',
-        'Default sorting can be set with orderByDefault prop'
+        'Default sorting can be set with orderByDefault prop',
+        'Search property enables column-specific searching'
       ]}
     >
       <BasicDataTableExampleComponent />
@@ -186,11 +147,11 @@ const PaginatedDataTableExampleComponent = () => {
       name: 'Salary',
       orderBy: 'salary',
       selector: (user: User) => formatCurrency(user.salary),
-      search: ({ salary }) => salary,
+      search: ({ salary }: User) => salary,
       value: 'salary',
       formatSum: formatCurrency,
     },
-    { name: 'Join Date', orderBy: 'joinDate', selector: (user: User) => formatDate(user.joinDate), search: ({ joinDate }) => joinDate},
+    { name: 'Join Date', orderBy: 'joinDate', selector: (user: User) => formatDate(user.joinDate), search: ({ joinDate }: User) => joinDate},
   ];
 
   return (
@@ -210,18 +171,22 @@ import { DataTable } from '@jasperoosthoek/react-toolbox';
  
 const PaginatedDataTableExample = () => {
   const columns = [
-    { name: 'Name', orderBy: 'name', selector: 'name' },
-    { name: 'Email', orderBy: 'email', selector: 'email' },
-    { name: 'Role', orderBy: 'role', selector: 'role' },
-    { 
-      name: 'Salary', 
-      orderBy: 'salary', 
-      selector: (user) => formatCurrency(user.salary) 
+    { name: 'Name', orderBy: 'name', selector: 'name', search: 'name', formatSum: 'Total' },
+    { name: 'Email', orderBy: 'email', selector: 'email', search: 'email' },
+    { name: 'Role', orderBy: 'role', selector: 'role', search: 'role' },
+    {
+      name: 'Salary',
+      orderBy: 'salary',
+      selector: (user: User) => formatCurrency(user.salary),
+      search: ({ salary }: User) => salary,
+      value: 'salary',
+      formatSum: formatCurrency,
     },
     { 
       name: 'Join Date', 
       orderBy: 'joinDate', 
-      selector: (user) => formatDate(user.joinDate) 
+      selector: (user: User) => formatDate(user.joinDate),
+      search: ({ joinDate }: User) => joinDate,
     },
   ];
 
@@ -231,6 +196,7 @@ const PaginatedDataTableExample = () => {
       columns={columns}
       rowsPerPageOptions={[5, 10, 25, null]}
       rowsPerPage={5}
+      showSum
     />
   );
 };
@@ -243,21 +209,23 @@ ${userInterfaceExample}
 const mockUsers: User[] = ${mockDataFormatter(mockUsers)};
 
 // Helper functions
-${formatCurrencyExample};
+${formatCurrencyExample}
 
 ${formatDateExample}`;
 
   return (
     <ExampleSection
       title="DataTable with Pagination"
-      description="Table with built-in pagination controls and customizable page sizes."
+      description="Table with built-in pagination controls and customizable page sizes plus sum calculations."
       code={code}
-      features={['Pagination', 'Page Size Options', 'Data Formatting', 'Large Dataset Handling']}
+      features={['Pagination', 'Page Size Options', 'Data Formatting', 'Large Dataset Handling', 'Sum Calculations']}
       notes={[
         'rowsPerPageOptions allows users to choose page size',
         'null in options array means "Show All" option',
         'Custom formatters (formatCurrency, formatDate) improve readability',
-        'Pagination automatically handles large datasets efficiently'
+        'Pagination automatically handles large datasets efficiently',
+        'showSum enables totals row with formatSum for custom formatting',
+        'value property specifies which field to sum for numeric columns'
       ]}
     >
       <PaginatedDataTableExampleComponent />
@@ -387,27 +355,28 @@ import {
 } from '@jasperoosthoek/react-toolbox';
 
 const EditableDataTableExample = () => {
-  const [selectedUser, setSelectedUser] = useState(null);
-  const [showModal, setShowModal] = useState(false);
-  const [users, setUsers] = useState(mockUsers);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [showModal, setShowModal] = useState<boolean>(false);
+  const [users, setUsers] = useState<User[]>(mockUsers);
 
   const columns = [
-    { name: 'Name', orderBy: 'name', selector: 'name' },
-    { name: 'Email', orderBy: 'email', selector: 'email' },
-    { name: 'Role', orderBy: 'role', selector: 'role' },
+    { name: 'Name', orderBy: 'name', selector: 'name', search: 'name' },
+    { name: 'Email', orderBy: 'email', selector: 'email', search: 'email' },
+    { name: 'Role', orderBy: 'role', selector: 'role', search: 'role' },
     { 
       name: 'Status', 
       orderBy: 'status', 
-      selector: (user) => (
+      selector: (user: User) => (
         <Badge className={getStatusBadge(user.status)}>
           {user.status}
         </Badge>
-      ) 
+      ),
+      search: ({ status }: User) => status,
     },
     { 
       name: 'Actions', 
       className: 'text-center', 
-      selector: (user) => (
+      selector: (user: User) => (
         <ButtonGroup size="sm">
           <EditButton onClick={() => handleRowClick(user)} />
           <DeleteConfirmButton 
@@ -419,12 +388,12 @@ const EditableDataTableExample = () => {
     },
   ];
 
-  const handleRowClick = (user) => {
+  const handleRowClick = (user: User) => {
     setSelectedUser(user);
     setShowModal(true);
   };
 
-  const handleEditSubmit = (data, callback) => {
+  const handleEditSubmit = (data: any, callback?: () => void) => {
     setUsers(users.map(user => 
       user.id === selectedUser?.id 
         ? { ...user, ...data }
@@ -438,7 +407,7 @@ const EditableDataTableExample = () => {
     }, 1000);
   };
 
-  const handleDelete = (userId) => {
+  const handleDelete = (userId: number) => {
     setUsers(users.filter(user => user.id !== userId));
   };
 
@@ -460,7 +429,7 @@ const EditableDataTableExample = () => {
     },
     status: {
       label: 'Status',
-      type: 'select',
+      type: 'select' as const,
       options: [
         { value: 'active', label: 'Active' },
         { value: 'inactive', label: 'Inactive' },
@@ -628,21 +597,29 @@ const DragDropDataTableExample = () => {
   const [isMoving, setIsMoving] = useState(false);
 
   const columns = [
-    { name: 'Name', orderBy: 'name', selector: 'name' },
-    { name: 'Category', orderBy: 'category', selector: 'category' },
-    { name: 'Price', orderBy: 'price', selector: (product) => formatCurrency(product.price) },
+    { name: 'Name', orderBy: 'name', selector: 'name', search: 'name', formatSum: 'Total' },
+    { name: 'Category', orderBy: 'category', selector: 'category', search: 'category' },
+    {
+      name: 'Price',
+      orderBy: 'price',
+      selector: (product: Product) => formatCurrency(product.price),
+      search: ({ price }: Product) => price,
+      value: 'price',
+      formatSum: formatCurrency,
+    },
     { 
       name: 'Stock', 
       orderBy: 'stock', 
-      selector: (product) => (
+      selector: (product: Product) => (
         <Badge bg={product.stock > 50 ? 'success' : product.stock > 20 ? 'warning' : 'danger'}>
           {product.stock}
         </Badge>
-      ) 
+      ),
+      search: ({ stock }: Product) => stock,
     },
     { 
       name: 'Tags', 
-      selector: (product) => (
+      selector: (product: Product) => (
         <span>
           {product.tags.map((tag, index) => (
             <Badge key={index} bg="secondary" className="me-1">
@@ -650,11 +627,11 @@ const DragDropDataTableExample = () => {
             </Badge>
           ))}
         </span>
-      ) 
+      ),
+      search: ({ tags }: Product) => tags.join(' '),
     },
   ];
-
-  const handleMove = ({ item, target, reset }) => {
+  const handleMove = ({ item, target, reset }: { item: Product; target: Product; reset: () => void }) => {
     setIsMoving(true);
     
     // Get current positions
@@ -696,6 +673,7 @@ const DragDropDataTableExample = () => {
         columns={columns}
         onMove={handleMove}
         moveIsLoading={isMoving}
+        showSum
       />
     </div>
   );
@@ -709,20 +687,21 @@ ${productInterfaceExample}
 const mockProducts: Product[] = ${mockDataFormatter(mockProducts)};
 
 // Helper function
-${formatCurrencyExample};`;
+${formatCurrencyExample}`;
 
   return (
     <ExampleSection
       title="DataTable with Drag & Drop Reordering"
-      description="Drag rows to reorder them with server persistence and error handling."
+      description="Drag rows to reorder them with server persistence and error handling plus sum calculations."
       code={code}
-      features={['Drag & Drop', 'Optimistic Updates', 'Error Handling', 'Loading States', 'Stock Status Badges']}
+      features={['Drag & Drop', 'Optimistic Updates', 'Error Handling', 'Loading States', 'Stock Status Badges', 'Sum Calculations']}
       notes={[
         'Drag any row to reorder - changes are immediately visible',
         'Optimistic updates provide instant feedback to users',
         'If server save fails, the row automatically resets to original position',
         'Loading indicator shows during save operation',
-        'Stock levels are color-coded: green (50+), yellow (20-49), red (<20)'
+        'Stock levels are color-coded: green (50+), yellow (20-49), red (<20)',
+        'showSum displays totals with custom formatting for price column'
       ]}
     >
       <DragDropDataTableExampleComponent />
@@ -763,7 +742,7 @@ const CustomRendererDataTableExampleComponent = () => {
       name: 'Total',
       orderBy: 'total',
       selector: (order: Order) => formatCurrency(order.total),
-      search: 'total',
+      search: ({ total }: Order) => total,
       value: 'total',
       formatSum: total => formatCurrency(total),
     },
@@ -795,7 +774,7 @@ const CustomRendererDataTableExampleComponent = () => {
           </Dropdown.Menu>
         </Dropdown>
       ),
-      search: 'status',
+      search: ({ status }: Order) => status,
       optionsDropdown: {
         onSelect: (key: string | null) => {
           console.log('Filter by status:', key);
@@ -842,10 +821,10 @@ const CustomRendererDataTableExample = () => {
     delivered: 'Delivered',
   };
 
-  const updateOrderStatus = (orderId, newStatus) => {
+  const updateOrderStatus = (orderId: number, newStatus: string) => {
     setOrders(orders.map(order =>
       order.id === orderId
-        ? { ...order, status: newStatus }
+        ? { ...order, status: newStatus as Order['status'] }
         : order
     ));
   };
@@ -854,20 +833,31 @@ const CustomRendererDataTableExample = () => {
     { 
       name: 'Order ID', 
       orderBy: 'id', 
-      selector: (order) => \`#\${order.id}\` 
+      selector: (order: Order) => \`#\${order.id}\`,
+      search: 'id',
+      formatSum: 'Total'
     },
-    { name: 'Customer', orderBy: 'customerName', selector: 'customerName' },
-    { name: 'Product', orderBy: 'product', selector: 'product' },
-    { name: 'Quantity', orderBy: 'quantity', selector: 'quantity' },
+    { name: 'Customer', orderBy: 'customerName', selector: 'customerName', search: 'customerName' },
+    { name: 'Product', orderBy: 'product', selector: 'product', search: 'product' },
+    { 
+      name: 'Quantity', 
+      orderBy: 'quantity', 
+      selector: 'quantity',
+      search: 'quantity',
+      value: 'quantity',
+    },
     { 
       name: 'Total', 
       orderBy: 'total', 
-      selector: (order) => formatCurrency(order.total) 
+      selector: (order: Order) => formatCurrency(order.total),
+      search: ({ total }: Order) => total,
+      value: 'total',
+      formatSum: formatCurrency,
     },
     { 
       name: 'Status', 
       orderBy: 'status',
-      selector: (order) => (
+      selector: (order: Order) => (
         <Dropdown>
           <Dropdown.Toggle 
             variant="outline-secondary" 
@@ -892,8 +882,11 @@ const CustomRendererDataTableExample = () => {
           </Dropdown.Menu>
         </Dropdown>
       ),
+      search: ({ status }: Order) => status,
       optionsDropdown: {
-        onSelect: (key) => console.log('Filter by status:', key),
+        onSelect: (key: string | null) => {
+          console.log('Filter by status:', key);
+        },
         selected: null,
         options: statusOptions,
       }
@@ -901,7 +894,7 @@ const CustomRendererDataTableExample = () => {
     { 
       name: 'Actions', 
       className: 'text-center', 
-      selector: (order) => (
+      selector: (order: Order) => (
         <ButtonGroup size="sm">
           <Button variant="outline-primary" size="sm">
             View
@@ -920,6 +913,7 @@ const CustomRendererDataTableExample = () => {
       columns={columns}
       rowsPerPageOptions={[5, 10, 25, null]}
       rowsPerPage={5}
+      showSum
     />
   );
 };
@@ -939,15 +933,16 @@ ${formatCurrencyExample}`;
   return (
     <ExampleSection
       title="DataTable with Custom Renderers"
-      description="Advanced rendering with dropdown status updates, action buttons, and column filters."
+      description="Advanced rendering with dropdown status updates, action buttons, column filters, and sum calculations."
       code={code}
-      features={['Custom Cell Renderers', 'Interactive Dropdowns', 'Status Updates', 'Action Buttons', 'Column Filters']}
+      features={['Custom Cell Renderers', 'Interactive Dropdowns', 'Status Updates', 'Action Buttons', 'Column Filters', 'Sum Calculations']}
       notes={[
         'Status column uses interactive dropdown for real-time updates',
         'Order ID column adds # prefix for better visual formatting',
         'Action buttons provide contextual operations for each row',
         'optionsDropdown enables column-specific filtering',
-        'Multiple custom renderers can be combined in a single table'
+        'Multiple custom renderers can be combined in a single table',
+        'showSum displays totals for quantity and total columns with custom formatting'
       ]}
     >
       <CustomRendererDataTableExampleComponent />
@@ -1041,7 +1036,7 @@ const IntegratedFormDataTableExampleComponent = () => {
           {user.status}
         </Badge>
       ),
-      search: 'status',
+      search: ({ status }: User) => status,
     },
     { name: 'Actions', className: 'text-center', selector: (user: User) => (
       <ButtonGroup size="sm">
@@ -1114,7 +1109,7 @@ const IntegratedFormDataTableExample = () => {
     },
     department: {
       label: 'Department',
-      type: 'select',
+      type: 'select' as const,
       options: [
         { value: 'Engineering', label: 'Engineering' },
         { value: 'Design', label: 'Design' },
@@ -1126,7 +1121,7 @@ const IntegratedFormDataTableExample = () => {
     },
     status: {
       label: 'Status',
-      type: 'select',
+      type: 'select' as const,
       options: [
         { value: 'active', label: 'Active' },
         { value: 'inactive', label: 'Inactive' },
@@ -1136,12 +1131,12 @@ const IntegratedFormDataTableExample = () => {
     },
   };
 
-  const handleCreate = (data, callback) => {
-    const newUser = {
+  const handleCreate = (data: any, callback?: () => void) => {
+    const newUser: User = {
       id: Math.max(...users.map(u => u.id)) + 1,
       ...data,
       joinDate: new Date().toISOString().split('T')[0],
-      salary: 70000,
+      salary: 70000, // Default salary
     };
     
     setUsers([...users, newUser]);
@@ -1151,7 +1146,7 @@ const IntegratedFormDataTableExample = () => {
     }, 1000);
   };
 
-  const handleUpdate = (data, callback) => {
+  const handleUpdate = (data: any, callback?: () => void) => {
     setUsers(users.map(user =>
       user.id === data.id ? { ...user, ...data } : user
     ));
@@ -1161,37 +1156,35 @@ const IntegratedFormDataTableExample = () => {
     }, 1000);
   };
 
-  const handleDelete = (userId) => {
+  const handleDelete = (userId: number) => {
     setUsers(users.filter(user => user.id !== userId));
   };
 
   const columns = [
-    { name: 'Name', orderBy: 'name', selector: 'name' },
-    { name: 'Email', orderBy: 'email', selector: 'email' },
-    { name: 'Role', orderBy: 'role', selector: 'role' },
-    { name: 'Department', orderBy: 'department', selector: 'department' },
+    { name: 'Name', orderBy: 'name', selector: 'name', search: 'name' },
+    { name: 'Email', orderBy: 'email', selector: 'email', search: 'email' },
+    { name: 'Role', orderBy: 'role', selector: 'role', search: 'role' },
+    { name: 'Department', orderBy: 'department', selector: 'department', search: 'department' },
     { 
       name: 'Status', 
       orderBy: 'status', 
-      selector: (user) => (
+      selector: (user: User) => (
         <Badge className={getStatusBadge(user.status)}>
           {user.status}
         </Badge>
-      ) 
+      ),
+      search: ({ status }: User) => status, 
     },
-    { 
-      name: 'Actions', 
-      className: 'text-center', 
-      selector: (user) => (
-        <ButtonGroup size="sm">
-          <FormEditModalButton state={user} variant="outline-primary" size="sm" />
-          <DeleteConfirmButton 
-            onDelete={() => handleDelete(user.id)}
-            size="sm"
-          />
-        </ButtonGroup>
-      ) 
-    },
+    { name: 'Actions', className: 'text-center', selector: (user: User) => (
+      <ButtonGroup size="sm">
+        <FormEditModalButton state={user} variant="outline-primary" size="sm" />
+        <DeleteConfirmButton 
+          onDelete={() => handleDelete(user.id)}
+          variant="outline-primary"
+          size="sm"
+        />
+      </ButtonGroup>
+    ) },
   ];
 
   return (
