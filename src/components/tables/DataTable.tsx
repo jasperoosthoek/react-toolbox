@@ -45,6 +45,7 @@ export type DataTableColumn<R> = {
   name: ReactNode | string | number;
   orderBy?: OrderByColumn<R>;
   optionsDropdown?: OptionsDropdown;
+  search?: string | ((row: R) => string);
   className?: string;
   value?: number | string | ((row: R)  => number);
   formatSum?: ((value: number) => ReactElement | string | number) | ReactElement | string | number;
@@ -78,7 +79,6 @@ export type DataTableProps<D extends any[]> = {
   columns: DataTableColumn<D[number]>[];
   rowsPerPage?: number | null;
   rowsPerPageOptions?: RowsPerPageOptions;
-  filterColumn?: string | ((row: D[number]) => string) | (string | ((row: D[number]) => string))[];
   orderByDefault?: ((row: D[number]) => number) | string | null;
   orderByDefaultDirection?: OrderByDirection;
   onMove?: OnMove<D[number]>;
@@ -99,7 +99,6 @@ export const DataTable = <D extends any[]>({
   columns,
   rowsPerPage: rowsPerPageDefault = 10,
   rowsPerPageOptions = [10, 25, 50, 100, null],
-  filterColumn,
   orderByDefault,
   orderByDefaultDirection='asc',
   onMove,
@@ -127,20 +126,18 @@ export const DataTable = <D extends any[]>({
   const [page, setPage] = useState(0);
   let data = allData && (
   Object.values(allData).filter(row =>
-    filterColumn && filterText
+    filterText
       ? (
-          typeof filterColumn === 'function'
-            ? filterColumn(row)
-            : Array.isArray(filterColumn)
-              ? filterColumn.reduce((acc, col) => {
-                  if (typeof col === 'function') {
-                    return acc + ' ' + col(row);
-                  } else if (typeof row[col] !== 'undefined') {
-                    return acc + ' ' + row[col];
-                  }
-                  return acc;
-                }, '')
-              : row[filterColumn]
+          columns.reduce((acc, { search }) => {
+            if (!search) {
+              return acc;
+            } else if (typeof search === 'function') {
+              return acc + ' ' + search(row);
+            } else if (typeof row[search] !== 'undefined') {
+              return acc + ' ' + row[search];
+            }
+            return acc;
+          }, '')
         ).toString().match(new RegExp(`${filterText}`, 'i'))
       : true
     )

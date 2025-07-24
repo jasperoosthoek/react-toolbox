@@ -348,7 +348,8 @@
 - No longer show "Select" option in number of rows dropdown of `DataTables` component
 - New `formId` in form context that is used to generate unique `controlIds` in case of multiple forms
 
-##### Version 0.9.6
+##### Version 0.10.0
+- **BREAKING**: Replace `filterColumn` argument in `DataTable` component by `search` prop on `columns`
 - All form input components accept `className` prop that is given to `Form.Group` component
 - Add 'mt-2' class to `FormCheckbox` improve vertical spacing
 - `FormBadgesSelection` uses same value/label inputs as `FormSelect`

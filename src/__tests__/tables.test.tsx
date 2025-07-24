@@ -28,9 +28,9 @@ describe('Table Components Tests', () => {
   ];
 
   const mockColumns = [
-    { name: 'Name', selector: 'name' },
+    { name: 'Name', selector: 'name', search: 'name' },
     { name: 'Email', selector: 'email' },
-    { name: 'Age', selector: 'age' },
+    { name: 'Age', selector: 'age', search: ({ age }) => age },
   ];
 
   describe('SearchBox', () => {
@@ -186,7 +186,6 @@ describe('Table Components Tests', () => {
             data={mockData} 
             columns={mockColumns} 
             showHeader={{ search: true }}
-            filterColumn="name"
           />
         </TestWrapper>
       );
@@ -303,7 +302,6 @@ describe('Table Components Tests', () => {
               data={mockData} 
               columns={mockColumns} 
               showHeader={{ search: true }}
-              filterColumn="name"
             />
           </TestWrapper>
         );
@@ -312,6 +310,10 @@ describe('Table Components Tests', () => {
         fireEvent.change(searchInput, { target: { value: 'John' } });
 
         expect(queryByText('John Doe')).toBeInTheDocument();
+        expect(queryByText('Jane Smith')).not.toBeInTheDocument();
+        
+        // Email column doesn't have search property
+        fireEvent.change(searchInput, { target: { value: 'jane@example.com' } });
         expect(queryByText('Jane Smith')).not.toBeInTheDocument();
       });
 
@@ -323,34 +325,15 @@ describe('Table Components Tests', () => {
               data={mockData} 
               columns={mockColumns} 
               showHeader={{ search: true }}
-              filterColumn={filterFn}
             />
           </TestWrapper>
         );
 
         const searchInput = getByRole('textbox');
-        fireEvent.change(searchInput, { target: { value: 'jane@example' } });
+        fireEvent.change(searchInput, { target: { value: '25' } });
 
         expect(queryByText('Jane Smith')).toBeInTheDocument();
         expect(queryByText('John Doe')).not.toBeInTheDocument();
-      });
-
-      it('should handle multiple filter columns', () => {
-        const { getByRole, queryByText } = render(
-          <TestWrapper>
-            <DataTable 
-              data={mockData} 
-              columns={mockColumns} 
-              showHeader={{ search: true }}
-              filterColumn={['name', 'email']}
-            />
-          </TestWrapper>
-        );
-
-        const searchInput = getByRole('textbox');
-        fireEvent.change(searchInput, { target: { value: 'bob' } });
-
-        expect(queryByText('Bob Johnson')).toBeInTheDocument();
       });
     });
 
