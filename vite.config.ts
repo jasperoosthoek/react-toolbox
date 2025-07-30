@@ -23,6 +23,7 @@ export default defineConfig({
   build: {
     outDir: '../../dist-examples',
     emptyOutDir: true,
+    cssCodeSplit: false, // Bundle all CSS into one file for better loading
   },
   resolve: {
     alias: {

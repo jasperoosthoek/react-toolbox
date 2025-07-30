@@ -59,9 +59,11 @@
   "scripts": {
     "build": "vite build --config vite.config.lib.ts && tsc --project tsconfig.lib.json",
     "build:examples": "vite build",
+    "build:vercel": "npm run build:examples",
     "dev": "node ssr-server.js",
     "dev:spa": "vite",
     "preview": "vite preview",
+    "start": "node ssr-server.js",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",

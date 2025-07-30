@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import 'bootstrap/dist/css/bootstrap.min.css';
 import { Nav, Tab, Container } from 'react-bootstrap';
 import { LocalizationProvider } from '../localization/LocalizationContext';
 import { DndProvider } from 'react-dnd'
