@@ -1,0 +1,13 @@
+{
+  "functions": {
+    "api/ssr.js": {
+      "runtime": "nodejs18.x"
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/api/ssr"
+    }
+  ]
+}

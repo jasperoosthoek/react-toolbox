@@ -2,8 +2,7 @@
   "buildCommand": "npm run build:examples",
   "functions": {
     "api/ssr.js": {
-      "runtime": "nodejs20.x",
-      "maxDuration": 10
+      "runtime": "nodejs22.x"
     }
   },
   "rewrites": [
