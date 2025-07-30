@@ -1,13 +1,10 @@
 {
-  "functions": {
-    "ssr-server.js": {
-      "runtime": "nodejs18.x"
-    }
-  },
+  "buildCommand": "npm run build:examples",
+  "outputDirectory": "dist-examples",
   "rewrites": [
     {
       "source": "/(.*)",
-      "destination": "/ssr-server.js"
+      "destination": "/index.html"
     }
   ],
   "headers": [
@@ -21,7 +18,7 @@
       ]
     },
     {
-      "source": "/(.*\\.css)",
+      "source": "/(.*\\.(js|css))",
       "headers": [
         {
           "key": "Cache-Control", 
