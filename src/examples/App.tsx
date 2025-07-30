@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Nav, Tab, Container } from 'react-bootstrap';
 import { LocalizationProvider } from '../localization/LocalizationContext';
@@ -52,11 +52,28 @@ import {
   customStrings,
 } from './components/LocalizationExamples';
 
+
+export const DndWrapper = ({ children }) => {
+  const [mounted, setMounted] = useState(false);
+  
+  useEffect(() => setMounted(true), []);
+
+  if (!mounted) {
+    return <>{children}</>;
+  }
+
+  return (
+    <DndProvider backend={HTML5Backend}>
+      {children}
+    </DndProvider>
+  );
+};
+
 function App() {
   const [activeTab, setActiveTab] = useState('datatable');
 
   return (
-    <DndProvider backend={HTML5Backend}>
+    <DndWrapper>
       <LocalizationProvider lang="en" localization={customStrings}>
         <Container fluid className="py-4">
           <div className="mb-4">
@@ -317,7 +334,7 @@ function App() {
           </Tab.Container>
         </Container>
       </LocalizationProvider>
-    </DndProvider>
+    </DndWrapper>
   );
 }
 
