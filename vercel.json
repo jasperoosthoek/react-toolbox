@@ -1,9 +1,7 @@
 {
   "buildCommand": "npm run build:examples",
   "functions": {
-    "api/ssr.js": {
-      "runtime": "nodejs22.x"
-    }
+    "api/ssr.js": {}
   },
   "rewrites": [
     {
