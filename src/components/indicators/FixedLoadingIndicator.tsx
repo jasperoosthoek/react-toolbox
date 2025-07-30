@@ -37,6 +37,7 @@ export const FixedLoadingIndicator: React.FC<FixedLoadingIndicatorProps> = ({
     <div 
       className={`alert alert-${variant} ${className}`}
       style={defaultStyle}
+      role="alert"
     >
       <div className="d-flex align-items-center">
         <div className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></div>
