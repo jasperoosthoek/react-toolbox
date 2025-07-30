@@ -357,3 +357,6 @@
 - Add 'mt-2' class to `FormCheckbox` improve vertical spacing
 - `FormBadgesSelection` uses same value/label inputs as `FormSelect`
 - Move `FixedLoadingIndicator` from examples to `/src/components/indicators`
+
+##### Version 0.10.1
+- Exclude `src/examples` directory from test coverage
