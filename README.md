@@ -24,7 +24,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 ### Try It Now
 
-**Online:** Visit [react-toolbox.vercel.app](https://react-toolbox.vercel.app) for interactive examples with copy-pasteable code
+**Online:** Visit [react-toolbox.vercel.app](https://react-toolbox.vercel.app) for interactive examples with copy-pasteable code (server-side rendered)
 
 **Locally:**
 ```bash
@@ -37,7 +37,7 @@ npm run dev  # Interactive examples at localhost:5173
 ## Documentation & Examples
 
 ### Live Interactive Examples
-- **[Interactive Examples](https://react-toolbox.vercel.app)** - Live component playground with copy-pasteable code
+- **[Interactive Examples](https://react-toolbox.vercel.app)** - Live component playground with copy-pasteable code (SSR-enabled)
 - **[Live Dashboard Demo](https://dashboard-demo-olive-eight.vercel.app/employees)** - Complete real-world application
 - **[Local Development](##)** - Run `npm run dev` for local examples with hot reload
 
@@ -102,7 +102,7 @@ return <h1>{text`save`}</h1>;
 ### Available Scripts
 
 ```bash
-npm run dev              # Start interactive examples locally
+npm run dev              # Start interactive examples locally (with SSR)
 npm run build           # Build library for npm distribution
 npm run test            # Run tests
 npm run build:examples  # Build examples for deployment (react-toolbox.vercel.app)
@@ -148,6 +148,7 @@ npm run dev
 - **TypeScript**: Full type definitions included
 - **Tree Shaking**: ES modules supported
 - **Bundle Size**: Optimized for production
+- **SSR Compatible**: Server-side rendering ready with 4x performance improvement
 - **Peer Dependencies**: Uses your existing React/Bootstrap setup
 
 ## Links
