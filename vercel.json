@@ -1,7 +1,9 @@
 {
   "buildCommand": "npm run build:examples",
   "functions": {
-    "api/ssr.js": {}
+    "api/ssr.js": {
+      "maxDuration": 10
+    }
   },
   "rewrites": [
     {
