@@ -360,3 +360,4 @@
 
 ##### Version 0.10.1
 - Exclude `src/examples` directory from test coverage
+- Do not render drag and droppable content before `DragAndDropList` is mounted

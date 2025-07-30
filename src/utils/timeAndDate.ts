@@ -4,9 +4,12 @@ import { toZonedTime, fromZonedTime } from 'date-fns-tz';
 export const getTimestamp = () => Math.round(new Date().getTime() / 1000);
 
 export const getToday = () => {
-  const now = new Date();
-  const utcDate = toZonedTime(now, 'UTC');
-  return startOfDay(utcDate);
+  return startOfDay(
+    toZonedTime(
+      new Date(),
+      'UTC'
+    )
+  );
 };
 
 // Common date formatting utilities

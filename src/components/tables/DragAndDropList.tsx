@@ -128,11 +128,15 @@ export type DragAndDropListProps<A extends any[]> = {
   propsArray: A; 
   component: DragAndDropListComponent;
 }
-export const DragAndDropList = <A extends any[]>({ onDrop, propsArray, component }: DragAndDropListProps<A>) => {
+export const DragAndDropList = <A extends any[]>({ onDrop, propsArray, component: Component }: DragAndDropListProps<A>) => {
   const [listMap, setListMap] = useState<number[] | null>(null);
   const [droppedIndex, setDroppedIndex] = useState<number | null>(null);
   const propsArrayPrev = usePrevious(propsArray);
   const reset = useCallback(() => setListMap(propsArray.map((obj: A[number], index: number) => index)), [propsArray]);
+  // Keep track of whether the component has mounted to make sure the drag and drop isn't initialized before the
+  // component is ready in the DOM.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
   
   const forceUpdate = useForceUpdate();
   useEffect(() => {
@@ -161,24 +165,37 @@ export const DragAndDropList = <A extends any[]>({ onDrop, propsArray, component
     [listMap]
   );
 
-  if (!component) return null;
+  if (!Component) return null;
   return (
     <>
       {
         listMap && listMap.map((movedIndex, index) =>
-          propsArray[movedIndex] &&
-            <DragAndDropItem
-              key={movedIndex}
-              movedIndex={movedIndex}
-              index={index}
-              moveNext={moveNext}
-              onDrop={onDrop}
-              reset={() => reset()}
-              component={component}
-              componentProps={propsArray[movedIndex]}
-              droppedIndex={droppedIndex}
-              setDroppedIndex={setDroppedIndex}
-            />
+          propsArray[movedIndex] && (
+            mounted ? (
+              <DragAndDropItem
+                key={movedIndex}
+                movedIndex={movedIndex}
+                index={index}
+                moveNext={moveNext}
+                onDrop={onDrop}
+                reset={() => reset()}
+                component={Component}
+                componentProps={propsArray[movedIndex]}
+                droppedIndex={droppedIndex}
+                setDroppedIndex={setDroppedIndex}
+              />
+            ) : (
+              <Component
+                key={movedIndex}
+                {...propsArray[movedIndex]}
+                dropped={false}
+                style={{ 
+                  ...propsArray[movedIndex].style || {},
+                  cursor: 'move',
+                }}
+              />
+            )
+          )
         )
       }
     </>
