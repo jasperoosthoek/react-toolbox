@@ -64,6 +64,7 @@
     "dev:spa": "vite",
     "preview": "vite preview",
     "start": "node ssr-server.js",
+    "vercel-build": "npm run build:examples",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
