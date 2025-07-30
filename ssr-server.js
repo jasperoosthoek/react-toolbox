@@ -51,11 +51,26 @@ async function createServer() {
 
     app.use(vite.middlewares);
 
+    // Handle static files before SSR catch-all
+    app.get('/favicon.ico', (req, res) => {
+      res.redirect(301, '/favicon.png');
+    });
+
+    // Skip SSR for static assets and special paths
     app.use('*', async (req, res, next) => {
       const url = req.originalUrl;
 
+      // Skip SSR for static assets and special browser requests
+      if (
+        url.includes('.') && !url.endsWith('.html') || // Files with extensions (except .html)
+        url.includes('/.well-known/') ||               // Browser metadata
+        url.includes('/favicon')                       // Favicon requests
+      ) {
+        return next(); // Let Vite handle these
+      }
+
       try {
-        console.log('SSR Request:', url);
+        console.log('🔄 SSR Request:', url);
         
         // Load the main examples server entry
         const { render } = await vite.ssrLoadModule('/entry.server.tsx');
@@ -63,7 +78,7 @@ async function createServer() {
         // Render the main app
         const html = render();
         
-        console.log('✅ SSR Success', html.length, 'characters');
+        console.log('✅ SSR Success! Rendered', html.length, 'characters');
         res.status(200).set({ 'Content-Type': 'text/html' }).end(html);
       } catch (e) {
         if (vite.ssrFixStacktrace) {
@@ -81,6 +96,7 @@ async function createServer() {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>React Toolbox Examples (SPA Fallback)</title>
+    <link rel="icon" type="image/png" href="/favicon.png">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
     <script type="module" src="/main.tsx"></script>
   </head>
@@ -98,7 +114,7 @@ async function createServer() {
     const port = 3000;
     app.listen(port, () => {
       console.log(`React Toolbox Examples (SSR) running at http://localhost:3000`);
-      console.log('Now serving main examples with SSR-safe CodeBlock');
+      console.log('Now serving main examples with SSR-safe CodeBlock and favicon');
     });
   } catch (error) {
     console.error('❌ Failed to start SSR server:', error);
