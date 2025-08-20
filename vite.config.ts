@@ -24,6 +24,23 @@ export default defineConfig({
     outDir: '../../dist-examples',
     emptyOutDir: true,
     cssCodeSplit: false, // Bundle all CSS into one file for better loading
+    sourcemap: false, // Disable sourcemaps in production
+    rollupOptions: {
+      input: {
+        main: path.resolve(__dirname, './src/examples/index.html')
+      },
+      output: {
+        // Fixed filenames for CSS and JS - no hashing for consistent URLs
+        assetFileNames: (assetInfo) => {
+          if (assetInfo.name?.endsWith('.css')) {
+            return 'assets/style.css';  // Fixed CSS name
+          }
+          return 'assets/[name].[ext]';
+        },
+        chunkFileNames: 'assets/[name].js',       // JS chunks without hash
+        entryFileNames: 'assets/main.js'          // Main JS entry without hash
+      }
+    }
   },
   resolve: {
     alias: {
