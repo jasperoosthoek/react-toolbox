@@ -65,8 +65,6 @@
     "dev": "node ssr-server.js",
     "dev:spa": "vite",
     "preview": "vite preview",
-    "preview:ssr": "node production-server.cjs",
-    "start": "node production-server.cjs",
     "vercel-build": "npm run build:examples",
     "test": "jest",
     "test:watch": "jest --watch",
