@@ -10,6 +10,7 @@ import {
   AiOutlineFileAdd,
   AiOutlineFolderAdd,
   AiOutlineArrowRight,
+  AiOutlineLock,
   AiOutlineUnlock,
   AiOutlineCheck,
   AiOutlineClose,
@@ -98,6 +99,7 @@ export const SortDownButton = makeIconButton(FaSortDown);
 export const StopButton = makeIconButton(BiSquare);
 export const SyncButton = makeIconButton(FaSyncAlt);
 export const UnCheckButton = makeIconButton(AiOutlineClose);
+export const LockButton = makeIconButton(AiOutlineLock);
 export const UnlockButton = makeIconButton(AiOutlineUnlock);
 export const UpButton = makeIconButton(AiFillCaretUp);
 export const UploadButton = makeIconButton(AiOutlineUpload);

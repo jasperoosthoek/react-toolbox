@@ -48,4 +48,4 @@ export const ErrorBoundary: React.FC<ErrorBoundaryProps> = ({ children }) => {
       {children}
     </ErrorContext.Provider>
   );
-};
+}; 

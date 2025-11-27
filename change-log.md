@@ -358,6 +358,8 @@
 - `FormBadgesSelection` uses same value/label inputs as `FormSelect`
 - Move `FixedLoadingIndicator` from examples to `/src/components/indicators`
 
-Upcoming: ##### Version 0.10.1
+##### Version 0.10.1
 - Exclude `src/examples` directory from test coverage
 - Do not render drag and droppable content before `DragAndDropList` is mounted
+- New `LockButton` component
+- New `unselectedOptionLabel` prop in `FormDropdown` component

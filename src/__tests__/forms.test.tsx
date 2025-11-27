@@ -865,7 +865,7 @@ describe('Form Components Tests', () => {
 
       it('should render all options', () => {
         const { getByRole } = renderWithFormProvider(
-          <FormDropdown name="category" options={MOCK_OPTIONS.categories} />
+          <FormDropdown name="category" options={MOCK_OPTIONS.categories} unselectedOptionLabel={null}/>
         );
 
         const select = getByRole('combobox');
@@ -971,15 +971,160 @@ describe('Form Components Tests', () => {
 
       it('should handle string options', () => {
         const { getByRole } = renderWithFormProvider(
-          <FormDropdown name="category" options={MOCK_OPTIONS.stringOptions} />
+          <FormDropdown name="category" options={MOCK_OPTIONS.stringOptions} unselectedOptionLabel={null} />
         );
 
         const select = getByRole('combobox');
         const options = select.querySelectorAll('option');
-        
+
         expect(options).toHaveLength(3);
         expect(options[0]).toHaveTextContent('red');
         expect(options[0]).toHaveValue('red');
+      });
+    });
+
+    describe('unselectedOptionLabel Prop', () => {
+      // Clean category options without pre-built unselected option
+      const cleanCategories = [
+        { value: 'electronics', label: 'Electronics' },
+        { value: 'clothing', label: 'Clothing' },
+        { value: 'books', label: 'Books' },
+        { value: 'sports', label: 'Sports' },
+      ];
+
+      it('should show default unselected option when unselectedOptionLabel is true', () => {
+        const { getByRole } = renderWithFormProvider(
+          <FormDropdown name="category" options={cleanCategories} unselectedOptionLabel={true} />
+        );
+
+        const select = getByRole('combobox');
+        const options = select.querySelectorAll('option');
+
+        // Should have 5 options: 1 unselected + 4 categories
+        expect(options).toHaveLength(5);
+        expect(options[0]).toHaveTextContent('Select');
+        expect(options[0]).toHaveValue('');
+        expect(options[0]).toBeDisabled();
+      });
+
+      it('should show default unselected option when unselectedOptionLabel is not provided (default behavior)', () => {
+        const { getByRole } = renderWithFormProvider(
+          <FormDropdown name="category" options={cleanCategories} />
+        );
+
+        const select = getByRole('combobox');
+        const options = select.querySelectorAll('option');
+
+        // Should have 5 options: 1 unselected + 4 categories
+        expect(options).toHaveLength(5);
+        expect(options[0]).toHaveTextContent('Select');
+        expect(options[0]).toHaveValue('');
+        expect(options[0]).toBeDisabled();
+      });
+
+      it('should NOT show unselected option when unselectedOptionLabel is false', () => {
+        const { getByRole } = renderWithFormProvider(
+          <FormDropdown name="category" options={cleanCategories} unselectedOptionLabel={false} />
+        );
+
+        const select = getByRole('combobox');
+        const options = select.querySelectorAll('option');
+
+        // Should have only 4 options (no unselected option)
+        expect(options).toHaveLength(4);
+        expect(options[0]).toHaveTextContent('Electronics');
+        expect(options[0]).toHaveValue('electronics');
+      });
+
+      it('should NOT show unselected option when unselectedOptionLabel is null', () => {
+        const { getByRole } = renderWithFormProvider(
+          <FormDropdown name="category" options={cleanCategories} unselectedOptionLabel={null} />
+        );
+
+        const select = getByRole('combobox');
+        const options = select.querySelectorAll('option');
+
+        // Should have only 4 options (no unselected option)
+        expect(options).toHaveLength(4);
+        expect(options[0]).toHaveTextContent('Electronics');
+        expect(options[0]).toHaveValue('electronics');
+      });
+
+      it('should show custom unselected option text when unselectedOptionLabel is a string', () => {
+        const { getByRole } = renderWithFormProvider(
+          <FormDropdown
+            name="category"
+            options={cleanCategories}
+            unselectedOptionLabel="Choose a category"
+          />
+        );
+
+        const select = getByRole('combobox');
+        const options = select.querySelectorAll('option');
+
+        // Should have 5 options: 1 unselected + 4 categories
+        expect(options).toHaveLength(5);
+        expect(options[0]).toHaveTextContent('Choose a category');
+        expect(options[0]).toHaveValue('');
+        expect(options[0]).toBeDisabled();
+      });
+
+      it('should show different custom text for different dropdowns', () => {
+        const { container } = render(
+          <FormTestWrapper
+            formFields={{
+              category: {
+                label: 'Category',
+                required: true,
+                formProps: {},
+              },
+              status: {
+                label: 'Status',
+                required: false,
+                formProps: {},
+              },
+            }}
+            initialState={{ category: '', status: '' }}
+          >
+            <FormDropdown
+              name="category"
+              options={cleanCategories}
+              unselectedOptionLabel="Select your category"
+            />
+            <FormDropdown
+              name="status"
+              options={[{ value: 'active', label: 'Active' }, { value: 'inactive', label: 'Inactive' }]}
+              unselectedOptionLabel="Pick a status"
+            />
+          </FormTestWrapper>
+        );
+
+        const selects = container.querySelectorAll('select');
+
+        // Check category dropdown
+        const categoryOptions = selects[0].querySelectorAll('option');
+        expect(categoryOptions[0]).toHaveTextContent('Select your category');
+
+        // Check status dropdown
+        const statusOptions = selects[1].querySelectorAll('option');
+        expect(statusOptions[0]).toHaveTextContent('Pick a status');
+      });
+
+      it('should handle empty string as unselectedOptionLabel', () => {
+        const { getByRole } = renderWithFormProvider(
+          <FormDropdown
+            name="category"
+            options={cleanCategories}
+            unselectedOptionLabel=""
+          />
+        );
+
+        const select = getByRole('combobox');
+        const options = select.querySelectorAll('option');
+
+        // Should have only 4 options (empty string is falsy, so no unselected option)
+        expect(options).toHaveLength(4);
+        expect(options[0]).toHaveTextContent('Electronics');
       });
     });
   });

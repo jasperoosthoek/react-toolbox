@@ -22,6 +22,7 @@ export interface FormDropdownProps<T> extends Omit<
   idKey?: keyof T;
   nameKey?: keyof T;
   disabled?: boolean | ((props: DisabledProps) => boolean);
+  unselectedOptionLabel?: string | null | boolean;
 }
 
 export const FormDropdown = <T,>(props: FormDropdownProps<T>) => {
@@ -31,10 +32,12 @@ export const FormDropdown = <T,>(props: FormDropdownProps<T>) => {
     idKey = 'value' as keyof T, // Change default to match test
     nameKey = 'label' as keyof T, // Change default to match test
     disabled,
+    unselectedOptionLabel = true,
     ...componentProps
   } = props;
   
   const { value, onChange, isInvalid, error, label, required, mergedProps, submit, formId, className } = useFormField(componentProps);
+  const { strings } = useLocalization();
 
   // Use options or list, with options taking precedence
   const listBase = options || listProp;
@@ -103,6 +106,13 @@ export const FormDropdown = <T,>(props: FormDropdownProps<T>) => {
         }}
         {...mergedProps}
       >
+        {unselectedOptionLabel && (
+          <option value="" disabled>
+            {typeof unselectedOptionLabel === 'string'
+              ? unselectedOptionLabel
+              : strings.getString('select')}
+          </option>
+        )}
         {list.map((item, key) =>
           <option
             key={key}

@@ -1,7 +1,6 @@
 {
   "name": "@jasperoosthoek/react-toolbox",
-  "version": "0.10.0",
-  "type": "module",
+  "version": "0.10.1",
   "author": "jasperoosthoek",
   "license": "MIT",
   "repository": {
