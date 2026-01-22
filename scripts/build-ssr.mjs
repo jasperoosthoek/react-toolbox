@@ -20,7 +20,7 @@ async function buildSSR() {
     // Build server bundle with esbuild
     console.log('Building server bundle...');
     await build({
-      entryPoints: [join(projectRoot, 'src/examples/entry.server.tsx')],
+      entryPoints: [join(projectRoot, 'examples/entry.server.tsx')],
       bundle: true,
       platform: 'node',
       target: 'node18',
@@ -68,7 +68,7 @@ async function buildSSR() {
     // Build production server
     console.log('Building production server...');
     await build({
-      entryPoints: [join(projectRoot, 'src/examples/production-server.ts')],
+      entryPoints: [join(projectRoot, 'examples/production-server.ts')],
       bundle: true,
       platform: 'node',
       target: 'node18',
@@ -99,7 +99,7 @@ async function buildSSR() {
     // Copy static files to dist-examples
     console.log('Copying static files...');
     const staticFiles = [
-      { src: 'src/examples/favicon.png', dest: 'dist-examples/favicon.png' }
+      { src: 'examples/favicon.png', dest: 'dist-examples/favicon.png' }
     ];
     
     for (const file of staticFiles) {

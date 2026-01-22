@@ -12,7 +12,7 @@ import {
   DeleteConfirmButton,
   EditButton,
   useForm,
-} from '../../index';
+} from '../../src/index';
 import { ExampleSection } from './ExampleSection';
 import { FormActions } from './FormExamples';
 import {

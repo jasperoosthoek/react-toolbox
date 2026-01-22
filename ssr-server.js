@@ -12,7 +12,7 @@ async function createServer() {
     const vite = await createViteServer({
       server: { middlewareMode: true },
       appType: 'custom',
-      root: './src/examples',
+      root: './examples',
       configFile: './vite.config.ts',
       // Enhanced SSR configuration - externalize problematic packages
       ssr: {

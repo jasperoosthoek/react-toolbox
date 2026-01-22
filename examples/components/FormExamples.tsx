@@ -15,7 +15,7 @@ import {
   useForm,
   useFormModal,
   BadgeSelection
-} from '../../index';
+} from '../../src/index';
 import {
   mockUsers,
   User,

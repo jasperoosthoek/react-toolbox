@@ -19,15 +19,15 @@ export default defineConfig({
       fastRefresh: false,
     })
   ],
-  root: './src/examples',
+  root: './examples',
   build: {
-    outDir: '../../dist-examples',
+    outDir: '../dist-examples',
     emptyOutDir: true,
     cssCodeSplit: false, // Bundle all CSS into one file for better loading
     sourcemap: false, // Disable sourcemaps in production
     rollupOptions: {
       input: {
-        main: path.resolve(__dirname, './src/examples/index.html')
+        main: path.resolve(__dirname, './examples/index.html')
       },
       output: {
         // Fixed filenames for CSS and JS - no hashing for consistent URLs
@@ -44,7 +44,7 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, '../../src'),
+      '@': path.resolve(__dirname, './src'),
     },
   },
   server: {
@@ -63,7 +63,7 @@ export default defineConfig({
     external: [
       // Externalize all React ecosystem packages
       'react',
-      'react-dom', 
+      'react-dom',
       'react-dom/server',
       'react/jsx-dev-runtime',
       'react/jsx-runtime',

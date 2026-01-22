@@ -366,3 +366,4 @@
 
 ##### Upcoming
 - Move `/src/__tests__` to `/__tests__`
+- Move `/src/examples` to `/examples`

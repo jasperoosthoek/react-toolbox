@@ -13,7 +13,7 @@ import {
   QuestionnaireButton, DropdownButton, ResetButton,
   // Additional components
   IconButton, makeIconButton, UploadTextButton
-} from '../../index';
+} from '../../src/index';
 
 // Import some additional icons for custom button examples
 import { AiOutlineHeart, AiOutlineStar, AiOutlineBell } from 'react-icons/ai';
