@@ -13,7 +13,7 @@ import {
   MoveButton,
   SyncButton,
   FixedLoadingIndicator,
-} from '../../index';
+} from '../../src/index';
 import { ExampleSection } from './ExampleSection';
 
 // Example 1: ConfirmButton with different configurations

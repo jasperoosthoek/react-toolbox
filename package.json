@@ -58,7 +58,7 @@
   },
   "scripts": {
     "build:lib": "vite build --config vite.config.lib.ts && tsc --project tsconfig.lib.json",
-    "build:examples": "node scripts/build-ssr.js",
+    "build:examples": "node scripts/build-ssr.mjs",
     "build": "npm run build:lib && npm run build:examples",
     "build:vercel": "npm run build:examples",
     "dev": "node ssr-server.js",

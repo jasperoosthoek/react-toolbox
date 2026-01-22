@@ -12,7 +12,7 @@ import {
   FormCreateModalButton,
   DeleteConfirmButton,
   FixedLoadingIndicator,
-} from '../../index';
+} from '../../src/index';
 import {
   mockUsers,
   mockProducts,
