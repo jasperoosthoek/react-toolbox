@@ -1,9 +1,9 @@
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react';
-import { LocalizationProvider } from '../localization/LocalizationContext';
-import { DataTable } from '../components/tables/DataTable';
-import { DragAndDropList } from '../components/tables/DragAndDropList';
-import { SearchBox } from '../components/tables/SearchBox';
+import { LocalizationProvider } from '../src/localization/LocalizationContext';
+import { DataTable } from '../src/components/tables/DataTable';
+import { DragAndDropList } from '../src/components/tables/DragAndDropList';
+import { SearchBox } from '../src/components/tables/SearchBox';
 
 // Mock react-dnd for testing
 jest.mock('react-dnd', () => ({

@@ -1,7 +1,7 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-import { LocalizationProvider } from '../localization/LocalizationContext';
-import { LoginPage } from '../components/login/LoginPage';
+import { LocalizationProvider } from '../src/localization/LocalizationContext';
+import { LoginPage } from '../src/components/login/LoginPage';
 
 // Test wrapper with localization context
 const TestWrapper = ({ children }: { children: React.ReactNode }) => (

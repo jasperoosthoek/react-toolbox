@@ -1,9 +1,9 @@
 import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react';
 import { Button } from 'react-bootstrap';
-import { LocalizationProvider } from '../localization/LocalizationContext';
-import ConfirmButton from '../components/buttons/ConfirmButton';
-import DeleteConfirmButton from '../components/buttons/DeleteConfirmButton';
+import { LocalizationProvider } from '../src/localization/LocalizationContext';
+import ConfirmButton from '../src/components/buttons/ConfirmButton';
+import DeleteConfirmButton from '../src/components/buttons/DeleteConfirmButton';
 import {
   IconButton,
   CheckButton,
@@ -15,11 +15,11 @@ import {
   SaveButton,
   UploadTextButton,
   makeIconButton,
-} from '../components/buttons/IconButtons';
+} from '../src/components/buttons/IconButtons';
 import { AiOutlineHome } from 'react-icons/ai';
 
 // Mock the SmallSpinner component
-jest.mock('../components/indicators/LoadingIndicator', () => ({
+jest.mock('../src/components/indicators/LoadingIndicator', () => ({
   SmallSpinner: () => <div data-testid="spinner">Loading...</div>,
 }));
 

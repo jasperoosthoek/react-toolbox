@@ -5,8 +5,8 @@ import {
   ErrorContext, 
   useError, 
   dispatchError 
-} from '../components/errors/ErrorBoundary';
-import { ErrorPage } from '../components/errors/Errors';
+} from '../src/components/errors/ErrorBoundary';
+import { ErrorPage } from '../src/components/errors/Errors';
 
 describe('Error Components Tests', () => {
   describe('ErrorBoundary', () => {

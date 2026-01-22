@@ -6,7 +6,7 @@ import {
   useSetState,
   useInterval,
   useLocalStorage,
-} from '../utils/hooks';
+} from '../src/utils/hooks';
 
 // Mock localStorage for testing
 const mockStorage = {

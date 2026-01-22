@@ -5,11 +5,11 @@ import {
   LocalizationContext,
   useLocalization,
   combineLocalization 
-} from '../localization/LocalizationContext';
+} from '../src/localization/LocalizationContext';
 import { 
   defaultLocalization, 
   defaultLanguages 
-} from '../localization/localization';
+} from '../src/localization/localization';
 
 describe('Localization Tests', () => {
   afterEach(() => {

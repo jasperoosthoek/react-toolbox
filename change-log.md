@@ -363,3 +363,6 @@
 - Do not render drag and droppable content before `DragAndDropList` is mounted
 - New `LockButton` component
 - New `unselectedOptionLabel` prop in `FormDropdown` component
+
+##### Upcoming
+- Move `/src/__tests__` to `/__tests__`

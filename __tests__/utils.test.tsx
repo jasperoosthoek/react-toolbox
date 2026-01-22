@@ -7,7 +7,7 @@ import {
   roundFixed,
   round,
   downloadFile,
-} from '../utils/utils';
+} from '../src/utils/utils';
 
 // Mock fetch
 const mockFetch = jest.fn();

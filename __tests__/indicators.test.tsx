@@ -1,14 +1,14 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import { LocalizationProvider } from '../localization/LocalizationContext';
+import { LocalizationProvider } from '../src/localization/LocalizationContext';
 import {
   CheckIndicator,
   LoadingIndicator,
   SmallSpinner,
   BigSpinner,
-} from '../components/indicators/LoadingIndicator';
-import { CheckIndicator as CheckIndicatorComponent } from '../components/indicators/CheckIndicator';
-import { FixedLoadingIndicator } from '../components/indicators/FixedLoadingIndicator';
+} from '../src/components/indicators/LoadingIndicator';
+import { CheckIndicator as CheckIndicatorComponent } from '../src/components/indicators/CheckIndicator';
+import { FixedLoadingIndicator } from '../src/components/indicators/FixedLoadingIndicator';
 
 // Test wrapper with localization context
 const TestWrapper = ({ children }: { children: React.ReactNode }) => (

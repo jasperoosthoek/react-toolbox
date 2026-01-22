@@ -1,7 +1,7 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-import { LocalizationProvider } from '../../localization/LocalizationContext';
-import { FormProvider } from '../../components/forms/FormProvider';
+import { LocalizationProvider } from '../../src/localization/LocalizationContext';
+import { FormProvider } from '../../src/components/forms/FormProvider';
 
 /**
  * Basic wrapper with LocalizationProvider for components that need localization

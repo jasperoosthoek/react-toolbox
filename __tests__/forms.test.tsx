@@ -1,10 +1,10 @@
 import React from 'react';
-import { LocalizationProvider } from '../localization/LocalizationContext';
+import { LocalizationProvider } from '../src/localization/LocalizationContext';
 
 // Core Form Components
-import { FormProvider, useForm } from '../components/forms/FormProvider';
-import { FormModal, FormFieldsRenderer } from '../components/forms/FormModal';
-import { FormField, useFormField } from '../components/forms/FormField';
+import { FormProvider, useForm } from '../src/components/forms/FormProvider';
+import { FormModal, FormFieldsRenderer } from '../src/components/forms/FormModal';
+import { FormField, useFormField } from '../src/components/forms/FormField';
 
 // Import FormModalProvider components
 import { 
@@ -12,7 +12,7 @@ import {
   FormCreateModalButton, 
   FormEditModalButton, 
   useFormModal 
-} from '../components/forms/FormModalProvider';
+} from '../src/components/forms/FormModalProvider';
 
 // Form Field Components
 import { 
@@ -20,17 +20,17 @@ import {
   FormTextarea, 
   FormDate, 
   FormDateTime 
-} from '../components/forms/fields/FormInput';
+} from '../src/components/forms/fields/FormInput';
 import { 
   FormCheckbox, 
   FormSwitch 
-} from '../components/forms/fields/FormCheckbox';
-import { FormSelect } from '../components/forms/fields/FormSelect';
-import { FormDropdown } from '../components/forms/fields/FormDropdown';
+} from '../src/components/forms/fields/FormCheckbox';
+import { FormSelect } from '../src/components/forms/fields/FormSelect';
+import { FormDropdown } from '../src/components/forms/fields/FormDropdown';
 import { 
   FormBadgesSelection, 
   BadgeSelection 
-} from '../components/forms/fields/FormBadgesSelection';
+} from '../src/components/forms/fields/FormBadgesSelection';
 
 // Import test utilities
 import {

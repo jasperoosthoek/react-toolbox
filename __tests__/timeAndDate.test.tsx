@@ -5,11 +5,11 @@ import {
   formatDateTime,
   toUtc,
   fromUtc,
-} from '../utils/timeAndDate';
+} from '../src/utils/timeAndDate';
 
 // Mock the getTimestamp function directly since Date.now mocking can be tricky
-jest.mock('../utils/timeAndDate', () => {
-  const actual = jest.requireActual('../utils/timeAndDate');
+jest.mock('../src/utils/timeAndDate', () => {
+  const actual = jest.requireActual('../src/utils/timeAndDate');
   return {
     ...actual,
     getTimestamp: jest.fn(),
@@ -51,7 +51,7 @@ describe('Utils - Time and Date Tests', () => {
   describe('getTimestamp', () => {
     it('should return current timestamp in seconds', () => {
       const mockTimestamp = 1640995200;
-      const { getTimestamp } = require('../utils/timeAndDate');
+      const { getTimestamp } = require('../src/utils/timeAndDate');
       getTimestamp.mockReturnValue(mockTimestamp);
 
       const timestamp = getTimestamp();
@@ -64,7 +64,7 @@ describe('Utils - Time and Date Tests', () => {
       const mockTimestamp1 = 1640995200;
       const mockTimestamp2 = 1640995260; // 1 minute later
       
-      const { getTimestamp } = require('../utils/timeAndDate');
+      const { getTimestamp } = require('../src/utils/timeAndDate');
       getTimestamp.mockReturnValueOnce(mockTimestamp1);
       getTimestamp.mockReturnValueOnce(mockTimestamp2);
       
@@ -78,7 +78,7 @@ describe('Utils - Time and Date Tests', () => {
   describe('getToday', () => {
     it('should return start of current day in UTC', () => {
       // Mock the getToday function to return a specific date at midnight UTC
-      const { getToday } = require('../utils/timeAndDate');
+      const { getToday } = require('../src/utils/timeAndDate');
       const mockToday = new Date('2023-06-15T00:00:00.000Z'); // Explicitly UTC midnight
       
       getToday.mockReturnValue(mockToday);
