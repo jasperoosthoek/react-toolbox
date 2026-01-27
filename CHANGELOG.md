@@ -1,3 +1,8 @@
+# Changelog
+
+##### [Unreleased]
+- Add `RequestPasswordResetPage` and `SetPasswordPage` components for password reset flows
+
 ##### Version 0.2.1
 - Fix not updating state correctly in `CreateEditModal` component .
 - Install packages for development
