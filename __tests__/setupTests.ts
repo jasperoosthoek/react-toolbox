@@ -250,7 +250,13 @@ jest.mock('react-bootstrap', () => {
         Item: (props) => mockReact.createElement('a', { ...props, className: 'dropdown-item' }, props.children),
       }
     ),
-    Nav: (props) => mockReact.createElement('nav', props, props.children),
+    Nav: Object.assign(
+      (props) => mockReact.createElement('nav', props, props.children),
+      {
+        Item: (props) => mockReact.createElement('div', { ...props, className: 'nav-item' }, props.children),
+        Link: (props) => mockReact.createElement('a', { ...props, className: 'nav-link' }, props.children),
+      }
+    ),
     Navbar: (props) => mockReact.createElement('nav', { ...props, className: 'navbar' }, props.children),
   };
 });

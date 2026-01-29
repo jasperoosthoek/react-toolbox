@@ -26,6 +26,8 @@ export * from './components/login/LoginPage';
 export * from './components/login/RequestPasswordResetPage';
 export * from './components/login/SetPasswordPage';
 
+export * from './components/navigation/NavLinks';
+
 export * from './utils/hooks';
 export * from './utils/timeAndDate';
 export * from './utils/utils';
