@@ -19,6 +19,7 @@ export interface LocalizationStrings {
   save: string;
   cancel: string;
   ok: string;
+  send: string;
   your_email: string;
   enter_email: string;
   your_password: string;
@@ -27,6 +28,13 @@ export interface LocalizationStrings {
   logout: string;
   forgot_password: string;
   reset_password: string;
+  enter_email_for_reset: string;
+  reset_link_sent: string;
+  back_to_login: string;
+  set_new_password: string;
+  new_password: string;
+  confirm_password: string;
+  passwords_must_match: string;
   required_field: string;
   choose_one: string;
   everything: string;
@@ -60,6 +68,7 @@ export const defaultLocalization: Localization = {
     save: "Save",
     cancel: "Cancel",
     ok: "OK",
+    send: "Send",
     your_email: "Your email",
     enter_email: "Enter email address",
     your_password: "Your password",
@@ -68,6 +77,13 @@ export const defaultLocalization: Localization = {
     logout: "Logout",
     forgot_password: "Forgot password?",
     reset_password: "Reset password",
+    enter_email_for_reset: "Enter your email address to receive a password reset link.",
+    reset_link_sent: "A password reset link has been sent to your email address.",
+    back_to_login: "Back to login",
+    set_new_password: "Set new password",
+    new_password: "New password",
+    confirm_password: "Confirm password",
+    passwords_must_match: "Passwords must match",
     required_field: "required",
     choose_one: "Choose one",
     everything: "Everything",
@@ -86,6 +102,7 @@ export const defaultLocalization: Localization = {
     save: "Sauvegarder",
     cancel: "Annuler",
     ok: "D'accord'",
+    send: "Envoyer",
     your_email: "Votre adresse e-mail",
     enter_email: "Entrez l'adresse e-mail",
     your_password: "Votre mot de passe",
@@ -94,6 +111,13 @@ export const defaultLocalization: Localization = {
     logout: "Se déconnecter",
     forgot_password: "Mot de passe oublié?",
     reset_password: "Réinitialiser le mot de passe",
+    enter_email_for_reset: "Entrez votre adresse e-mail pour recevoir un lien de réinitialisation.",
+    reset_link_sent: "Un lien de réinitialisation a été envoyé à votre adresse e-mail.",
+    back_to_login: "Retour à la connexion",
+    set_new_password: "Définir un nouveau mot de passe",
+    new_password: "Nouveau mot de passe",
+    confirm_password: "Confirmer le mot de passe",
+    passwords_must_match: "Les mots de passe doivent correspondre",
     required_field: "requis",
     choose_one: "Choisissez-en un",
     everything: "Tout",
@@ -112,6 +136,7 @@ export const defaultLocalization: Localization = {
     save: "Opslaan",
     cancel: "Annuleren",
     ok: "OK",
+    send: "Versturen",
     your_email: "Uw e-mail",
     enter_email: "Voer e-mailadres in",
     your_password: "Uw wachtwoord",
@@ -120,6 +145,13 @@ export const defaultLocalization: Localization = {
     logout: "Uitloggen",
     forgot_password: "Wachtwoord vergeten?",
     reset_password: "Wachtwoord resetten",
+    enter_email_for_reset: "Voer uw e-mailadres in om een wachtwoord reset link te ontvangen.",
+    reset_link_sent: "Een wachtwoord reset link is naar uw e-mailadres verzonden.",
+    back_to_login: "Terug naar inloggen",
+    set_new_password: "Nieuw wachtwoord instellen",
+    new_password: "Nieuw wachtwoord",
+    confirm_password: "Bevestig wachtwoord",
+    passwords_must_match: "Wachtwoorden moeten overeenkomen",
     required_field: "verplicht",
     choose_one: "Maak een keuze",
     everything: "Alles",

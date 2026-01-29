@@ -23,6 +23,10 @@ export * from './components/errors/Errors';
 export * from './components/errors/ErrorBoundary';
 
 export * from './components/login/LoginPage';
+export * from './components/login/RequestPasswordResetPage';
+export * from './components/login/SetPasswordPage';
+
+export * from './components/navigation/NavLinks';
 
 export * from './utils/hooks';
 export * from './utils/timeAndDate';
