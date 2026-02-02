@@ -1,6 +1,7 @@
 import React, { useMemo, KeyboardEvent } from 'react';
 import { Form } from 'react-bootstrap';
 import { useFormField } from '../FormField';
+import { FormError } from './FormError';
 import { useLocalization } from '../../../localization/LocalizationContext';
 
 type DisabledProps = {
@@ -88,11 +89,7 @@ export const FormDropdown = <T,>(props: FormDropdownProps<T>) => {
   return (
     <Form.Group controlId={controlId} className={className}>
       {label && <Form.Label>{label}{required && ' *'}</Form.Label>}
-      {isInvalid && error && (
-        <Form.Text className="text-danger">
-          {error}
-        </Form.Text>
-      )}
+      {isInvalid && <FormError error={error} />}
       
       <Form.Select
         value={value || ''}

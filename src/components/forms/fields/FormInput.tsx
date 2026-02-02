@@ -1,6 +1,7 @@
 import React, { ChangeEvent, KeyboardEvent } from 'react';
 import { Form } from 'react-bootstrap';
 import { useFormField } from '../FormField';
+import { FormError } from './FormError';
 
 export interface FormInputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'name' | 'onChange'> {
   name: string;
@@ -19,11 +20,7 @@ export const FormInput = (props: FormInputProps) => {
   return (
     <Form.Group controlId={controlId} className={className}>
       {label && <Form.Label>{label}{required && ' *'}</Form.Label>}
-      {isInvalid && error && (
-        <Form.Text id={errorId} className="text-danger">
-          {error}
-        </Form.Text>
-      )}
+      {isInvalid && <FormError error={error} id={errorId} />}
       <Form.Control
         autoComplete="off"
         {...mergedProps}

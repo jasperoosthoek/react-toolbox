@@ -368,3 +368,8 @@
 - Move `/src/__tests__` to `/__tests__`
 - Move `/src/examples` to `/examples`
 - New `NavLinks` component
+
+##### Version 0.11.0
+- New `FormError` component that centralizes error rendering with leading space for proper label alignment
+- New `FormDateRange` component for date range inputs with `from` and `to` fields
+- Tests for `FormError` and `FormDateRange` components

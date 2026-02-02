@@ -1,6 +1,7 @@
 import React from 'react';
 import { Form } from 'react-bootstrap';
 import { useFormField } from '../FormField';
+import { FormError } from './FormError';
 
 export interface FormCheckboxProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'name' | 'value' | 'onChange' | 'type'> {
   name: string;
@@ -15,11 +16,7 @@ export const FormCheckbox = (props: FormCheckboxProps) => {
 
   return (
     <Form.Group controlId={controlId} className={`mt-2 mb-2${className ? ` ${className}` : ''}`}>
-      {isInvalid && error && (
-        <Form.Text id={errorId} className="text-danger">
-          {error}
-        </Form.Text>
-      )}
+      {isInvalid && <FormError error={error} id={errorId} />}
       <Form.Check
         type="checkbox"
         {...mergedProps}
@@ -48,11 +45,7 @@ export const FormSwitch = (props: FormCheckboxProps) => {
 
   return (
     <Form.Group controlId={controlId} className={className}>
-      {isInvalid && error && (
-        <Form.Text id={errorId} className="text-danger">
-          {error}
-        </Form.Text>
-      )}
+      {isInvalid && <FormError error={error} id={errorId} />}
       <Form.Check
         type="switch"
         {...mergedProps}
