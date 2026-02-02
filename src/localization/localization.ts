@@ -36,6 +36,9 @@ export interface LocalizationStrings {
   confirm_password: string;
   passwords_must_match: string;
   required_field: string;
+  date_range_from: string;
+  date_range_to: string;
+  date_range_to_before_from: string;
   choose_one: string;
   everything: string;
   number_of_rows: string;
@@ -85,6 +88,9 @@ export const defaultLocalization: Localization = {
     confirm_password: "Confirm password",
     passwords_must_match: "Passwords must match",
     required_field: "required",
+    date_range_from: "From",
+    date_range_to: "To",
+    date_range_to_before_from: "end date must be after start date",
     choose_one: "Choose one",
     everything: "Everything",
     number_of_rows: "Number of rows",
@@ -119,6 +125,9 @@ export const defaultLocalization: Localization = {
     confirm_password: "Confirmer le mot de passe",
     passwords_must_match: "Les mots de passe doivent correspondre",
     required_field: "requis",
+    date_range_from: "De",
+    date_range_to: "À",
+    date_range_to_before_from: "la date de fin doit être après la date de début",
     choose_one: "Choisissez-en un",
     everything: "Tout",
     number_of_rows: "Nombre de rangées",
@@ -153,6 +162,9 @@ export const defaultLocalization: Localization = {
     confirm_password: "Bevestig wachtwoord",
     passwords_must_match: "Wachtwoorden moeten overeenkomen",
     required_field: "verplicht",
+    date_range_from: "Van",
+    date_range_to: "Tot",
+    date_range_to_before_from: "de einddatum moet na de startdatum zijn",
     choose_one: "Maak een keuze",
     everything: "Alles",
     number_of_rows: "Aantal rijen",

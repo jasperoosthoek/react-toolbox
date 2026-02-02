@@ -1,6 +1,7 @@
 import React from 'react';
 import { Form } from 'react-bootstrap';
 import { useFormField } from '../FormField';
+import { FormError } from './FormError';
 
 export interface FormSelectProps extends Omit<React.SelectHTMLAttributes<HTMLSelectElement>, 'name' | 'value' | 'onChange'> {
   name: string;
@@ -17,11 +18,7 @@ export const FormSelect = (props: FormSelectProps) => {
   return (
     <Form.Group controlId={controlId} className={className}>
       {label && <Form.Label>{label}{required && ' *'}</Form.Label>}
-      {isInvalid && error && (
-        <Form.Text className="text-danger">
-          {error}
-        </Form.Text>
-      )}
+      {isInvalid && <FormError error={error} />}
       <Form.Select
         {...mergedProps}
         value={value || ''}
