@@ -44,6 +44,9 @@ export interface LocalizationStrings {
   number_of_rows: string;
   modal_create: string;
   modal_edit: string;
+  file_upload: string;
+  file_too_large: string;
+  file_upload_failed: string;
 }
 
 export type Localization = {
@@ -96,6 +99,9 @@ export const defaultLocalization: Localization = {
     number_of_rows: "Number of rows",
     modal_create: 'New',
     modal_edit: 'Edit',
+    file_upload: 'Upload file',
+    file_too_large: 'File is too large',
+    file_upload_failed: 'Upload failed',
   },
   fr: {
     select: "Sélectionner",
@@ -133,6 +139,9 @@ export const defaultLocalization: Localization = {
     number_of_rows: "Nombre de rangées",
     modal_create: 'Nouveau',
     modal_edit: 'Éditer',
+    file_upload: 'Télécharger le fichier',
+    file_too_large: 'Le fichier est trop volumineux',
+    file_upload_failed: 'Échec du téléchargement',
   },
   nl: {
     select: "Selecteer",
@@ -170,6 +179,9 @@ export const defaultLocalization: Localization = {
     number_of_rows: "Aantal rijen",
     modal_create: 'Nieuw',
     modal_edit: 'Bewerken',
+    file_upload: 'Bestand uploaden',
+    file_too_large: 'Bestand is te groot',
+    file_upload_failed: 'Upload mislukt',
   },
 } as const;
 

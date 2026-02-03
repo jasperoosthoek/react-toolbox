@@ -5,6 +5,7 @@ import {
   AiFillCaretUp,
   AiFillEdit,
   AiOutlinePlus,
+  AiOutlineFile,
   AiOutlineUpload,
   AiOutlineDownload,
   AiOutlineFileAdd,
@@ -102,6 +103,7 @@ export const UnCheckButton = makeIconButton(AiOutlineClose);
 export const LockButton = makeIconButton(AiOutlineLock);
 export const UnlockButton = makeIconButton(AiOutlineUnlock);
 export const UpButton = makeIconButton(AiFillCaretUp);
+export const FileButton = makeIconButton(AiOutlineFile);
 export const UploadButton = makeIconButton(AiOutlineUpload);
 export const QuestionnaireButton = makeIconButton(RiQuestionnaireLine);
 export const DropdownButton = makeIconButton(RiDropdownList);

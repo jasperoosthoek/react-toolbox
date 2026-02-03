@@ -21,6 +21,7 @@ import {
   FormBadgesSelection,
   BadgeSelection
 } from '../src/components/forms/fields/FormBadgesSelection';
+import { FormFile, FileRef } from '../src/components/forms/fields/FormFile';
 
 // Import test utilities
 import {
@@ -32,7 +33,8 @@ import {
   a11yHelpers,
   render,
   fireEvent,
-  screen
+  screen,
+  waitFor
 } from './utils';
 
 describe('Form Field Components Tests', () => {
@@ -493,6 +495,633 @@ describe('Form Field Components Tests', () => {
       expect(typeof FormDropdown).toBe('function');
       expect(typeof FormBadgesSelection).toBe('function');
       expect(typeof BadgeSelection).toBe('function');
+      expect(typeof FormFile).toBe('function');
+    });
+  });
+
+  describe('FormFile Component', () => {
+    const fileFormFields = {
+      attachments: {
+        initialValue: [],
+        label: 'Attachments',
+        required: false,
+        formProps: {},
+      },
+    };
+
+    // Mock URL methods
+    const originalCreateObjectURL = global.URL.createObjectURL;
+    const originalRevokeObjectURL = global.URL.revokeObjectURL;
+
+    beforeEach(() => {
+      global.URL.createObjectURL = jest.fn(() => 'blob:mock-url-' + Math.random());
+      global.URL.revokeObjectURL = jest.fn();
+    });
+
+    afterEach(() => {
+      global.URL.createObjectURL = originalCreateObjectURL;
+      global.URL.revokeObjectURL = originalRevokeObjectURL;
+    });
+
+    const createMockFile = (name: string, size: number, type: string): File => {
+      const file = new File(['x'.repeat(size)], name, { type });
+      return file;
+    };
+
+    const createMockOnUpload = (shouldFail = false, delay = 0) => {
+      return jest.fn((file: File, onProgress: (progress: number) => void) => {
+        return new Promise<{ path: string }>((resolve, reject) => {
+          setTimeout(() => {
+            onProgress(50);
+            setTimeout(() => {
+              onProgress(100);
+              if (shouldFail) {
+                reject(new Error('Upload failed'));
+              } else {
+                resolve({ path: `/uploads/${file.name}` });
+              }
+            }, delay);
+          }, delay);
+        });
+      });
+    };
+
+    describe('Basic Rendering', () => {
+      it('should render without crashing', () => {
+        const mockOnUpload = createMockOnUpload();
+
+        expect(() => {
+          render(
+            <TestWrapper>
+              <FormProvider formFields={fileFormFields} onSubmit={jest.fn()}>
+                <FormFile name="attachments" onUpload={mockOnUpload} />
+              </FormProvider>
+            </TestWrapper>
+          );
+        }).not.toThrow();
+      });
+
+      it('should render with label', () => {
+        const mockOnUpload = createMockOnUpload();
+
+        const { getByText } = render(
+          <TestWrapper>
+            <FormProvider formFields={fileFormFields} onSubmit={jest.fn()}>
+              <FormFile name="attachments" label="Upload Files" onUpload={mockOnUpload} />
+            </FormProvider>
+          </TestWrapper>
+        );
+
+        expect(getByText('Upload Files')).toBeInTheDocument();
+      });
+
+      it('should show required asterisk when required', () => {
+        const requiredFormFields = {
+          attachments: {
+            initialValue: [],
+            label: 'Attachments',
+            required: true,
+            formProps: {},
+          },
+        };
+        const mockOnUpload = createMockOnUpload();
+
+        const { getByText } = render(
+          <TestWrapper>
+            <FormProvider formFields={requiredFormFields} onSubmit={jest.fn()}>
+              <FormFile name="attachments" onUpload={mockOnUpload} />
+            </FormProvider>
+          </TestWrapper>
+        );
+
+        expect(getByText('Attachments *')).toBeInTheDocument();
+      });
+
+      it('should render drop zone with upload text', () => {
+        const mockOnUpload = createMockOnUpload();
+
+        const { getByText } = render(
+          <TestWrapper>
+            <FormProvider formFields={fileFormFields} onSubmit={jest.fn()}>
+              <FormFile name="attachments" onUpload={mockOnUpload} />
+            </FormProvider>
+          </TestWrapper>
+        );
+
+        expect(getByText('Upload file')).toBeInTheDocument();
+      });
+    });
+
+    describe('File Selection', () => {
+      it('should trigger file input when drop zone is clicked', () => {
+        const mockOnUpload = createMockOnUpload();
+
+        const { container } = render(
+          <TestWrapper>
+            <FormProvider formFields={fileFormFields} onSubmit={jest.fn()}>
+              <FormFile name="attachments" onUpload={mockOnUpload} />
+            </FormProvider>
+          </TestWrapper>
+        );
+
+        const input = container.querySelector('input[type="file"]');
+        const dropZone = container.querySelector('.form-file-dropzone');
+
+        expect(input).toBeInTheDocument();
+        expect(dropZone).toBeInTheDocument();
+
+        // Input should be hidden
+        expect(input).toHaveClass('d-none');
+      });
+
+      it('should accept files matching accept prop', () => {
+        const mockOnUpload = createMockOnUpload();
+
+        const { container } = render(
+          <TestWrapper>
+            <FormProvider formFields={fileFormFields} onSubmit={jest.fn()}>
+              <FormFile name="attachments" onUpload={mockOnUpload} accept="image/*" />
+            </FormProvider>
+          </TestWrapper>
+        );
+
+        const input = container.querySelector('input[type="file"]');
+        expect(input).toHaveAttribute('accept', 'image/*');
+      });
+
+      it('should handle multiple files when multiple is true', () => {
+        const mockOnUpload = createMockOnUpload();
+
+        const { container } = render(
+          <TestWrapper>
+            <FormProvider formFields={fileFormFields} onSubmit={jest.fn()}>
+              <FormFile name="attachments" onUpload={mockOnUpload} multiple={true} />
+            </FormProvider>
+          </TestWrapper>
+        );
+
+        const input = container.querySelector('input[type="file"]');
+        expect(input).toHaveAttribute('multiple');
+      });
+
+      it('should handle single file when multiple is false', () => {
+        const mockOnUpload = createMockOnUpload();
+
+        const { container } = render(
+          <TestWrapper>
+            <FormProvider formFields={fileFormFields} onSubmit={jest.fn()}>
+              <FormFile name="attachments" onUpload={mockOnUpload} multiple={false} />
+            </FormProvider>
+          </TestWrapper>
+        );
+
+        const input = container.querySelector('input[type="file"]');
+        expect(input).not.toHaveAttribute('multiple');
+      });
+    });
+
+    describe('Upload Flow', () => {
+      it('should call onUpload when file is selected', async () => {
+        const mockOnUpload = createMockOnUpload();
+        const mockFile = createMockFile('test.txt', 100, 'text/plain');
+
+        const { container } = render(
+          <TestWrapper>
+            <FormProvider formFields={fileFormFields} onSubmit={jest.fn()}>
+              <FormFile name="attachments" onUpload={mockOnUpload} />
+            </FormProvider>
+          </TestWrapper>
+        );
+
+        const input = container.querySelector('input[type="file"]') as HTMLInputElement;
+
+        fireEvent.change(input, { target: { files: [mockFile] } });
+
+        await waitFor(() => {
+          expect(mockOnUpload).toHaveBeenCalledWith(mockFile, expect.any(Function));
+        });
+      });
+
+      it('should display uploaded file after successful upload', async () => {
+        const mockOnUpload = createMockOnUpload();
+        const mockFile = createMockFile('document.pdf', 100, 'application/pdf');
+
+        const { container, getByText } = render(
+          <TestWrapper>
+            <FormProvider formFields={fileFormFields} onSubmit={jest.fn()}>
+              <FormFile name="attachments" onUpload={mockOnUpload} />
+            </FormProvider>
+          </TestWrapper>
+        );
+
+        const input = container.querySelector('input[type="file"]') as HTMLInputElement;
+        fireEvent.change(input, { target: { files: [mockFile] } });
+
+        await waitFor(() => {
+          expect(getByText('document.pdf')).toBeInTheDocument();
+        });
+      });
+
+      it('should show progress bar during upload', async () => {
+        // Create a slow upload to observe progress
+        const mockOnUpload = jest.fn((file: File, onProgress: (progress: number) => void) => {
+          return new Promise<{ path: string }>((resolve) => {
+            onProgress(50);
+            setTimeout(() => {
+              onProgress(100);
+              resolve({ path: `/uploads/${file.name}` });
+            }, 100);
+          });
+        });
+
+        const mockFile = createMockFile('test.txt', 100, 'text/plain');
+
+        const { container } = render(
+          <TestWrapper>
+            <FormProvider formFields={fileFormFields} onSubmit={jest.fn()}>
+              <FormFile name="attachments" onUpload={mockOnUpload} />
+            </FormProvider>
+          </TestWrapper>
+        );
+
+        const input = container.querySelector('input[type="file"]') as HTMLInputElement;
+        fireEvent.change(input, { target: { files: [mockFile] } });
+
+        // Wait for progress bar to appear
+        await waitFor(() => {
+          const progressBar = container.querySelector('.progress');
+          expect(progressBar).toBeInTheDocument();
+        });
+      });
+    });
+
+    describe('Error Handling', () => {
+      it('should show error when file exceeds maxSize', async () => {
+        const mockOnUpload = createMockOnUpload();
+        const largeFile = createMockFile('large.txt', 2000, 'text/plain');
+
+        const { container, getByText } = render(
+          <TestWrapper>
+            <FormProvider formFields={fileFormFields} onSubmit={jest.fn()}>
+              <FormFile name="attachments" onUpload={mockOnUpload} maxSize={1000} />
+            </FormProvider>
+          </TestWrapper>
+        );
+
+        const input = container.querySelector('input[type="file"]') as HTMLInputElement;
+        fireEvent.change(input, { target: { files: [largeFile] } });
+
+        await waitFor(() => {
+          expect(getByText('File is too large')).toBeInTheDocument();
+        });
+
+        // Should not call onUpload for oversized file
+        expect(mockOnUpload).not.toHaveBeenCalled();
+      });
+
+      it('should show error message when upload fails', async () => {
+        const mockOnUpload = createMockOnUpload(true); // shouldFail = true
+        const mockFile = createMockFile('test.txt', 100, 'text/plain');
+
+        const { container, getByText } = render(
+          <TestWrapper>
+            <FormProvider formFields={fileFormFields} onSubmit={jest.fn()}>
+              <FormFile name="attachments" onUpload={mockOnUpload} />
+            </FormProvider>
+          </TestWrapper>
+        );
+
+        const input = container.querySelector('input[type="file"]') as HTMLInputElement;
+        fireEvent.change(input, { target: { files: [mockFile] } });
+
+        await waitFor(() => {
+          expect(getByText('Upload failed')).toBeInTheDocument();
+        });
+      });
+
+      it('should allow dismissing failed upload errors', async () => {
+        const mockOnUpload = createMockOnUpload(true); // shouldFail = true
+        const mockFile = createMockFile('test.txt', 100, 'text/plain');
+
+        const { container, getByText, queryByText } = render(
+          <TestWrapper>
+            <FormProvider formFields={fileFormFields} onSubmit={jest.fn()}>
+              <FormFile name="attachments" onUpload={mockOnUpload} />
+            </FormProvider>
+          </TestWrapper>
+        );
+
+        const input = container.querySelector('input[type="file"]') as HTMLInputElement;
+        fireEvent.change(input, { target: { files: [mockFile] } });
+
+        await waitFor(() => {
+          expect(getByText('Upload failed')).toBeInTheDocument();
+        });
+
+        // Find and click dismiss button
+        const dismissButtons = container.querySelectorAll('button');
+        const dismissButton = Array.from(dismissButtons).find(btn =>
+          btn.closest('.border.rounded')?.textContent?.includes('Upload failed')
+        );
+
+        if (dismissButton) {
+          fireEvent.click(dismissButton);
+        }
+
+        await waitFor(() => {
+          expect(queryByText('Upload failed')).not.toBeInTheDocument();
+        });
+      });
+    });
+
+    describe('File Management', () => {
+      it('should remove file when remove button is clicked', async () => {
+        const mockOnUpload = createMockOnUpload();
+        const mockFile = createMockFile('test.txt', 100, 'text/plain');
+
+        const { container, queryByText, getByTestId, queryByTestId } = render(
+          <TestWrapper>
+            <FormProvider formFields={fileFormFields} onSubmit={jest.fn()}>
+              <FormFile name="attachments" onUpload={mockOnUpload} />
+            </FormProvider>
+          </TestWrapper>
+        );
+
+        const input = container.querySelector('input[type="file"]') as HTMLInputElement;
+        fireEvent.change(input, { target: { files: [mockFile] } });
+
+        // Wait for upload to complete (times-icon appears only on completed files)
+        await waitFor(() => {
+          expect(getByTestId('times-icon')).toBeInTheDocument();
+        }, { timeout: 2000 });
+
+        // Find the remove button by the times icon inside it
+        const timesIcon = getByTestId('times-icon');
+        const removeButton = timesIcon.closest('button') as HTMLButtonElement;
+        expect(removeButton).toBeTruthy();
+
+        fireEvent.click(removeButton);
+
+        await waitFor(() => {
+          expect(queryByText('test.txt')).not.toBeInTheDocument();
+        }, { timeout: 2000 });
+      });
+
+      it('should revoke blob URL when file is removed', async () => {
+        const mockOnUpload = createMockOnUpload();
+        const mockFile = createMockFile('test.txt', 100, 'text/plain');
+
+        const { container, getByTestId } = render(
+          <TestWrapper>
+            <FormProvider formFields={fileFormFields} onSubmit={jest.fn()}>
+              <FormFile name="attachments" onUpload={mockOnUpload} />
+            </FormProvider>
+          </TestWrapper>
+        );
+
+        const input = container.querySelector('input[type="file"]') as HTMLInputElement;
+        fireEvent.change(input, { target: { files: [mockFile] } });
+
+        // Wait for upload to complete (times-icon appears only on completed files)
+        await waitFor(() => {
+          expect(getByTestId('times-icon')).toBeInTheDocument();
+        }, { timeout: 2000 });
+
+        // Clear any previous calls from upload
+        (global.URL.revokeObjectURL as jest.Mock).mockClear();
+
+        // Find the remove button by the times icon inside it
+        const timesIcon = getByTestId('times-icon');
+        const removeButton = timesIcon.closest('button') as HTMLButtonElement;
+
+        fireEvent.click(removeButton);
+
+        await waitFor(() => {
+          expect(global.URL.revokeObjectURL).toHaveBeenCalled();
+        }, { timeout: 2000 });
+      });
+    });
+
+    describe('Drag and Drop', () => {
+      it('should handle drag over with visual feedback', () => {
+        const mockOnUpload = createMockOnUpload();
+
+        const { container } = render(
+          <TestWrapper>
+            <FormProvider formFields={fileFormFields} onSubmit={jest.fn()}>
+              <FormFile name="attachments" onUpload={mockOnUpload} />
+            </FormProvider>
+          </TestWrapper>
+        );
+
+        const dropZone = container.querySelector('.form-file-dropzone') as HTMLElement;
+
+        fireEvent.dragOver(dropZone, { preventDefault: jest.fn() });
+
+        expect(dropZone).toHaveClass('bg-light');
+      });
+
+      it('should handle drag leave', () => {
+        const mockOnUpload = createMockOnUpload();
+
+        const { container } = render(
+          <TestWrapper>
+            <FormProvider formFields={fileFormFields} onSubmit={jest.fn()}>
+              <FormFile name="attachments" onUpload={mockOnUpload} />
+            </FormProvider>
+          </TestWrapper>
+        );
+
+        const dropZone = container.querySelector('.form-file-dropzone') as HTMLElement;
+
+        fireEvent.dragOver(dropZone);
+        fireEvent.dragLeave(dropZone);
+
+        expect(dropZone).not.toHaveClass('bg-light');
+      });
+
+      it('should process dropped files', async () => {
+        const mockOnUpload = createMockOnUpload();
+        const mockFile = createMockFile('dropped.txt', 100, 'text/plain');
+
+        const { container, getByText } = render(
+          <TestWrapper>
+            <FormProvider formFields={fileFormFields} onSubmit={jest.fn()}>
+              <FormFile name="attachments" onUpload={mockOnUpload} />
+            </FormProvider>
+          </TestWrapper>
+        );
+
+        const dropZone = container.querySelector('.form-file-dropzone') as HTMLElement;
+
+        const dataTransfer = {
+          files: [mockFile],
+        };
+
+        fireEvent.drop(dropZone, { dataTransfer });
+
+        await waitFor(() => {
+          expect(mockOnUpload).toHaveBeenCalledWith(mockFile, expect.any(Function));
+        });
+
+        await waitFor(() => {
+          expect(getByText('dropped.txt')).toBeInTheDocument();
+        });
+      });
+    });
+
+    describe('Cleanup', () => {
+      it('should revoke all blob URLs on unmount', async () => {
+        const mockOnUpload = createMockOnUpload();
+        const mockFile = createMockFile('test.txt', 100, 'text/plain');
+
+        const { container, getByText, unmount } = render(
+          <TestWrapper>
+            <FormProvider formFields={fileFormFields} onSubmit={jest.fn()}>
+              <FormFile name="attachments" onUpload={mockOnUpload} />
+            </FormProvider>
+          </TestWrapper>
+        );
+
+        const input = container.querySelector('input[type="file"]') as HTMLInputElement;
+        fireEvent.change(input, { target: { files: [mockFile] } });
+
+        await waitFor(() => {
+          expect(getByText('test.txt')).toBeInTheDocument();
+        });
+
+        // Clear mock to track only unmount calls
+        (global.URL.revokeObjectURL as jest.Mock).mockClear();
+
+        unmount();
+
+        expect(global.URL.revokeObjectURL).toHaveBeenCalled();
+      });
+    });
+
+    describe('File Type Icons', () => {
+      it('should show PDF icon for .pdf files', async () => {
+        const mockOnUpload = createMockOnUpload();
+        const mockFile = createMockFile('document.pdf', 100, 'application/pdf');
+
+        const { container, getByTestId } = render(
+          <TestWrapper>
+            <FormProvider formFields={fileFormFields} onSubmit={jest.fn()}>
+              <FormFile name="attachments" onUpload={mockOnUpload} />
+            </FormProvider>
+          </TestWrapper>
+        );
+
+        const input = container.querySelector('input[type="file"]') as HTMLInputElement;
+        fireEvent.change(input, { target: { files: [mockFile] } });
+
+        await waitFor(() => {
+          expect(getByTestId('file-pdf-icon')).toBeInTheDocument();
+        });
+      });
+
+      it('should show Word icon for .doc and .docx files', async () => {
+        const mockOnUpload = createMockOnUpload();
+        const mockFile = createMockFile('document.docx', 100, 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+
+        const { container, getByTestId } = render(
+          <TestWrapper>
+            <FormProvider formFields={fileFormFields} onSubmit={jest.fn()}>
+              <FormFile name="attachments" onUpload={mockOnUpload} />
+            </FormProvider>
+          </TestWrapper>
+        );
+
+        const input = container.querySelector('input[type="file"]') as HTMLInputElement;
+        fireEvent.change(input, { target: { files: [mockFile] } });
+
+        await waitFor(() => {
+          expect(getByTestId('file-word-icon')).toBeInTheDocument();
+        });
+      });
+
+      it('should show PowerPoint icon for .ppt and .pptx files', async () => {
+        const mockOnUpload = createMockOnUpload();
+        const mockFile = createMockFile('presentation.pptx', 100, 'application/vnd.openxmlformats-officedocument.presentationml.presentation');
+
+        const { container, getByTestId } = render(
+          <TestWrapper>
+            <FormProvider formFields={fileFormFields} onSubmit={jest.fn()}>
+              <FormFile name="attachments" onUpload={mockOnUpload} />
+            </FormProvider>
+          </TestWrapper>
+        );
+
+        const input = container.querySelector('input[type="file"]') as HTMLInputElement;
+        fireEvent.change(input, { target: { files: [mockFile] } });
+
+        await waitFor(() => {
+          expect(getByTestId('file-ppt-icon')).toBeInTheDocument();
+        });
+      });
+
+      it('should show text icon for text-based files', async () => {
+        const mockOnUpload = createMockOnUpload();
+        const mockFile = createMockFile('readme.md', 100, 'text/markdown');
+
+        const { container, getByTestId } = render(
+          <TestWrapper>
+            <FormProvider formFields={fileFormFields} onSubmit={jest.fn()}>
+              <FormFile name="attachments" onUpload={mockOnUpload} />
+            </FormProvider>
+          </TestWrapper>
+        );
+
+        const input = container.querySelector('input[type="file"]') as HTMLInputElement;
+        fireEvent.change(input, { target: { files: [mockFile] } });
+
+        await waitFor(() => {
+          expect(getByTestId('file-text-icon')).toBeInTheDocument();
+        });
+      });
+
+      it('should show generic file icon for unknown file types', async () => {
+        const mockOnUpload = createMockOnUpload();
+        const mockFile = createMockFile('archive.zip', 100, 'application/zip');
+
+        const { container, getByTestId } = render(
+          <TestWrapper>
+            <FormProvider formFields={fileFormFields} onSubmit={jest.fn()}>
+              <FormFile name="attachments" onUpload={mockOnUpload} />
+            </FormProvider>
+          </TestWrapper>
+        );
+
+        const input = container.querySelector('input[type="file"]') as HTMLInputElement;
+        fireEvent.change(input, { target: { files: [mockFile] } });
+
+        await waitFor(() => {
+          expect(getByTestId('file-icon')).toBeInTheDocument();
+        });
+      });
+
+      it('should show image thumbnail instead of icon for image files', async () => {
+        const mockOnUpload = createMockOnUpload();
+        const mockFile = createMockFile('photo.jpg', 100, 'image/jpeg');
+
+        const { container, queryByTestId } = render(
+          <TestWrapper>
+            <FormProvider formFields={fileFormFields} onSubmit={jest.fn()}>
+              <FormFile name="attachments" onUpload={mockOnUpload} />
+            </FormProvider>
+          </TestWrapper>
+        );
+
+        const input = container.querySelector('input[type="file"]') as HTMLInputElement;
+        fireEvent.change(input, { target: { files: [mockFile] } });
+
+        await waitFor(() => {
+          // Should show img element instead of file icon
+          const img = container.querySelector('img.form-file-thumbnail');
+          expect(img).toBeInTheDocument();
+          expect(queryByTestId('file-icon')).not.toBeInTheDocument();
+        });
+      });
     });
   });
 });

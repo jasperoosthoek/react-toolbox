@@ -6,3 +6,4 @@ export * from './FormCheckbox';
 export * from './FormDropdown';
 export * from './FormDateRange';
 export * from './FormBadgesSelection';
+export * from './FormFile';
