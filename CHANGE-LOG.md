@@ -373,3 +373,6 @@
 - New `FormError` component that centralizes error rendering with leading space for proper label alignment
 - New `FormDateRange` component for date range inputs with `from` and `to` fields
 - Tests for `FormError` and `FormDateRange` components
+
+#### Upcoming
+- Add placeholder `choose_one` in `FormSelect` component
