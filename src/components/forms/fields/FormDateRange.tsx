@@ -48,13 +48,13 @@ export const FormDateRange = <K1 extends string = 'from', K2 extends string = 't
       {label && <Form.Label>
         {label}
         {required && ' *'}
-        {isRangeInvalid && <FormError error={strings.getString('date_range_to_before_from')} />}
+        {isRangeInvalid && <FormError error={strings.getString('error_date_range_to_before_from')} />}
       </Form.Label>}
       <div className="d-flex gap-2 align-items-center">
         <div className="flex-grow-1">
           <Form.Label className="small text-muted mb-1">
             {strings.getString('date_range_from')}
-            {isFromInvalid && <FormError error={strings.getString('required_field')} />}
+            {isFromInvalid && <FormError error={strings.getString('error_required_field')} />}
           </Form.Label>
           <Form.Control
             type="date"
@@ -69,7 +69,7 @@ export const FormDateRange = <K1 extends string = 'from', K2 extends string = 't
         <div className="flex-grow-1">
           <Form.Label className="small text-muted mb-1">
             {strings.getString('date_range_to')}
-            {isToInvalid && <FormError error={strings.getString('required_field')} />}
+            {isToInvalid && <FormError error={strings.getString('error_required_field')} />}
           </Form.Label>
           <Form.Control
             type="date"

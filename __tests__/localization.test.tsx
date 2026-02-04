@@ -53,7 +53,7 @@ describe('Localization Tests', () => {
         'cancel',
         'ok',
         'login',
-        'required_field',
+        'error_required_field',
         'choose_one',
         'everything',
         'number_of_rows',

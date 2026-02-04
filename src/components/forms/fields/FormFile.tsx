@@ -79,7 +79,7 @@ export const FormFile = (props: FormFileProps) => {
       if (maxSize && file.size > maxSize) {
         setUploading(prev => ({
           ...prev,
-          [tempId]: { progress: 0, previewUrl: '', name: file.name, error: strings.getString('file_too_large') }
+          [tempId]: { progress: 0, previewUrl: '', name: file.name, error: strings.getString('error_file_too_large') }
         }));
         continue;
       }
@@ -120,7 +120,7 @@ export const FormFile = (props: FormFileProps) => {
         blobUrlsRef.current.delete(previewUrl);
         setUploading(prev => ({
           ...prev,
-          [tempId]: { ...prev[tempId], previewUrl: '', error: err instanceof Error ? err.message : strings.getString('file_upload_failed') }
+          [tempId]: { ...prev[tempId], previewUrl: '', error: err instanceof Error ? err.message : strings.getString('error_file_upload_failed') }
         }));
       }
     }
@@ -214,6 +214,8 @@ export const FormFile = (props: FormFileProps) => {
 
       {/* Drop zone with hidden input */}
       <div
+        role="button"
+        aria-label={strings.getString('file_upload')}
         className={`form-file-dropzone border rounded p-3 text-center ${isInvalid ? 'border-danger' : 'border-secondary'}`}
         onClick={() => inputRef.current?.click()}
         onDragOver={(e) => {
