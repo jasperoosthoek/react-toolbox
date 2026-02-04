@@ -380,3 +380,4 @@
 - Instant preview using blob URLs
 - Localized error messages for file size and upload failures
 - Add placeholder `choose_one` in `FormSelect` component
+- Prefix error related localization strings with "error_"

@@ -60,7 +60,9 @@ export const FormBadgesSelection = (props: FormBadgesSelectionProps) => {
   const { value, onChange, isInvalid, error, label, required, mergedProps, formId } = useFormField(componentProps);
 
   const isMultiple = multiple || multiple === false ? multiple : value instanceof Array;
-  const parseInteger = (value: string | number): string | number => integer ? parseInt(`${value}`) : `${value}`;
+  // Cast value to expected type for badge selection (string/number arrays or single values)
+  const badgeValue = value as string | number | (string | number)[] | null;
+  const parseInteger = (val: string | number): string | number => integer ? parseInt(`${val}`) : `${val}`;
   const controlId = `${formId}-${props.name}`;
   if (!list) {
     console.error('Missing required list property in FormBadgesSelection')
@@ -73,8 +75,8 @@ export const FormBadgesSelection = (props: FormBadgesSelectionProps) => {
       <div className={`form-control ${isInvalid ? 'is-invalid' : ''}`}>
         {list.map((item: any, key) => {
           const selected = isMultiple
-            ? !!value && Array.isArray(value) && (value as Array<any>).includes(item[idKey])
-            : value === item[idKey];
+            ? !!badgeValue && Array.isArray(badgeValue) && badgeValue.includes(item[idKey])
+            : badgeValue === item[idKey];
           return (
             <BadgeSelection
               key={key}
@@ -86,18 +88,17 @@ export const FormBadgesSelection = (props: FormBadgesSelectionProps) => {
               selected={selected}
               cursor='pointer'
               onClick={() => {
-                if (Array.isArray(value)) {
+                if (Array.isArray(badgeValue)) {
                   if(selected) {
-                    // The "as string[]" cast is not ideal and use cases need to be reviewed
-                    onChange(value.filter(id => parseInteger(id) !== parseInteger(item[idKey])) as string[]);
+                    onChange(badgeValue.filter(id => parseInteger(id) !== parseInteger(item[idKey])));
                   } else {
                     onChange(
                       [
-                        ...value,
+                        ...badgeValue,
                         integer
                           ? parseInt(item[idKey])
                           : `${item[idKey]}`
-                      ] as string[]
+                      ]
                      );
                   }
                 } else {

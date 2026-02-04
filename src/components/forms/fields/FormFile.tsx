@@ -3,6 +3,7 @@ import { Form, ProgressBar, Button } from 'react-bootstrap';
 import { useFormField } from '../FormField';
 import { FormError } from './FormError';
 import { useLocalization } from '../../../localization/LocalizationContext';
+import { FormValue } from '../FormFields';
 import {
   AiOutlineFile,
   AiOutlineUpload,
@@ -47,6 +48,10 @@ export interface FormFileProps {
   onUpload: UploadFunction;
 }
 
+// Type guard to narrow FormValue to FileRef array
+const isFileRefArray = (v: FormValue): v is FileRef[] =>
+  Array.isArray(v) && (v.length === 0 || (typeof v[0] === 'object' && 'path' in v[0]));
+
 export const FormFile = (props: FormFileProps) => {
   const { value, onChange, isInvalid, error, label, required, formId, className } = useFormField(props);
   const { multiple = true, accept, maxSize, onUpload } = props;
@@ -54,7 +59,7 @@ export const FormFile = (props: FormFileProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const [uploading, setUploading] = useState<Record<string, UploadingFile>>({});
-  const files = (value as unknown as FileRef[] | null) || [];
+  const files = isFileRefArray(value) ? value : [];
 
   // Keep a ref to the latest files to avoid stale closure issues
   const filesRef = useRef(files);
@@ -113,7 +118,7 @@ export const FormFile = (props: FormFileProps) => {
           return rest;
         });
 
-        onChange([...filesRef.current, fileRef] as unknown as string);
+        onChange([...filesRef.current, fileRef]);
       } catch (err) {
         // Upload failed - revoke URL and show error
         URL.revokeObjectURL(previewUrl);
@@ -138,7 +143,7 @@ export const FormFile = (props: FormFileProps) => {
     URL.revokeObjectURL(fileToRemove.previewUrl);
     blobUrlsRef.current.delete(fileToRemove.previewUrl);
     const newFiles = files.filter((_, i) => i !== index);
-    onChange(newFiles as unknown as string);
+    onChange(newFiles);
   }, [files, onChange]);
 
   const handleDismissError = useCallback((id: string) => {

@@ -5,10 +5,15 @@ import { useForm } from '../FormProvider';
 import { FormError } from './FormError';
 import { FaArrowRight } from "react-icons/fa6";
 import { useLocalization } from '../../../localization/LocalizationContext';
+import { FormValue } from '../FormFields';
 
 export type DateRangeValue<K1 extends string = 'from', K2 extends string = 'to'> = {
   [key in K1 | K2]: string;
 } | null;
+
+// Type guard to narrow FormValue to Record type
+const isRecordValue = (v: FormValue): v is Record<string, string | null> =>
+  v !== null && typeof v === 'object' && !Array.isArray(v);
 
 export interface FormDateRangeProps<K1 extends string = 'from', K2 extends string = 'to'> extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'name' | 'value' | 'onChange'> {
   name: string;
@@ -24,23 +29,28 @@ export const FormDateRange = <K1 extends string = 'from', K2 extends string = 't
   const { pristine } = useForm();
   const { strings } = useLocalization();
 
-  const rangeValue = value as unknown as Record<string, string> | null;
+  const rangeValue = isRecordValue(value) ? value : null;
   const isFromInvalid = !pristine && required && !rangeValue?.[fromKey];
   const isToInvalid = !pristine && required && !rangeValue?.[toKey];
-  const isRangeInvalid = !pristine && rangeValue?.[fromKey] && rangeValue?.[toKey] && rangeValue[toKey] < rangeValue[fromKey];
+  const isRangeInvalid = (
+    !pristine
+    && rangeValue?.[fromKey]
+    && rangeValue?.[toKey]
+    && rangeValue[toKey]! < rangeValue[fromKey]!
+  );
 
   const handleFromChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     onChange({
       [fromKey]: e.target.value,
       [toKey]: rangeValue?.[toKey] || '',
-    } as unknown as string);
+    });
   };
 
   const handleToChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     onChange({
       [fromKey]: rangeValue?.[fromKey] || '',
       [toKey]: e.target.value,
-    } as unknown as string);
+    });
   };
 
   return (
