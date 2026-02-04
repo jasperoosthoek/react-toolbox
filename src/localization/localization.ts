@@ -34,16 +34,19 @@ export interface LocalizationStrings {
   set_new_password: string;
   new_password: string;
   confirm_password: string;
-  passwords_must_match: string;
-  required_field: string;
+  error_passwords_must_match: string;
+  error_required_field: string;
   date_range_from: string;
   date_range_to: string;
-  date_range_to_before_from: string;
+  error_date_range_to_before_from: string;
   choose_one: string;
   everything: string;
   number_of_rows: string;
   modal_create: string;
   modal_edit: string;
+  file_upload: string;
+  error_file_too_large: string;
+  error_file_upload_failed: string;
 }
 
 export type Localization = {
@@ -86,16 +89,19 @@ export const defaultLocalization: Localization = {
     set_new_password: "Set new password",
     new_password: "New password",
     confirm_password: "Confirm password",
-    passwords_must_match: "Passwords must match",
-    required_field: "required",
+    error_passwords_must_match: "Passwords must match",
+    error_required_field: "required",
     date_range_from: "From",
     date_range_to: "To",
-    date_range_to_before_from: "end date must be after start date",
+    error_date_range_to_before_from: "end date must be after start date",
     choose_one: "Choose one",
     everything: "Everything",
     number_of_rows: "Number of rows",
     modal_create: 'New',
     modal_edit: 'Edit',
+    file_upload: 'Upload file',
+    error_file_too_large: 'File is too large',
+    error_file_upload_failed: 'Upload failed',
   },
   fr: {
     select: "Sélectionner",
@@ -123,16 +129,19 @@ export const defaultLocalization: Localization = {
     set_new_password: "Définir un nouveau mot de passe",
     new_password: "Nouveau mot de passe",
     confirm_password: "Confirmer le mot de passe",
-    passwords_must_match: "Les mots de passe doivent correspondre",
-    required_field: "requis",
+    error_passwords_must_match: "Les mots de passe doivent correspondre",
+    error_required_field: "requis",
     date_range_from: "De",
     date_range_to: "À",
-    date_range_to_before_from: "la date de fin doit être après la date de début",
+    error_date_range_to_before_from: "la date de fin doit être après la date de début",
     choose_one: "Choisissez-en un",
     everything: "Tout",
     number_of_rows: "Nombre de rangées",
     modal_create: 'Nouveau',
     modal_edit: 'Éditer',
+    file_upload: 'Télécharger le fichier',
+    error_file_too_large: 'Le fichier est trop volumineux',
+    error_file_upload_failed: 'Échec du téléchargement',
   },
   nl: {
     select: "Selecteer",
@@ -160,16 +169,19 @@ export const defaultLocalization: Localization = {
     set_new_password: "Nieuw wachtwoord instellen",
     new_password: "Nieuw wachtwoord",
     confirm_password: "Bevestig wachtwoord",
-    passwords_must_match: "Wachtwoorden moeten overeenkomen",
-    required_field: "verplicht",
+    error_passwords_must_match: "Wachtwoorden moeten overeenkomen",
+    error_required_field: "verplicht",
     date_range_from: "Van",
     date_range_to: "Tot",
-    date_range_to_before_from: "de einddatum moet na de startdatum zijn",
+    error_date_range_to_before_from: "de einddatum moet na de startdatum zijn",
     choose_one: "Maak een keuze",
     everything: "Alles",
     number_of_rows: "Aantal rijen",
     modal_create: 'Nieuw',
     modal_edit: 'Bewerken',
+    file_upload: 'Bestand uploaden',
+    error_file_too_large: 'Bestand is te groot',
+    error_file_upload_failed: 'Upload mislukt',
   },
 } as const;
 

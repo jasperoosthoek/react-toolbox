@@ -72,7 +72,7 @@ export const SetPasswordPage = ({
               />
               {state.confirmPassword.length > 0 && !passwordsMatch && (
                 <Form.Text className="text-danger">
-                  {strings.getString('passwords_must_match')}
+                  {strings.getString('error_passwords_must_match')}
                 </Form.Text>
               )}
             </Form.Group>

@@ -5,10 +5,15 @@ import { useForm } from '../FormProvider';
 import { FormError } from './FormError';
 import { FaArrowRight } from "react-icons/fa6";
 import { useLocalization } from '../../../localization/LocalizationContext';
+import { FormValue } from '../FormFields';
 
 export type DateRangeValue<K1 extends string = 'from', K2 extends string = 'to'> = {
   [key in K1 | K2]: string;
 } | null;
+
+// Type guard to narrow FormValue to Record type
+const isRecordValue = (v: FormValue): v is Record<string, string | null> =>
+  v !== null && typeof v === 'object' && !Array.isArray(v);
 
 export interface FormDateRangeProps<K1 extends string = 'from', K2 extends string = 'to'> extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'name' | 'value' | 'onChange'> {
   name: string;
@@ -24,23 +29,28 @@ export const FormDateRange = <K1 extends string = 'from', K2 extends string = 't
   const { pristine } = useForm();
   const { strings } = useLocalization();
 
-  const rangeValue = value as unknown as Record<string, string> | null;
+  const rangeValue = isRecordValue(value) ? value : null;
   const isFromInvalid = !pristine && required && !rangeValue?.[fromKey];
   const isToInvalid = !pristine && required && !rangeValue?.[toKey];
-  const isRangeInvalid = !pristine && rangeValue?.[fromKey] && rangeValue?.[toKey] && rangeValue[toKey] < rangeValue[fromKey];
+  const isRangeInvalid = (
+    !pristine
+    && rangeValue?.[fromKey]
+    && rangeValue?.[toKey]
+    && rangeValue[toKey]! < rangeValue[fromKey]!
+  );
 
   const handleFromChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     onChange({
       [fromKey]: e.target.value,
       [toKey]: rangeValue?.[toKey] || '',
-    } as unknown as string);
+    });
   };
 
   const handleToChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     onChange({
       [fromKey]: rangeValue?.[fromKey] || '',
       [toKey]: e.target.value,
-    } as unknown as string);
+    });
   };
 
   return (
@@ -48,13 +58,13 @@ export const FormDateRange = <K1 extends string = 'from', K2 extends string = 't
       {label && <Form.Label>
         {label}
         {required && ' *'}
-        {isRangeInvalid && <FormError error={strings.getString('date_range_to_before_from')} />}
+        {isRangeInvalid && <FormError error={strings.getString('error_date_range_to_before_from')} />}
       </Form.Label>}
       <div className="d-flex gap-2 align-items-center">
         <div className="flex-grow-1">
           <Form.Label className="small text-muted mb-1">
             {strings.getString('date_range_from')}
-            {isFromInvalid && <FormError error={strings.getString('required_field')} />}
+            {isFromInvalid && <FormError error={strings.getString('error_required_field')} />}
           </Form.Label>
           <Form.Control
             type="date"
@@ -69,7 +79,7 @@ export const FormDateRange = <K1 extends string = 'from', K2 extends string = 't
         <div className="flex-grow-1">
           <Form.Label className="small text-muted mb-1">
             {strings.getString('date_range_to')}
-            {isToInvalid && <FormError error={strings.getString('required_field')} />}
+            {isToInvalid && <FormError error={strings.getString('error_required_field')} />}
           </Form.Label>
           <Form.Control
             type="date"

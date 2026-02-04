@@ -170,7 +170,7 @@ export const FormProvider = <T extends FormFields>({
     ...Object.keys(formData).reduce(
       (o, key) => {
         if (!formFields[key] || !formFields[key].required || !isEmpty(getValue(key))) return o;
-        return { ...o, [key]: strings.getString('required_field') };
+        return { ...o, [key]: strings.getString('error_required_field') };
       },
       {}
     ),

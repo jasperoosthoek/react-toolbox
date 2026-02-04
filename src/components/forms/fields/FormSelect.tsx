@@ -2,6 +2,7 @@ import React from 'react';
 import { Form } from 'react-bootstrap';
 import { useFormField } from '../FormField';
 import { FormError } from './FormError';
+import { useLocalization } from '../../../localization/LocalizationContext';
 
 export interface FormSelectProps extends Omit<React.SelectHTMLAttributes<HTMLSelectElement>, 'name' | 'value' | 'onChange'> {
   name: string;
@@ -12,7 +13,8 @@ export interface FormSelectProps extends Omit<React.SelectHTMLAttributes<HTMLSel
 
 export const FormSelect = (props: FormSelectProps) => {
   const { value, onChange, isInvalid, error, label, required, mergedProps, formId, className } = useFormField(props);
-  const { options = [], placeholder = "Choose..." } = props;
+  const { strings } = useLocalization();
+  const { options = [], placeholder = strings.getString('choose_one') } = props;
   const controlId = `${formId}-${props.name}`;
 
   return (

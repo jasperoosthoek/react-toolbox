@@ -373,3 +373,11 @@
 - New `FormError` component that centralizes error rendering with leading space for proper label alignment
 - New `FormDateRange` component for date range inputs with `from` and `to` fields
 - Tests for `FormError` and `FormDateRange` components
+
+##### Version 0.11.1
+- New `FormFile` component for file uploads with progress tracking and drag & drop
+- Consumer provides `onUpload` callback for flexibility
+- Instant preview using blob URLs
+- Localized error messages for file size and upload failures
+- Add placeholder `choose_one` in `FormSelect` component
+- Prefix error related localization strings with "error_"

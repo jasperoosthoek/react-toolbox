@@ -10,6 +10,14 @@ global.console = {
   warn: jest.fn(),
 };
 
+// Mock URL.createObjectURL and URL.revokeObjectURL for file upload tests
+let blobUrlCounter = 0;
+global.URL.createObjectURL = jest.fn((blob: Blob) => {
+  blobUrlCounter++;
+  return `blob:http://localhost:3000/mock-blob-url-${blobUrlCounter}`;
+});
+global.URL.revokeObjectURL = jest.fn();
+
 // Mock React's useId hook to return consistent values for testing
 jest.mock('react', () => {
   const actualReact = jest.requireActual('react');
@@ -258,6 +266,12 @@ jest.mock('react-bootstrap', () => {
       }
     ),
     Navbar: (props) => mockReact.createElement('nav', { ...props, className: 'navbar' }, props.children),
+    ProgressBar: (props) => mockReact.createElement('div', { ...props, className: 'progress' },
+      mockReact.createElement('div', {
+        className: 'progress-bar',
+        style: { width: `${props.now || 0}%` }
+      })
+    ),
   };
 });
 
@@ -273,6 +287,11 @@ jest.mock('react-icons/ai', () => {
     AiOutlinePlus: () => mockReact.createElement('span', { 'data-testid': 'plus-icon' }, '+'),
     AiOutlineUpload: () => mockReact.createElement('span', { 'data-testid': 'upload-icon' }, '↑'),
     AiOutlineDownload: () => mockReact.createElement('span', { 'data-testid': 'download-icon' }, '↓'),
+    AiOutlineFile: () => mockReact.createElement('span', { 'data-testid': 'file-icon' }, '📄'),
+    AiOutlineFilePdf: () => mockReact.createElement('span', { 'data-testid': 'file-pdf-icon' }, '📕'),
+    AiOutlineFileWord: () => mockReact.createElement('span', { 'data-testid': 'file-word-icon' }, '📘'),
+    AiOutlineFilePpt: () => mockReact.createElement('span', { 'data-testid': 'file-ppt-icon' }, '📙'),
+    AiOutlineFileText: () => mockReact.createElement('span', { 'data-testid': 'file-text-icon' }, '📝'),
     AiOutlineFileAdd: () => mockReact.createElement('span', { 'data-testid': 'file-add-icon' }, '📄+'),
     AiOutlineFolderAdd: () => mockReact.createElement('span', { 'data-testid': 'folder-add-icon' }, '📁+'),
     AiOutlineArrowRight: () => mockReact.createElement('span', { 'data-testid': 'arrow-right-icon' }, '→'),
