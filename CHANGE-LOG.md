@@ -374,7 +374,7 @@
 - New `FormDateRange` component for date range inputs with `from` and `to` fields
 - Tests for `FormError` and `FormDateRange` components
 
-##### Upcoming: Version 0.12.0
+##### Version 0.11.1
 - New `FormFile` component for file uploads with progress tracking and drag & drop
 - Consumer provides `onUpload` callback for flexibility
 - Instant preview using blob URLs
