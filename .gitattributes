@@ -1,1 +1,6 @@
-src/** -linguist-generated
+# Only src/ counts as source code
+__tests__/**        linguist-generated
+__mocks__/**        linguist-generated
+examples/**         linguist-generated
+scripts/**          linguist-generated
+api/**              linguist-generated
