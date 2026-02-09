@@ -1,7 +1,7 @@
-__tests__/         linguist-generated
-__mocks__/         linguist-generated
-examples/          linguist-generated
-*.config.js        linguist-generated
-*.config.ts        linguist-generated
-ssr-server.js      linguist-generated
-api/               linguist-generated
+__tests__/**        linguist-generated=true
+__mocks__/**        linguist-generated=true
+examples/**         linguist-generated=true
+scripts/**          linguist-generated=true
+api/**              linguist-generated=true
+*.config.js         linguist-generated=true
+*.config.ts         linguist-generated=true
