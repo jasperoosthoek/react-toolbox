@@ -100,9 +100,95 @@ describe('Table Components Tests', () => {
 
       const searchInput = getByRole('textbox');
       fireEvent.keyDown(searchInput, { key: 'Enter', code: 'Enter' });
-      
+
       // The SearchBox might not have onSearch implemented, so just check it doesn't crash
       expect(searchInput).toBeInTheDocument();
+    });
+
+    it('should call onClear when clear button is clicked', () => {
+      const { getByTestId } = render(
+        <TestWrapper>
+          <SearchBox
+            value="test"
+            onChange={mockOnChange}
+            onClear={mockOnClear}
+          />
+        </TestWrapper>
+      );
+
+      const clearButton = getByTestId('close-icon').closest('button')!;
+      fireEvent.click(clearButton);
+      expect(mockOnClear).toHaveBeenCalled();
+    });
+
+    it('should call onSearch when search button is clicked', () => {
+      const { getByTestId } = render(
+        <TestWrapper>
+          <SearchBox
+            value="test"
+            onChange={mockOnChange}
+            onSearch={mockOnSearch}
+          />
+        </TestWrapper>
+      );
+
+      const searchButton = getByTestId('search-icon').closest('button')!;
+      fireEvent.click(searchButton);
+      expect(mockOnSearch).toHaveBeenCalled();
+    });
+
+    it('should not render clear button when onClear is not provided', () => {
+      const { queryByTestId } = render(
+        <TestWrapper>
+          <SearchBox
+            value="test"
+            onChange={mockOnChange}
+          />
+        </TestWrapper>
+      );
+
+      expect(queryByTestId('close-icon')).not.toBeInTheDocument();
+    });
+
+    it('should not render search button when onSearch is not provided', () => {
+      const { queryByTestId } = render(
+        <TestWrapper>
+          <SearchBox
+            value="test"
+            onChange={mockOnChange}
+          />
+        </TestWrapper>
+      );
+
+      expect(queryByTestId('search-icon')).not.toBeInTheDocument();
+    });
+
+    it('should render label when provided', () => {
+      const { getByText } = render(
+        <TestWrapper>
+          <SearchBox
+            value=""
+            onChange={mockOnChange}
+            label="Search items"
+          />
+        </TestWrapper>
+      );
+
+      expect(getByText('Search items')).toBeInTheDocument();
+    });
+
+    it('should use custom placeholder when provided', () => {
+      const { getByPlaceholderText } = render(
+        <TestWrapper>
+          <SearchBox
+            value=""
+            onChange={mockOnChange}
+            placeholder="Find something..."
+          />
+        </TestWrapper>
+      );
+
+      expect(getByPlaceholderText('Find something...')).toBeInTheDocument();
     });
   });
 

@@ -6,6 +6,7 @@ import { FormError } from './FormError';
 import { FaArrowRight } from "react-icons/fa6";
 import { useLocalization } from '../../../localization/LocalizationContext';
 import { FormValue } from '../FormFields';
+import { IsRequiredAsterisk } from './FormInput';
 
 export type DateRangeValue<K1 extends string = 'from', K2 extends string = 'to'> = {
   [key in K1 | K2]: string;
@@ -57,7 +58,7 @@ export const FormDateRange = <K1 extends string = 'from', K2 extends string = 't
     <Form.Group controlId={`${formId}-${props.name}`} className={className}>
       {label && <Form.Label>
         {label}
-        {required && ' *'}
+        {required && <IsRequiredAsterisk />}
         {isRangeInvalid && <FormError error={strings.getString('error_date_range_to_before_from')} />}
       </Form.Label>}
       <div className="d-flex gap-2 align-items-center">

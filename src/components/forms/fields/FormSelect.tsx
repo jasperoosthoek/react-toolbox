@@ -3,6 +3,7 @@ import { Form } from 'react-bootstrap';
 import { useFormField } from '../FormField';
 import { FormError } from './FormError';
 import { useLocalization } from '../../../localization/LocalizationContext';
+import { IsRequiredAsterisk } from './FormInput';
 
 export interface FormSelectProps extends Omit<React.SelectHTMLAttributes<HTMLSelectElement>, 'name' | 'value' | 'onChange'> {
   name: string;
@@ -19,7 +20,7 @@ export const FormSelect = (props: FormSelectProps) => {
 
   return (
     <Form.Group controlId={controlId} className={className}>
-      {label && <Form.Label>{label}{required && ' *'}</Form.Label>}
+      {label && <Form.Label>{label}{required && <IsRequiredAsterisk />}</Form.Label>}
       {isInvalid && <FormError error={error} />}
       <Form.Select
         {...mergedProps}
