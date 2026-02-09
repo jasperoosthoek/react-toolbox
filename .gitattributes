@@ -1,0 +1,8 @@
+__tests__/         linguist-generated
+__mocks__/         linguist-generated
+examples/          linguist-generated
+scripts/           linguist-generated
+*.config.js        linguist-generated
+*.config.ts        linguist-generated
+ssr-server.js      linguist-generated
+api/               linguist-generated
