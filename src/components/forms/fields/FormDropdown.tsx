@@ -3,6 +3,7 @@ import { Form } from 'react-bootstrap';
 import { useFormField } from '../FormField';
 import { FormError } from './FormError';
 import { useLocalization } from '../../../localization/LocalizationContext';
+import { IsRequiredAsterisk } from './FormInput';
 
 type DisabledProps = {
   list: any[];
@@ -88,7 +89,7 @@ export const FormDropdown = <T,>(props: FormDropdownProps<T>) => {
   
   return (
     <Form.Group controlId={controlId} className={className}>
-      {label && <Form.Label>{label}{required && ' *'}</Form.Label>}
+      {label && <Form.Label>{label}{required && <IsRequiredAsterisk />}</Form.Label>}
       {isInvalid && <FormError error={error} />}
       
       <Form.Select

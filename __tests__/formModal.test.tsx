@@ -334,7 +334,7 @@ describe('Form Modal Tests', () => {
           </RendererTestWrapper>
         );
 
-        expect(getByText('Name *')).toBeInTheDocument();
+        expect(getByText('Name')).toBeInTheDocument();
         expect(getByText('Email')).toBeInTheDocument();
         expect(getByText('Age')).toBeInTheDocument();
         expect(getByText('Active')).toBeInTheDocument();
@@ -511,7 +511,7 @@ describe('Form Modal Tests', () => {
       fireEvent.click(getByTestId('edit-1'));
       expect(queryByText('Multi-State Test')).toBeInTheDocument();
 
-      const nameInput = getByLabelText('Name *') as HTMLInputElement;
+      const nameInput = getByLabelText(/Name/) as HTMLInputElement;
       expect(nameInput.value).toBe('User 1');
 
       fireEvent.click(getByTestId('edit-2'));

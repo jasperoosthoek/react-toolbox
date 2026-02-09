@@ -19,7 +19,7 @@ export const FormInput = (props: FormInputProps) => {
 
   return (
     <Form.Group controlId={controlId} className={className}>
-      {label && <Form.Label>{label}{required && ' *'}</Form.Label>}
+      {label && <Form.Label>{label}{required && <IsRequiredAsterisk />}</Form.Label>}
       {isInvalid && <FormError error={error} id={errorId} />}
       <Form.Control
         autoComplete="off"
@@ -109,3 +109,5 @@ export const FormDateTime = ({ value, onChange, timezone, ...props }: FormDateTi
     />
   );
 };
+
+export const IsRequiredAsterisk = () => <span className="is-required-asterix">*</span>;

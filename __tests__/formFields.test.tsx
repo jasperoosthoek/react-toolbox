@@ -87,7 +87,7 @@ describe('Form Field Components Tests', () => {
           <FormBadgesSelection name="tags" list={mockOptions} multiple />
         );
 
-        expect(getByText('Tags *')).toBeInTheDocument();
+        expect(getByText('Tags')).toBeInTheDocument();
         expect(getByText('React')).toBeInTheDocument();
         expect(getByText('TypeScript')).toBeInTheDocument();
         expect(getByText('JavaScript')).toBeInTheDocument();
@@ -246,8 +246,8 @@ describe('Form Field Components Tests', () => {
       it('should render input with label', () => {
         renderWithFormProvider(<FormInput name="username" />);
 
-        a11yHelpers.expectProperLabelAssociation('Username *');
-        const input = screen.getByLabelText('Username *');
+        a11yHelpers.expectProperLabelAssociation(/Username/);
+        const input = screen.getByLabelText(/Username/);
         expect(input.tagName).toBe('INPUT');
       });
 
@@ -258,7 +258,7 @@ describe('Form Field Components Tests', () => {
 
       it('should handle change events', () => {
         renderWithFormProvider(<FormInput name="username" />);
-        const input = formHelpers.fillField('Username *', 'newuser');
+        const input = formHelpers.fillField(/Username/, 'newuser');
         expect(input).toHaveValue('newuser');
       });
 
@@ -271,7 +271,7 @@ describe('Form Field Components Tests', () => {
     describe('Input Types', () => {
       it('should handle password type', () => {
         renderWithFormProvider(<FormInput name="password" />);
-        const input = screen.getByLabelText('Password *');
+        const input = screen.getByLabelText(/Password/);
         expect(input).toHaveAttribute('type', 'password');
       });
 
@@ -279,6 +279,24 @@ describe('Form Field Components Tests', () => {
         renderWithFormProvider(<FormInput name="email" />);
         const input = screen.getByLabelText('Email');
         expect(input).toHaveAttribute('type', 'email');
+      });
+    });
+
+    describe('Submit on Enter', () => {
+      it('should submit form on Enter key press', () => {
+        const mockSubmit = jest.fn();
+        renderWithFormProvider(<FormInput name="username" />, MOCK_FORM_VALUES.complete, { onSubmit: mockSubmit });
+        const input = screen.getByLabelText(/Username/);
+        fireEvent.keyDown(input, { key: 'Enter' });
+        expect(mockSubmit).toHaveBeenCalled();
+      });
+
+      it('should not submit form on Enter in textarea', () => {
+        const mockSubmit = jest.fn();
+        renderWithFormProvider(<FormTextarea name="username" />, undefined, { onSubmit: mockSubmit });
+        const textarea = screen.getByLabelText(/Username/);
+        fireEvent.keyDown(textarea, { key: 'Enter' });
+        expect(mockSubmit).not.toHaveBeenCalled();
       });
     });
 
@@ -308,7 +326,7 @@ describe('Form Field Components Tests', () => {
           </FormProvider>
         );
 
-        const input = getByLabelText('Username *');
+        const input = getByLabelText(/Username/);
         fireEvent.change(input, { target: { value: 'ab' } });
         fireEvent.click(getByTestId('submit-btn'));
 
@@ -344,6 +362,103 @@ describe('Form Field Components Tests', () => {
           </TestWrapper>
         );
       }).not.toThrow();
+    });
+
+    it('should render label and all options', () => {
+      const { getByText } = render(
+        <TestWrapper>
+          <FormProvider formFields={dropdownFormFields} onSubmit={jest.fn()}>
+            <FormDropdown name="category" list={dropdownOptions} idKey="id" nameKey="name" />
+          </FormProvider>
+        </TestWrapper>
+      );
+
+      expect(getByText('Category')).toBeInTheDocument();
+      expect(getByText('Electronics')).toBeInTheDocument();
+      expect(getByText('Clothing')).toBeInTheDocument();
+      expect(getByText('Books')).toBeInTheDocument();
+    });
+
+    it('should render default "Select" unselected option', () => {
+      const { getByText } = render(
+        <TestWrapper>
+          <FormProvider formFields={dropdownFormFields} onSubmit={jest.fn()}>
+            <FormDropdown name="category" list={dropdownOptions} idKey="id" nameKey="name" />
+          </FormProvider>
+        </TestWrapper>
+      );
+
+      expect(getByText('Select')).toBeInTheDocument();
+    });
+
+    it('should render custom unselectedOptionLabel', () => {
+      const { getByText } = render(
+        <TestWrapper>
+          <FormProvider formFields={dropdownFormFields} onSubmit={jest.fn()}>
+            <FormDropdown name="category" list={dropdownOptions} idKey="id" nameKey="name" unselectedOptionLabel="Pick one" />
+          </FormProvider>
+        </TestWrapper>
+      );
+
+      expect(getByText('Pick one')).toBeInTheDocument();
+    });
+
+    it('should handle selection change', () => {
+      const { container } = render(
+        <TestWrapper>
+          <FormProvider formFields={dropdownFormFields} onSubmit={jest.fn()}>
+            <FormDropdown name="category" list={dropdownOptions} idKey="id" nameKey="name" />
+          </FormProvider>
+        </TestWrapper>
+      );
+
+      const select = container.querySelector('select') as HTMLSelectElement;
+      fireEvent.change(select, { target: { value: 'electronics' } });
+      expect(select.value).toBe('electronics');
+    });
+
+    it('should handle string array list', () => {
+      const stringOptions = ['Red', 'Green', 'Blue'];
+      const { getByText } = render(
+        <TestWrapper>
+          <FormProvider formFields={dropdownFormFields} onSubmit={jest.fn()}>
+            <FormDropdown name="category" list={stringOptions as any} />
+          </FormProvider>
+        </TestWrapper>
+      );
+
+      expect(getByText('Red')).toBeInTheDocument();
+      expect(getByText('Green')).toBeInTheDocument();
+      expect(getByText('Blue')).toBeInTheDocument();
+    });
+
+    it('should handle options prop as alias for list', () => {
+      const { getByText } = render(
+        <TestWrapper>
+          <FormProvider formFields={dropdownFormFields} onSubmit={jest.fn()}>
+            <FormDropdown name="category" options={dropdownOptions} idKey="id" nameKey="name" />
+          </FormProvider>
+        </TestWrapper>
+      );
+
+      expect(getByText('Electronics')).toBeInTheDocument();
+    });
+
+    it('should submit on Enter key press', () => {
+      const mockSubmit = jest.fn();
+      const { container } = render(
+        <TestWrapper>
+          <FormProvider formFields={dropdownFormFields} onSubmit={mockSubmit}>
+            <FormDropdown name="category" list={dropdownOptions} idKey="id" nameKey="name" />
+          </FormProvider>
+        </TestWrapper>
+      );
+
+      const select = container.querySelector('select') as HTMLSelectElement;
+      fireEvent.change(select, { target: { value: 'electronics' } });
+      fireEvent.keyDown(select, { key: 'Enter' });
+
+      expect(mockSubmit).toHaveBeenCalled();
     });
 
     it('should be a valid React component', () => {
@@ -432,7 +547,7 @@ describe('Form Field Components Tests', () => {
         </FormTestWrapper>
       );
 
-      expect(getByText('Status *')).toBeInTheDocument();
+      expect(getByText('Status')).toBeInTheDocument();
     });
 
     it('should render all options', () => {
@@ -482,6 +597,68 @@ describe('Form Field Components Tests', () => {
           </FormTestWrapper>
         );
       }).not.toThrow();
+    });
+
+    it('should render FormDateTime with ISO string value from form context', () => {
+      const dateTimeFormFields = {
+        'test-input': {
+          initialValue: '2024-06-15T14:30:00.000Z',
+          label: 'Test DateTime',
+          formProps: {},
+        },
+      };
+
+      const { container } = render(
+        <FormTestWrapper formFields={dateTimeFormFields}>
+          <FormDateTime name="test-input" />
+        </FormTestWrapper>
+      );
+
+      const input = container.querySelector('input') as HTMLInputElement;
+      // Value comes from form context and FormDateTime formats for datetime-local
+      expect(input).toBeInTheDocument();
+      expect(input).toHaveAttribute('type', 'datetime-local');
+    });
+
+    it('should handle form value changes through FormDateTime', () => {
+      const dateTimeFormFields = {
+        'test-input': {
+          initialValue: '',
+          label: 'Test DateTime',
+          formProps: {},
+        },
+      };
+
+      const { container } = render(
+        <FormTestWrapper formFields={dateTimeFormFields}>
+          <FormDateTime name="test-input" />
+        </FormTestWrapper>
+      );
+
+      const input = container.querySelector('input') as HTMLInputElement;
+      fireEvent.change(input, { target: { value: '2024-06-15T14:30' } });
+      // The value is set in form context through onChange
+      expect(input).toBeInTheDocument();
+    });
+
+    it('should handle invalid date string gracefully', () => {
+      const dateTimeFormFields = {
+        'test-input': {
+          initialValue: 'not-a-date',
+          label: 'Test DateTime',
+          formProps: {},
+        },
+      };
+
+      const { container } = render(
+        <FormTestWrapper formFields={dateTimeFormFields}>
+          <FormDateTime name="test-input" />
+        </FormTestWrapper>
+      );
+
+      const input = container.querySelector('input') as HTMLInputElement;
+      // Invalid dates should not crash - form context handles the value
+      expect(input).toBeInTheDocument();
     });
 
     it('should be valid React components', () => {
@@ -586,7 +763,7 @@ describe('Form Field Components Tests', () => {
         };
         const mockOnUpload = createMockOnUpload();
 
-        const { getByText } = render(
+        const { getByText, container } = render(
           <TestWrapper>
             <FormProvider formFields={requiredFormFields} onSubmit={jest.fn()}>
               <FormFile name="attachments" onUpload={mockOnUpload} />
@@ -594,7 +771,8 @@ describe('Form Field Components Tests', () => {
           </TestWrapper>
         );
 
-        expect(getByText('Attachments *')).toBeInTheDocument();
+        expect(getByText('Attachments')).toBeInTheDocument();
+        expect(container.querySelector('.is-required-asterix')).toBeInTheDocument();
       });
 
       it('should render drop zone with upload text', () => {

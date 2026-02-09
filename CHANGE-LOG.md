@@ -381,3 +381,6 @@
 - Localized error messages for file size and upload failures
 - Add placeholder `choose_one` in `FormSelect` component
 - Prefix error related localization strings with "error_"
+
+##### Version 0.11.2
+- Replace is required asterix (*) by `IsRequiredAsterisk` component with class that can be styled

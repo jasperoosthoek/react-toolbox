@@ -375,35 +375,16 @@ describe('Login Components Tests', () => {
     });
   });
 
-  describe('Component Export Verification', () => {
-    it('should export LoginPage as a function', () => {
-      expect(typeof LoginPage).toBe('function');
-    });
-
-    it('should have the correct function signature', () => {
-      expect(LoginPage.length).toBe(1); // Should accept one parameter (props)
-    });
-  });
-
-  describe('LoginPage Rendering Logic', () => {
+  describe('LoginPage Interaction', () => {
     const mockOnSubmit = jest.fn();
+    const mockCallback = jest.fn();
 
-    it('should handle authenticated state properly', () => {
-      const { container } = render(
-        <TestWrapper>
-          <LoginPage
-            onSubmit={mockOnSubmit}
-            isAuthenticated={true}
-            onResetPassword="#reset"
-          />
-        </TestWrapper>
-      );
-
-      expect(container.firstChild).toBeNull();
+    afterEach(() => {
+      jest.clearAllMocks();
     });
 
-    it('should handle unauthenticated state properly', () => {
-      const { container } = render(
+    it('should update email field on change', () => {
+      render(
         <TestWrapper>
           <LoginPage
             onSubmit={mockOnSubmit}
@@ -413,7 +394,188 @@ describe('Login Components Tests', () => {
         </TestWrapper>
       );
 
-      expect(container.firstChild).toBeTruthy();
+      const emailInput = screen.getByPlaceholderText('Enter email address');
+      fireEvent.change(emailInput, { target: { value: 'user@test.com' } });
+      expect(emailInput).toHaveValue('user@test.com');
+    });
+
+    it('should update password field on change', () => {
+      render(
+        <TestWrapper>
+          <LoginPage
+            onSubmit={mockOnSubmit}
+            isAuthenticated={false}
+            onResetPassword="#reset"
+          />
+        </TestWrapper>
+      );
+
+      const passwordInput = screen.getByPlaceholderText('Enter password');
+      fireEvent.change(passwordInput, { target: { value: 'secret123' } });
+      expect(passwordInput).toHaveValue('secret123');
+    });
+
+    it('should disable login button when fields are empty', () => {
+      render(
+        <TestWrapper>
+          <LoginPage
+            onSubmit={mockOnSubmit}
+            isAuthenticated={false}
+            onResetPassword="#reset"
+          />
+        </TestWrapper>
+      );
+
+      const loginButton = screen.getByRole('button', { name: 'Login' });
+      expect(loginButton).toBeDisabled();
+    });
+
+    it('should enable login button when both fields are filled', () => {
+      render(
+        <TestWrapper>
+          <LoginPage
+            onSubmit={mockOnSubmit}
+            isAuthenticated={false}
+            onResetPassword="#reset"
+          />
+        </TestWrapper>
+      );
+
+      fireEvent.change(screen.getByPlaceholderText('Enter email address'), { target: { value: 'user@test.com' } });
+      fireEvent.change(screen.getByPlaceholderText('Enter password'), { target: { value: 'secret123' } });
+
+      const loginButton = screen.getByRole('button', { name: 'Login' });
+      expect(loginButton).not.toBeDisabled();
+    });
+
+    it('should call onSubmit with credentials when login button is clicked', () => {
+      render(
+        <TestWrapper>
+          <LoginPage
+            onSubmit={mockOnSubmit}
+            isAuthenticated={false}
+            onResetPassword="#reset"
+            callback={mockCallback}
+          />
+        </TestWrapper>
+      );
+
+      fireEvent.change(screen.getByPlaceholderText('Enter email address'), { target: { value: 'user@test.com' } });
+      fireEvent.change(screen.getByPlaceholderText('Enter password'), { target: { value: 'secret123' } });
+      fireEvent.click(screen.getByRole('button', { name: 'Login' }));
+
+      expect(mockOnSubmit).toHaveBeenCalledWith(
+        { email: 'user@test.com', password: 'secret123' },
+        mockCallback
+      );
+    });
+
+    it('should not call onSubmit when fields are empty', () => {
+      render(
+        <TestWrapper>
+          <LoginPage
+            onSubmit={mockOnSubmit}
+            isAuthenticated={false}
+            onResetPassword="#reset"
+          />
+        </TestWrapper>
+      );
+
+      fireEvent.click(screen.getByRole('button', { name: 'Login' }));
+      expect(mockOnSubmit).not.toHaveBeenCalled();
+    });
+
+    it('should submit on Enter key in email field', () => {
+      render(
+        <TestWrapper>
+          <LoginPage
+            onSubmit={mockOnSubmit}
+            isAuthenticated={false}
+            onResetPassword="#reset"
+          />
+        </TestWrapper>
+      );
+
+      fireEvent.change(screen.getByPlaceholderText('Enter email address'), { target: { value: 'user@test.com' } });
+      fireEvent.change(screen.getByPlaceholderText('Enter password'), { target: { value: 'secret123' } });
+      fireEvent.keyDown(screen.getByPlaceholderText('Enter email address'), { key: 'Enter' });
+
+      expect(mockOnSubmit).toHaveBeenCalledWith(
+        { email: 'user@test.com', password: 'secret123' },
+        undefined
+      );
+    });
+
+    it('should submit on Enter key in password field', () => {
+      render(
+        <TestWrapper>
+          <LoginPage
+            onSubmit={mockOnSubmit}
+            isAuthenticated={false}
+            onResetPassword="#reset"
+          />
+        </TestWrapper>
+      );
+
+      fireEvent.change(screen.getByPlaceholderText('Enter email address'), { target: { value: 'user@test.com' } });
+      fireEvent.change(screen.getByPlaceholderText('Enter password'), { target: { value: 'secret123' } });
+      fireEvent.keyDown(screen.getByPlaceholderText('Enter password'), { key: 'Enter' });
+
+      expect(mockOnSubmit).toHaveBeenCalledWith(
+        { email: 'user@test.com', password: 'secret123' },
+        undefined
+      );
+    });
+
+    it('should not submit on non-Enter key press', () => {
+      render(
+        <TestWrapper>
+          <LoginPage
+            onSubmit={mockOnSubmit}
+            isAuthenticated={false}
+            onResetPassword="#reset"
+          />
+        </TestWrapper>
+      );
+
+      fireEvent.change(screen.getByPlaceholderText('Enter email address'), { target: { value: 'user@test.com' } });
+      fireEvent.change(screen.getByPlaceholderText('Enter password'), { target: { value: 'secret123' } });
+      fireEvent.keyDown(screen.getByPlaceholderText('Enter email address'), { key: 'Tab' });
+
+      expect(mockOnSubmit).not.toHaveBeenCalled();
+    });
+
+    it('should call function onResetPassword when reset link is clicked', () => {
+      const mockResetFn = jest.fn();
+
+      render(
+        <TestWrapper>
+          <LoginPage
+            onSubmit={mockOnSubmit}
+            isAuthenticated={false}
+            onResetPassword={mockResetFn}
+          />
+        </TestWrapper>
+      );
+
+      fireEvent.click(screen.getByText('Reset password'));
+      expect(mockResetFn).toHaveBeenCalled();
+    });
+
+    it('should render reset password as link when string is provided', () => {
+      render(
+        <TestWrapper>
+          <LoginPage
+            onSubmit={mockOnSubmit}
+            isAuthenticated={false}
+            onResetPassword="https://example.com/reset"
+          />
+        </TestWrapper>
+      );
+
+      const resetLink = screen.getByText('Reset password');
+      expect(resetLink.tagName).toBe('A');
+      expect(resetLink).toHaveAttribute('href', 'https://example.com/reset');
     });
   });
 

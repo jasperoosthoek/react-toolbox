@@ -7,7 +7,7 @@ export const formHelpers = {
   /**
    * Fill a form field by label text
    */
-  fillField: (labelText: string, value: string) => {
+  fillField: (labelText: string | RegExp, value: string) => {
     const field = screen.getByLabelText(labelText);
     fireEvent.change(field, { target: { value } });
     return field;
@@ -187,7 +187,7 @@ export const a11yHelpers = {
   /**
    * Expect field to be properly associated with label
    */
-  expectProperLabelAssociation: (labelText: string, expectedIdPattern?: RegExp) => {
+  expectProperLabelAssociation: (labelText: string | RegExp, expectedIdPattern?: RegExp) => {
     const field = screen.getByLabelText(labelText);
     expect(field).toBeInTheDocument();
     

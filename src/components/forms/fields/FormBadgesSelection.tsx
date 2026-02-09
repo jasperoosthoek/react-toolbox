@@ -3,6 +3,7 @@ import { Form, Badge } from 'react-bootstrap';
 import { BadgeProps } from 'react-bootstrap';
 import { useFormField } from '../FormField';
 import { FormError } from './FormError';
+import { IsRequiredAsterisk } from './FormInput';
 
 export interface BadgeSelectionProps extends BadgeProps {
   selected: boolean;
@@ -70,7 +71,7 @@ export const FormBadgesSelection = (props: FormBadgesSelectionProps) => {
   
   return (
     <Form.Group controlId={controlId} className={className}>
-      {label && <Form.Label>{label}{required && ' *'}</Form.Label>}
+      {label && <Form.Label>{label}{required && <IsRequiredAsterisk />}</Form.Label>}
       {isInvalid && <FormError error={error} />}
       <div className={`form-control ${isInvalid ? 'is-invalid' : ''}`}>
         {list.map((item: any, key) => {

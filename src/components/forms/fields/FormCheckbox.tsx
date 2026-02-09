@@ -2,6 +2,7 @@ import React from 'react';
 import { Form } from 'react-bootstrap';
 import { useFormField } from '../FormField';
 import { FormError } from './FormError';
+import { IsRequiredAsterisk } from './FormInput';
 
 export interface FormCheckboxProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'name' | 'value' | 'onChange' | 'type'> {
   name: string;
@@ -29,7 +30,7 @@ export const FormCheckbox = (props: FormCheckboxProps) => {
         label={label ? (
           <span>
             {label}
-            {required && ' *'}
+            {required && <IsRequiredAsterisk />}
           </span>
         ) : undefined}
       />
@@ -58,7 +59,7 @@ export const FormSwitch = (props: FormCheckboxProps) => {
         label={label ? (
           <span>
             {label}
-            {required && ' *'}
+            {required && <IsRequiredAsterisk />}
           </span>
         ) : undefined}
       />

@@ -4,6 +4,7 @@ import { useFormField } from '../FormField';
 import { FormError } from './FormError';
 import { useLocalization } from '../../../localization/LocalizationContext';
 import { FormValue } from '../FormFields';
+import { IsRequiredAsterisk } from './FormInput';
 import {
   AiOutlineFile,
   AiOutlineUpload,
@@ -171,7 +172,7 @@ export const FormFile = (props: FormFileProps) => {
 
   return (
     <Form.Group controlId={`${formId}-${props.name}`} className={className}>
-      {label && <Form.Label>{label}{required && ' *'}</Form.Label>}
+      {label && <Form.Label>{label}{required && <IsRequiredAsterisk />}</Form.Label>}
       {isInvalid && <FormError error={error} />}
 
       {/* Uploaded files */}
