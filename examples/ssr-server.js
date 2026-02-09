@@ -1,5 +1,9 @@
 import express from 'express';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { createServer as createViteServer } from 'vite';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 // Set Node.js environment variables for SSR
 process.env.NODE_ENV = process.env.NODE_ENV || 'development';
@@ -12,8 +16,7 @@ async function createServer() {
     const vite = await createViteServer({
       server: { middlewareMode: true },
       appType: 'custom',
-      root: './examples',
-      configFile: './vite.config.ts',
+      root: __dirname,
       // Enhanced SSR configuration - externalize problematic packages
       ssr: {
         noExternal: [
@@ -25,7 +28,7 @@ async function createServer() {
         external: [
           // Externalize all React ecosystem packages
           'react',
-          'react-dom', 
+          'react-dom',
           'react-dom/server',
           'react/jsx-dev-runtime',
           'react/jsx-runtime',
@@ -38,7 +41,7 @@ async function createServer() {
       },
       resolve: {
         alias: {
-          '@': process.cwd() + '/src'
+          '@': path.resolve(__dirname, '../src')
         }
       },
       // Minimal define - let Node.js handle everything else
@@ -71,17 +74,17 @@ async function createServer() {
       try {
         // Load the main examples server entry
         const { render } = await vite.ssrLoadModule('/entry.server.tsx');
-        
+
         // Render the main app
         const html = render();
-        
+
         res.status(200).set({ 'Content-Type': 'text/html' }).end(html);
       } catch (e) {
         if (vite.ssrFixStacktrace) {
           vite.ssrFixStacktrace(e);
         }
         console.error('SSR Error:', e.message);
-        
+
         // Fallback to SPA mode
         res.status(200).set({ 'Content-Type': 'text/html' }).end(
           `<!DOCTYPE html>

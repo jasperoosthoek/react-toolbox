@@ -19,7 +19,7 @@ export default defineConfig({
       fastRefresh: false,
     })
   ],
-  root: './examples',
+  root: '.',
   build: {
     outDir: '../dist-examples',
     emptyOutDir: true,
@@ -27,7 +27,7 @@ export default defineConfig({
     sourcemap: false, // Disable sourcemaps in production
     rollupOptions: {
       input: {
-        main: path.resolve(__dirname, './examples/index.html')
+        main: path.resolve(__dirname, './index.html')
       },
       output: {
         // Fixed filenames for CSS and JS - no hashing for consistent URLs
@@ -44,7 +44,7 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src'),
+      '@': path.resolve(__dirname, '../src'),
     },
   },
   server: {
