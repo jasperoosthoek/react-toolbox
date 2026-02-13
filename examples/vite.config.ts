@@ -19,7 +19,7 @@ export default defineConfig({
       fastRefresh: false,
     })
   ],
-  root: '.',
+  root: __dirname,
   build: {
     outDir: '../dist-examples',
     emptyOutDir: true,
