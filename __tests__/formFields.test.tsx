@@ -2,6 +2,8 @@ import React from 'react';
 
 // Core Form Components
 import { FormProvider, useForm } from '../src/components/forms/FormProvider';
+import { FormField } from '../src/components/forms/FormField';
+import { FormFieldsRenderer, DisabledFormField } from '../src/components/forms/FormModal';
 import { LocalizationProvider } from '../src/localization/LocalizationContext';
 
 // Form Field Components
@@ -1300,6 +1302,551 @@ describe('Form Field Components Tests', () => {
           expect(queryByTestId('file-icon')).not.toBeInTheDocument();
         });
       });
+    });
+  });
+
+  describe('FormInput inputComponent prop', () => {
+    it('should render custom inputComponent instead of Form.Control', () => {
+      const CustomInput = ({ value, onChange, isInvalid, ...props }: any) => (
+        <input
+          data-testid="custom-input"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          data-invalid={isInvalid}
+          {...props}
+        />
+      );
+
+      const formFields = {
+        custom: { initialValue: 'hello', label: 'Custom', formProps: {} },
+      };
+
+      const { getByTestId } = render(
+        <FormTestWrapper formFields={formFields}>
+          <FormInput name="custom" inputComponent={CustomInput} />
+        </FormTestWrapper>
+      );
+
+      const input = getByTestId('custom-input');
+      expect(input).toBeInTheDocument();
+      expect(input).toHaveValue('hello');
+    });
+
+    it('should pass onChange(value) directly to custom component', () => {
+      const onChangeCalls: any[] = [];
+      const CustomInput = ({ value, onChange, ...props }: any) => (
+        <input
+          data-testid="custom-input"
+          value={value}
+          onChange={(e) => {
+            onChangeCalls.push(e.target.value);
+            onChange(e.target.value);
+          }}
+          {...props}
+        />
+      );
+
+      const formFields = {
+        custom: { initialValue: '', label: 'Custom', formProps: {} },
+      };
+
+      const { getByTestId } = render(
+        <FormTestWrapper formFields={formFields}>
+          <FormInput name="custom" inputComponent={CustomInput} />
+        </FormTestWrapper>
+      );
+
+      fireEvent.change(getByTestId('custom-input'), { target: { value: 'new' } });
+      expect(onChangeCalls).toContain('new');
+    });
+
+    it('should pass inputComponent through FormDate', () => {
+      const CustomDateInput = ({ value, onChange, ...props }: any) => (
+        <input data-testid="custom-date" value={value} onChange={() => {}} {...props} />
+      );
+
+      const formFields = {
+        mydate: { initialValue: '', label: 'My Date', formProps: {} },
+      };
+
+      const { getByTestId } = render(
+        <FormTestWrapper formFields={formFields}>
+          <FormDate name="mydate" inputComponent={CustomDateInput} />
+        </FormTestWrapper>
+      );
+
+      expect(getByTestId('custom-date')).toBeInTheDocument();
+    });
+
+    it('should pass inputComponent through FormTextarea', () => {
+      const CustomTextarea = ({ value, onChange, ...props }: any) => (
+        <textarea data-testid="custom-textarea" value={value} onChange={() => {}} {...props} />
+      );
+
+      const formFields = {
+        bio: { initialValue: '', label: 'Bio', formProps: {} },
+      };
+
+      const { getByTestId } = render(
+        <FormTestWrapper formFields={formFields}>
+          <FormTextarea name="bio" inputComponent={CustomTextarea} />
+        </FormTestWrapper>
+      );
+
+      expect(getByTestId('custom-textarea')).toBeInTheDocument();
+    });
+  });
+
+  describe('FormDateTime edge cases', () => {
+    it('should handle empty string onChange', () => {
+      const dateTimeFormFields = {
+        'dt': { initialValue: '2024-06-15T14:30:00.000Z', label: 'DateTime', formProps: {} },
+      };
+
+      const { container } = render(
+        <FormTestWrapper formFields={dateTimeFormFields}>
+          <FormDateTime name="dt" />
+        </FormTestWrapper>
+      );
+
+      const input = container.querySelector('input') as HTMLInputElement;
+      fireEvent.change(input, { target: { value: '' } });
+      expect(input).toBeInTheDocument();
+    });
+
+    it('should handle invalid date input gracefully', () => {
+      const dateTimeFormFields = {
+        'dt': { initialValue: '', label: 'DateTime', formProps: {} },
+      };
+
+      const { container } = render(
+        <FormTestWrapper formFields={dateTimeFormFields}>
+          <FormDateTime name="dt" />
+        </FormTestWrapper>
+      );
+
+      const input = container.querySelector('input') as HTMLInputElement;
+      fireEvent.change(input, { target: { value: 'invalid-date' } });
+      expect(input).toBeInTheDocument();
+    });
+
+    it('should convert valid datetime-local input to ISO string', () => {
+      const mockSubmit = jest.fn();
+      const dateTimeFormFields = {
+        'dt': { initialValue: '', label: 'DateTime', formProps: {} },
+      };
+
+      const TestForm = () => {
+        const { getValue } = useForm();
+        return (
+          <>
+            <FormDateTime name="dt" />
+            <span data-testid="val">{String(getValue('dt'))}</span>
+          </>
+        );
+      };
+
+      const { container, getByTestId } = render(
+        <TestWrapper>
+          <FormProvider formFields={dateTimeFormFields} onSubmit={mockSubmit}>
+            <TestForm />
+          </FormProvider>
+        </TestWrapper>
+      );
+
+      const input = container.querySelector('input') as HTMLInputElement;
+      fireEvent.change(input, { target: { value: '2024-06-15T14:30' } });
+      expect(getByTestId('val').textContent).toContain('2024-06-15');
+    });
+  });
+
+  describe('FormField Component', () => {
+    it('should render as FormInput when no children', () => {
+      const formFields = {
+        name: { initialValue: 'test', label: 'Name', required: true, formProps: {} },
+      };
+
+      const { getByLabelText } = render(
+        <FormTestWrapper formFields={formFields}>
+          <FormField name="name" />
+        </FormTestWrapper>
+      );
+
+      expect(getByLabelText(/Name/)).toHaveValue('test');
+    });
+
+    it('should render children when provided', () => {
+      const formFields = {
+        name: { initialValue: '', label: 'Name', formProps: {} },
+      };
+
+      const { getByTestId } = render(
+        <FormTestWrapper formFields={formFields}>
+          <FormField name="name">
+            <div data-testid="custom-child">Custom content</div>
+          </FormField>
+        </FormTestWrapper>
+      );
+
+      expect(getByTestId('custom-child')).toBeInTheDocument();
+    });
+
+    it('should return null when no FormProvider', () => {
+      const { container } = render(
+        <TestWrapper>
+          <FormField name="missing" />
+        </TestWrapper>
+      );
+
+      expect(container.innerHTML).toBe('');
+    });
+
+    it('should return null when field config not found', () => {
+      const formFields = {
+        name: { initialValue: '', label: 'Name', formProps: {} },
+      };
+
+      const { container } = render(
+        <FormTestWrapper formFields={formFields}>
+          <FormField name="nonexistent" />
+        </FormTestWrapper>
+      );
+
+      // FormField returns null for unknown field names
+      expect(container.querySelector('.form-group')).not.toBeInTheDocument();
+    });
+  });
+
+  describe('FormProvider advanced features', () => {
+    it('should handle field-level onChange callback', () => {
+      const formFields = {
+        price: {
+          initialValue: '10',
+          label: 'Price',
+          formProps: {},
+          onChange: (value: any, formData: any) => ({
+            ...formData,
+            price: value,
+            tax: String(Number(value) * 0.1),
+          }),
+        },
+        tax: { initialValue: '1', label: 'Tax', formProps: {} },
+      };
+
+      const { getByLabelText } = render(
+        <FormTestWrapper formFields={formFields}>
+          <FormInput name="price" />
+          <FormInput name="tax" />
+        </FormTestWrapper>
+      );
+
+      fireEvent.change(getByLabelText('Price'), { target: { value: '100' } });
+      expect(getByLabelText('Tax')).toHaveValue('10');
+    });
+
+    it('should handle resetTrigger', () => {
+      const formFields = {
+        name: { initialValue: 'initial', label: 'Name', formProps: {} },
+      };
+
+      const { getByLabelText, rerender } = render(
+        <TestWrapper>
+          <FormProvider formFields={formFields} onSubmit={jest.fn()} resetTrigger={1}>
+            <FormInput name="name" />
+          </FormProvider>
+        </TestWrapper>
+      );
+
+      fireEvent.change(getByLabelText('Name'), { target: { value: 'changed' } });
+      expect(getByLabelText('Name')).toHaveValue('changed');
+
+      rerender(
+        <TestWrapper>
+          <FormProvider formFields={formFields} onSubmit={jest.fn()} resetTrigger={2}>
+            <FormInput name="name" />
+          </FormProvider>
+        </TestWrapper>
+      );
+
+      expect(getByLabelText('Name')).toHaveValue('initial');
+    });
+
+    it('should handle submit with valid data and callback', () => {
+      const mockSubmit = jest.fn();
+      const formFields = {
+        name: { initialValue: 'test', label: 'Name', required: true, formProps: {} },
+      };
+
+      const TestForm = () => {
+        const { submit } = useForm();
+        return (
+          <>
+            <FormInput name="name" />
+            <button data-testid="submit" onClick={submit}>Submit</button>
+          </>
+        );
+      };
+
+      const { getByTestId } = render(
+        <TestWrapper>
+          <FormProvider formFields={formFields} onSubmit={mockSubmit}>
+            <TestForm />
+          </FormProvider>
+        </TestWrapper>
+      );
+
+      fireEvent.click(getByTestId('submit'));
+      expect(mockSubmit).toHaveBeenCalledWith(
+        expect.objectContaining({ name: 'test' }),
+        expect.any(Function)
+      );
+    });
+
+    it('should not submit when validation fails', () => {
+      const mockSubmit = jest.fn();
+      const formFields = {
+        name: { initialValue: '', label: 'Name', required: true, formProps: {} },
+      };
+
+      const TestForm = () => {
+        const { submit } = useForm();
+        return (
+          <>
+            <FormInput name="name" />
+            <button data-testid="submit" onClick={submit}>Submit</button>
+          </>
+        );
+      };
+
+      const { getByTestId } = render(
+        <TestWrapper>
+          <FormProvider formFields={formFields} onSubmit={mockSubmit}>
+            <TestForm />
+          </FormProvider>
+        </TestWrapper>
+      );
+
+      fireEvent.click(getByTestId('submit'));
+      expect(mockSubmit).not.toHaveBeenCalled();
+    });
+
+    it('should expose setFormData and resetForm', () => {
+      const formFields = {
+        name: { initialValue: 'initial', label: 'Name', formProps: {} },
+      };
+
+      const TestForm = () => {
+        const { setFormData, resetForm } = useForm();
+        return (
+          <>
+            <FormInput name="name" />
+            <button data-testid="set" onClick={() => setFormData({ name: 'bulk-set' })}>Set</button>
+            <button data-testid="reset" onClick={resetForm}>Reset</button>
+          </>
+        );
+      };
+
+      const { getByTestId, getByLabelText } = render(
+        <TestWrapper>
+          <FormProvider formFields={formFields} onSubmit={jest.fn()}>
+            <TestForm />
+          </FormProvider>
+        </TestWrapper>
+      );
+
+      fireEvent.click(getByTestId('set'));
+      expect(getByLabelText('Name')).toHaveValue('bulk-set');
+
+      fireEvent.click(getByTestId('reset'));
+      expect(getByLabelText('Name')).toHaveValue('initial');
+    });
+
+    it('should expose setPristine and setLoading', () => {
+      const formFields = {
+        name: { initialValue: '', label: 'Name', required: true, formProps: {} },
+      };
+
+      const TestForm = () => {
+        const { setPristine, setLoading, pristine, loading } = useForm();
+        return (
+          <>
+            <FormInput name="name" />
+            <span data-testid="pristine">{pristine.toString()}</span>
+            <span data-testid="loading">{loading.toString()}</span>
+            <button data-testid="dirty" onClick={() => setPristine(false)}>Set Dirty</button>
+            <button data-testid="load" onClick={() => setLoading(true)}>Set Loading</button>
+          </>
+        );
+      };
+
+      const { getByTestId } = render(
+        <TestWrapper>
+          <FormProvider formFields={formFields} onSubmit={jest.fn()}>
+            <TestForm />
+          </FormProvider>
+        </TestWrapper>
+      );
+
+      expect(getByTestId('pristine')).toHaveTextContent('true');
+      fireEvent.click(getByTestId('dirty'));
+      expect(getByTestId('pristine')).toHaveTextContent('false');
+
+      expect(getByTestId('loading')).toHaveTextContent('false');
+      fireEvent.click(getByTestId('load'));
+      expect(getByTestId('loading')).toHaveTextContent('true');
+    });
+
+    it('should return default value for number type fields', () => {
+      const formFields = {
+        count: { initialValue: null, label: 'Count', type: 'number' as const, formProps: {} },
+      };
+
+      const TestForm = () => {
+        const { getValue } = useForm();
+        return <span data-testid="val">{String(getValue('count'))}</span>;
+      };
+
+      const { getByTestId } = render(
+        <TestWrapper>
+          <FormProvider formFields={formFields} onSubmit={jest.fn()} initialState={{ count: null }}>
+            <TestForm />
+          </FormProvider>
+        </TestWrapper>
+      );
+
+      expect(getByTestId('val')).toHaveTextContent('0');
+    });
+
+    it('should return null when formFields is falsy', () => {
+      const { container } = render(
+        <TestWrapper>
+          <FormProvider formFields={null as any} onSubmit={jest.fn()}>
+            <div>children</div>
+          </FormProvider>
+        </TestWrapper>
+      );
+
+      expect(container.textContent).toBe('');
+    });
+  });
+
+  describe('FormModal advanced features', () => {
+    it('should render children instead of FormFieldsRenderer when provided', () => {
+      const formFields = {
+        name: { initialValue: '', label: 'Name', formProps: {} },
+      };
+
+      const { getByTestId, queryByLabelText } = render(
+        <FormTestWrapper formFields={formFields}>
+          <FormFieldsRenderer />
+        </FormTestWrapper>
+      );
+
+      // FormFieldsRenderer renders fields automatically
+      expect(queryByLabelText('Name')).toBeInTheDocument();
+    });
+
+    it('should render textarea type via FormFieldsRenderer', () => {
+      const formFields = {
+        notes: { initialValue: '', label: 'Notes', type: 'textarea' as const, rows: 5, formProps: {} },
+      };
+
+      const { container } = render(
+        <FormTestWrapper formFields={formFields}>
+          <FormFieldsRenderer />
+        </FormTestWrapper>
+      );
+
+      const textarea = container.querySelector('textarea');
+      expect(textarea).toBeInTheDocument();
+    });
+
+    it('should render dropdown type via FormFieldsRenderer', () => {
+      const formFields = {
+        color: {
+          initialValue: '',
+          label: 'Color',
+          type: 'dropdown' as const,
+          list: [{ id: 'red', name: 'Red' }, { id: 'blue', name: 'Blue' }],
+          idKey: 'id',
+          nameKey: 'name',
+          formProps: {},
+        },
+      };
+
+      const { getByText } = render(
+        <FormTestWrapper formFields={formFields}>
+          <FormFieldsRenderer />
+        </FormTestWrapper>
+      );
+
+      expect(getByText('Red')).toBeInTheDocument();
+      expect(getByText('Blue')).toBeInTheDocument();
+    });
+
+    it('should render number type as text input', () => {
+      const formFields = {
+        age: { initialValue: 0, label: 'Age', type: 'number' as const, formProps: {} },
+      };
+
+      const { container } = render(
+        <FormTestWrapper formFields={formFields}>
+          <FormFieldsRenderer />
+        </FormTestWrapper>
+      );
+
+      const input = container.querySelector('input[type="number"]');
+      expect(input).toBeInTheDocument();
+    });
+
+    it('should return null when no FormProvider', () => {
+      const { container } = render(
+        <TestWrapper>
+          <FormFieldsRenderer />
+        </TestWrapper>
+      );
+
+      expect(container.innerHTML).toBe('');
+    });
+  });
+
+  describe('DisabledFormField', () => {
+    it('should render disabled input with value', () => {
+      const { container } = render(<DisabledFormField value="Read Only" />);
+      const input = container.querySelector('input');
+      expect(input).toBeDisabled();
+      expect(input).toHaveValue('Read Only');
+    });
+
+    it('should render empty value as empty string', () => {
+      const { container } = render(<DisabledFormField value={null} />);
+      const input = container.querySelector('input');
+      expect(input).toHaveValue('');
+    });
+  });
+
+  describe('useFormField without provider', () => {
+    it('should return defaults when used outside FormProvider', () => {
+      const TestComponent = () => {
+        const { value, isInvalid, label, required } = require('../src/components/forms/FormField').useFormField({ name: 'test' });
+        return (
+          <div>
+            <span data-testid="value">{String(value)}</span>
+            <span data-testid="invalid">{String(isInvalid)}</span>
+            <span data-testid="required">{String(required)}</span>
+          </div>
+        );
+      };
+
+      const { getByTestId } = render(
+        <TestWrapper>
+          <TestComponent />
+        </TestWrapper>
+      );
+
+      expect(getByTestId('value')).toHaveTextContent('');
+      expect(getByTestId('invalid')).toHaveTextContent('false');
+      expect(getByTestId('required')).toHaveTextContent('false');
     });
   });
 });

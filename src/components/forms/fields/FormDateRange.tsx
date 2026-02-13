@@ -22,10 +22,11 @@ export interface FormDateRangeProps<K1 extends string = 'from', K2 extends strin
   fromKey?: K1;
   toKey?: K2;
   separator?: React.ReactNode | null;
+  inputComponent?: React.ComponentType<any>;
 }
 
 export const FormDateRange = <K1 extends string = 'from', K2 extends string = 'to'>(props: FormDateRangeProps<K1, K2>) => {
-  const { fromKey = 'from' as K1, toKey = 'to' as K2, separator = <FaArrowRight />, ...componentProps } = props;
+  const { fromKey = 'from' as K1, toKey = 'to' as K2, separator = <FaArrowRight />, inputComponent: InputComponent, ...componentProps } = props;
   const { value, onChange, label, required, mergedProps, formId, className } = useFormField(componentProps);
   const { pristine } = useForm();
   const { strings } = useLocalization();
@@ -67,14 +68,26 @@ export const FormDateRange = <K1 extends string = 'from', K2 extends string = 't
             {strings.getString('date_range_from')}
             {isFromInvalid && <FormError error={strings.getString('error_required_field')} />}
           </Form.Label>
-          <Form.Control
-            type="date"
-            autoComplete="off"
-            {...mergedProps}
-            value={rangeValue?.[fromKey] || ''}
-            isInvalid={isFromInvalid || isRangeInvalid}
-            onChange={handleFromChange}
-          />
+          {InputComponent ? (
+            <InputComponent
+              value={rangeValue?.[fromKey] || ''}
+              onChange={(val: string) => onChange({
+                [fromKey]: val,
+                [toKey]: rangeValue?.[toKey] || '',
+              })}
+              isInvalid={isFromInvalid || isRangeInvalid}
+              {...mergedProps}
+            />
+          ) : (
+            <Form.Control
+              type="date"
+              autoComplete="off"
+              {...mergedProps}
+              value={rangeValue?.[fromKey] || ''}
+              isInvalid={isFromInvalid || isRangeInvalid}
+              onChange={handleFromChange}
+            />
+          )}
         </div>
         {separator !== null && <div className="align-self-end mb-2">{separator}</div>}
         <div className="flex-grow-1">
@@ -82,14 +95,26 @@ export const FormDateRange = <K1 extends string = 'from', K2 extends string = 't
             {strings.getString('date_range_to')}
             {isToInvalid && <FormError error={strings.getString('error_required_field')} />}
           </Form.Label>
-          <Form.Control
-            type="date"
-            autoComplete="off"
-            {...mergedProps}
-            value={rangeValue?.[toKey] || ''}
-            isInvalid={isToInvalid || isRangeInvalid}
-            onChange={handleToChange}
-          />
+          {InputComponent ? (
+            <InputComponent
+              value={rangeValue?.[toKey] || ''}
+              onChange={(val: string) => onChange({
+                [fromKey]: rangeValue?.[fromKey] || '',
+                [toKey]: val,
+              })}
+              isInvalid={isToInvalid || isRangeInvalid}
+              {...mergedProps}
+            />
+          ) : (
+            <Form.Control
+              type="date"
+              autoComplete="off"
+              {...mergedProps}
+              value={rangeValue?.[toKey] || ''}
+              isInvalid={isToInvalid || isRangeInvalid}
+              onChange={handleToChange}
+            />
+          )}
         </div>
       </div>
     </Form.Group>

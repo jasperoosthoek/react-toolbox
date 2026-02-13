@@ -384,3 +384,6 @@
 
 ##### Version 0.11.2
 - Replace is required asterix (*) by `IsRequiredAsterisk` component with class that can be styled
+
+##### Version 0.11.3
+- New `inputComponent` prop in `FormInput`

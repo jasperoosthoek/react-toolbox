@@ -9,9 +9,10 @@ export interface FormInputProps extends Omit<React.InputHTMLAttributes<HTMLInput
   as?: string;         // For textarea, select, etc.
   rows?: number;       // For textarea
   onChange?: (value: string) => void;
+  inputComponent?: React.ComponentType<any>;
 }
 
-export const FormInput = (props: FormInputProps) => {
+export const FormInput = ({ inputComponent: InputComponent, ...props }: FormInputProps) => {
   const { value, onChange, isInvalid, error, label, required, mergedProps, submit, formId, className } = useFormField(props);
 
   const errorId = isInvalid && error ? `${formId}-${props.name}-error` : undefined;
@@ -21,23 +22,33 @@ export const FormInput = (props: FormInputProps) => {
     <Form.Group controlId={controlId} className={className}>
       {label && <Form.Label>{label}{required && <IsRequiredAsterisk />}</Form.Label>}
       {isInvalid && <FormError error={error} id={errorId} />}
-      <Form.Control
-        autoComplete="off"
-        {...mergedProps}
-        value={value || ''}
-        isInvalid={isInvalid}
-        aria-describedby={errorId}
-        onChange={(e: ChangeEvent<HTMLInputElement>) => {
-          onChange(e.target.value);
-        }}
-        onKeyDown={(e: KeyboardEvent<HTMLInputElement>) => {
-          if (e.key === 'Enter' && mergedProps.as !== 'textarea') {
-            // Pressing the enter key will save data unless it is a multi line text area
-            e.preventDefault();
-            submit();
-          }
-        }}
-      />
+      {InputComponent ? (
+        <InputComponent
+          value={value || ''}
+          onChange={onChange}
+          isInvalid={isInvalid}
+          aria-describedby={errorId}
+          {...mergedProps}
+        />
+      ) : (
+        <Form.Control
+          autoComplete="off"
+          {...mergedProps}
+          value={value || ''}
+          isInvalid={isInvalid}
+          aria-describedby={errorId}
+          onChange={(e: ChangeEvent<HTMLInputElement>) => {
+            onChange(e.target.value);
+          }}
+          onKeyDown={(e: KeyboardEvent<HTMLInputElement>) => {
+            if (e.key === 'Enter' && mergedProps.as !== 'textarea') {
+              // Pressing the enter key will save data unless it is a multi line text area
+              e.preventDefault();
+              submit();
+            }
+          }}
+        />
+      )}
     </Form.Group>
   );
 };

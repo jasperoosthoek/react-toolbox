@@ -522,6 +522,485 @@ describe('Form Modal Tests', () => {
     });
   });
 
+  describe('FormModalProvider Submit Handlers', () => {
+    const submitFormFields = {
+      name: {
+        initialValue: '',
+        label: 'Name',
+        required: false,
+        type: 'string' as const,
+      },
+    };
+
+    it('should call onCreate with merged includeData on create submit', async () => {
+      const mockOnCreate = jest.fn((data, callback) => callback());
+
+      const TestComponent = () => {
+        const { showCreateModal } = useFormModal();
+        return (
+          <button onClick={() => showCreateModal()} data-testid="open-create">
+            Create
+          </button>
+        );
+      };
+
+      const { getByTestId, getByText, getByLabelText } = render(
+        <TestWrapper>
+          <FormModalProvider
+            formFields={submitFormFields}
+            initialState={{ name: '' }}
+            onCreate={mockOnCreate}
+            includeData={{ orgId: 42 }}
+            createModalTitle="Create Item"
+          >
+            <TestComponent />
+          </FormModalProvider>
+        </TestWrapper>
+      );
+
+      fireEvent.click(getByTestId('open-create'));
+      fireEvent.change(getByLabelText(/Name/), { target: { value: 'New Item' } });
+      fireEvent.click(getByText('Save'));
+
+      expect(mockOnCreate).toHaveBeenCalledWith(
+        expect.objectContaining({ name: 'New Item', orgId: 42 }),
+        expect.any(Function)
+      );
+    });
+
+    it('should fall back to onSave when onCreate is not provided', () => {
+      const mockOnSave = jest.fn((data, callback) => callback());
+
+      const TestComponent = () => {
+        const { showCreateModal } = useFormModal();
+        return (
+          <button onClick={() => showCreateModal()} data-testid="open-create">
+            Create
+          </button>
+        );
+      };
+
+      const { getByTestId, getByText } = render(
+        <TestWrapper>
+          <FormModalProvider
+            formFields={submitFormFields}
+            initialState={{ name: '' }}
+            onSave={mockOnSave}
+            createModalTitle="Create Item"
+          >
+            <TestComponent />
+          </FormModalProvider>
+        </TestWrapper>
+      );
+
+      fireEvent.click(getByTestId('open-create'));
+      fireEvent.click(getByText('Save'));
+
+      expect(mockOnSave).toHaveBeenCalled();
+    });
+
+    it('should call onUpdate with merged includeData on edit submit', () => {
+      const mockOnUpdate = jest.fn((data, callback) => callback());
+
+      const TestComponent = () => {
+        const { showEditModal } = useFormModal();
+        return (
+          <button
+            onClick={() => showEditModal({ name: 'Existing' })}
+            data-testid="open-edit"
+          >
+            Edit
+          </button>
+        );
+      };
+
+      const { getByTestId, getByText } = render(
+        <TestWrapper>
+          <FormModalProvider
+            formFields={submitFormFields}
+            onUpdate={mockOnUpdate}
+            includeData={{ orgId: 42 }}
+            editModalTitle="Edit Item"
+          >
+            <TestComponent />
+          </FormModalProvider>
+        </TestWrapper>
+      );
+
+      fireEvent.click(getByTestId('open-edit'));
+      fireEvent.click(getByText('Save'));
+
+      expect(mockOnUpdate).toHaveBeenCalledWith(
+        expect.objectContaining({ name: 'Existing', orgId: 42 }),
+        expect.any(Function)
+      );
+    });
+
+    it('should fall back to onSave when onUpdate is not provided for edit', () => {
+      const mockOnSave = jest.fn((data, callback) => callback());
+
+      const TestComponent = () => {
+        const { showEditModal } = useFormModal();
+        return (
+          <button
+            onClick={() => showEditModal({ name: 'Existing' })}
+            data-testid="open-edit"
+          >
+            Edit
+          </button>
+        );
+      };
+
+      const { getByTestId, getByText } = render(
+        <TestWrapper>
+          <FormModalProvider
+            formFields={submitFormFields}
+            onSave={mockOnSave}
+            editModalTitle="Edit Item"
+          >
+            <TestComponent />
+          </FormModalProvider>
+        </TestWrapper>
+      );
+
+      fireEvent.click(getByTestId('open-edit'));
+      fireEvent.click(getByText('Save'));
+
+      expect(mockOnSave).toHaveBeenCalled();
+    });
+
+    it('should close create modal when no handler provided', () => {
+      const TestComponent = () => {
+        const { showCreateModal } = useFormModal();
+        return (
+          <button onClick={() => showCreateModal()} data-testid="open-create">
+            Create
+          </button>
+        );
+      };
+
+      // No onCreate, onUpdate, or onSave → modal shouldn't even render
+      const { getByTestId, queryByText } = render(
+        <TestWrapper>
+          <FormModalProvider
+            formFields={submitFormFields}
+            createModalTitle="No Handler"
+          >
+            <TestComponent />
+          </FormModalProvider>
+        </TestWrapper>
+      );
+
+      fireEvent.click(getByTestId('open-create'));
+      // Without onCreate or onSave, the create modal won't render
+      expect(queryByText('No Handler')).not.toBeInTheDocument();
+    });
+
+    it('should close edit modal when no handler provided', () => {
+      const TestComponent = () => {
+        const { showEditModal } = useFormModal();
+        return (
+          <button
+            onClick={() => showEditModal({ name: 'Existing' })}
+            data-testid="open-edit"
+          >
+            Edit
+          </button>
+        );
+      };
+
+      const { getByTestId, queryByText } = render(
+        <TestWrapper>
+          <FormModalProvider
+            formFields={submitFormFields}
+            editModalTitle="No Handler"
+          >
+            <TestComponent />
+          </FormModalProvider>
+        </TestWrapper>
+      );
+
+      fireEvent.click(getByTestId('open-edit'));
+      expect(queryByText('No Handler')).not.toBeInTheDocument();
+    });
+
+    it('should close create modal after successful submission', () => {
+      const mockOnCreate = jest.fn((data, callback) => callback());
+
+      const TestComponent = () => {
+        const { showCreateModal } = useFormModal();
+        return (
+          <button onClick={() => showCreateModal()} data-testid="open-create">
+            Create
+          </button>
+        );
+      };
+
+      const { getByTestId, getByText, queryByText } = render(
+        <TestWrapper>
+          <FormModalProvider
+            formFields={submitFormFields}
+            initialState={{ name: '' }}
+            onCreate={mockOnCreate}
+            createModalTitle="Will Close"
+          >
+            <TestComponent />
+          </FormModalProvider>
+        </TestWrapper>
+      );
+
+      fireEvent.click(getByTestId('open-create'));
+      expect(queryByText('Will Close')).toBeInTheDocument();
+
+      fireEvent.click(getByText('Save'));
+      expect(queryByText('Will Close')).not.toBeInTheDocument();
+    });
+
+    it('should close edit modal after successful submission', () => {
+      const mockOnUpdate = jest.fn((data, callback) => callback());
+
+      const TestComponent = () => {
+        const { showEditModal } = useFormModal();
+        return (
+          <button
+            onClick={() => showEditModal({ name: 'Test' })}
+            data-testid="open-edit"
+          >
+            Edit
+          </button>
+        );
+      };
+
+      const { getByTestId, getByText, queryByText } = render(
+        <TestWrapper>
+          <FormModalProvider
+            formFields={submitFormFields}
+            onUpdate={mockOnUpdate}
+            editModalTitle="Will Close"
+          >
+            <TestComponent />
+          </FormModalProvider>
+        </TestWrapper>
+      );
+
+      fireEvent.click(getByTestId('open-edit'));
+      expect(queryByText('Will Close')).toBeInTheDocument();
+
+      fireEvent.click(getByText('Save'));
+      expect(queryByText('Will Close')).not.toBeInTheDocument();
+    });
+  });
+
+  describe('FormCreateModalButton without provider', () => {
+    it('should log error when clicked without FormModalProvider', () => {
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+      const { getByRole } = render(
+        <TestWrapper>
+          <FormCreateModalButton>Create</FormCreateModalButton>
+        </TestWrapper>
+      );
+
+      fireEvent.click(getByRole('button'));
+      expect(consoleSpy).toHaveBeenCalledWith(
+        expect.stringContaining('showCreateModal')
+      );
+
+      consoleSpy.mockRestore();
+    });
+
+    it('should call custom onClick even without provider', () => {
+      const mockClick = jest.fn();
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+      const { getByRole } = render(
+        <TestWrapper>
+          <FormCreateModalButton onClick={mockClick}>Create</FormCreateModalButton>
+        </TestWrapper>
+      );
+
+      fireEvent.click(getByRole('button'));
+      expect(mockClick).toHaveBeenCalled();
+
+      consoleSpy.mockRestore();
+    });
+  });
+
+  describe('FormEditModalButton without provider', () => {
+    it('should log error when clicked without FormModalProvider', () => {
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+      const { getByRole } = render(
+        <TestWrapper>
+          <FormEditModalButton state={{ name: 'test' }}>Edit</FormEditModalButton>
+        </TestWrapper>
+      );
+
+      fireEvent.click(getByRole('button'));
+      expect(consoleSpy).toHaveBeenCalledWith(
+        expect.stringContaining('showEditModal')
+      );
+
+      consoleSpy.mockRestore();
+    });
+
+    it('should call custom onClick even without provider', () => {
+      const mockClick = jest.fn();
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+      const { getByRole } = render(
+        <TestWrapper>
+          <FormEditModalButton state={{ name: 'test' }} onClick={mockClick}>Edit</FormEditModalButton>
+        </TestWrapper>
+      );
+
+      fireEvent.click(getByRole('button'));
+      expect(mockClick).toHaveBeenCalled();
+
+      consoleSpy.mockRestore();
+    });
+  });
+
+  describe('useFormModal default context', () => {
+    it('should return hasProvider false outside provider', () => {
+      const TestComponent = () => {
+        const { hasProvider } = useFormModal();
+        return <span data-testid="has">{hasProvider.toString()}</span>;
+      };
+
+      const { getByTestId } = render(
+        <TestWrapper>
+          <TestComponent />
+        </TestWrapper>
+      );
+
+      expect(getByTestId('has')).toHaveTextContent('false');
+    });
+
+    it('should log error when calling default showCreateModal', () => {
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+      const TestComponent = () => {
+        const { showCreateModal } = useFormModal();
+        return <button onClick={() => showCreateModal()} data-testid="btn">Call</button>;
+      };
+
+      const { getByTestId } = render(
+        <TestWrapper>
+          <TestComponent />
+        </TestWrapper>
+      );
+
+      fireEvent.click(getByTestId('btn'));
+      expect(consoleSpy).toHaveBeenCalledWith(
+        expect.stringContaining('showCreateModal')
+      );
+
+      consoleSpy.mockRestore();
+    });
+
+    it('should log error when calling default showEditModal', () => {
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+      const TestComponent = () => {
+        const { showEditModal } = useFormModal();
+        return <button onClick={() => showEditModal({ name: 'x' })} data-testid="btn">Call</button>;
+      };
+
+      const { getByTestId } = render(
+        <TestWrapper>
+          <TestComponent />
+        </TestWrapper>
+      );
+
+      fireEvent.click(getByTestId('btn'));
+      expect(consoleSpy).toHaveBeenCalledWith(
+        expect.stringContaining('showEditModal')
+      );
+
+      consoleSpy.mockRestore();
+    });
+  });
+
+  describe('FormModalProvider with validate', () => {
+    it('should pass validate to FormProvider for create modal', () => {
+      const mockOnCreate = jest.fn();
+      const mockValidate = jest.fn(() => ({ name: 'Name is required' }));
+
+      const submitFormFields = {
+        name: { initialValue: '', label: 'Name', required: false, formProps: {} },
+      };
+
+      const TestComponent = () => {
+        const { showCreateModal } = useFormModal();
+        return (
+          <button onClick={() => showCreateModal()} data-testid="open">
+            Create
+          </button>
+        );
+      };
+
+      const { getByTestId, getByText } = render(
+        <TestWrapper>
+          <FormModalProvider
+            formFields={submitFormFields}
+            initialState={{ name: '' }}
+            onCreate={mockOnCreate}
+            validate={mockValidate}
+            createModalTitle="Validate Test"
+          >
+            <TestComponent />
+          </FormModalProvider>
+        </TestWrapper>
+      );
+
+      fireEvent.click(getByTestId('open'));
+      fireEvent.click(getByText('Save'));
+
+      // validate should be called and prevent submission
+      expect(mockValidate).toHaveBeenCalled();
+      expect(mockOnCreate).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('FormModalProvider with dialogClassName and width', () => {
+    it('should render create modal with dialogClassName and width', () => {
+      const mockOnCreate = jest.fn();
+
+      const submitFormFields = {
+        name: { initialValue: '', label: 'Name', formProps: {} },
+      };
+
+      const TestComponent = () => {
+        const { showCreateModal } = useFormModal();
+        return (
+          <button onClick={() => showCreateModal()} data-testid="open">
+            Create
+          </button>
+        );
+      };
+
+      const { getByTestId, getByText } = render(
+        <TestWrapper>
+          <FormModalProvider
+            formFields={submitFormFields}
+            initialState={{ name: '' }}
+            onCreate={mockOnCreate}
+            dialogClassName="custom-dialog"
+            width={75}
+            createModalTitle="Width Test"
+          >
+            <TestComponent />
+          </FormModalProvider>
+        </TestWrapper>
+      );
+
+      fireEvent.click(getByTestId('open'));
+      // Modal renders with the title
+      expect(getByText('Width Test')).toBeInTheDocument();
+    });
+  });
+
   describe('Component Export Verification', () => {
     it('should export FormModal as function', () => {
       expect(typeof FormModal).toBe('function');

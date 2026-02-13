@@ -460,6 +460,577 @@ describe('Table Components Tests', () => {
       });
     });
 
+    describe('Sorting Behavior', () => {
+      const sortableColumns = [
+        { name: 'Name', selector: 'name' as const, orderBy: 'name' as const, search: 'name' as const },
+        { name: 'Age', selector: 'age' as const, orderBy: ((row: any) => row.age) },
+        { name: 'Email', selector: 'email' as const },
+      ];
+
+      it('should sort ascending then descending then unsorted on column clicks', () => {
+        const { getByText, container } = render(
+          <TestWrapper>
+            <DataTable data={mockData} columns={sortableColumns} showHeader={false} rowsPerPage={null} />
+          </TestWrapper>
+        );
+
+        const nameHeader = getByText('Name').closest('th')!;
+
+        // Click 1: ascending
+        fireEvent.click(nameHeader);
+        let rows = container.querySelectorAll('tbody tr');
+        expect(rows[0]).toHaveTextContent('Bob Johnson');
+        expect(rows[2]).toHaveTextContent('John Doe');
+
+        // Click 2: descending
+        fireEvent.click(nameHeader);
+        rows = container.querySelectorAll('tbody tr');
+        expect(rows[0]).toHaveTextContent('John Doe');
+        expect(rows[2]).toHaveTextContent('Bob Johnson');
+
+        // Click 3: unsorted (back to original order)
+        fireEvent.click(nameHeader);
+        rows = container.querySelectorAll('tbody tr');
+        expect(rows).toHaveLength(3);
+      });
+
+      it('should sort by function-based orderBy column', () => {
+        const { getByText, container } = render(
+          <TestWrapper>
+            <DataTable data={mockData} columns={sortableColumns} showHeader={false} rowsPerPage={null} />
+          </TestWrapper>
+        );
+
+        const ageHeader = getByText('Age').closest('th')!;
+
+        // Click: ascending by age
+        fireEvent.click(ageHeader);
+        const rows = container.querySelectorAll('tbody tr');
+        // Ages: 25, 30, 35 in asc order
+        expect(rows[0]).toHaveTextContent('Jane Smith');
+        expect(rows[2]).toHaveTextContent('Bob Johnson');
+      });
+
+      it('should use orderByDefault string for initial sorting', () => {
+        const { container } = render(
+          <TestWrapper>
+            <DataTable
+              data={mockData}
+              columns={sortableColumns}
+              orderByDefault="name"
+              showHeader={false}
+              rowsPerPage={null}
+            />
+          </TestWrapper>
+        );
+
+        const rows = container.querySelectorAll('tbody tr');
+        expect(rows[0]).toHaveTextContent('Bob Johnson');
+        expect(rows[2]).toHaveTextContent('John Doe');
+      });
+
+      it('should use orderByDefault function for initial sorting', () => {
+        const { container } = render(
+          <TestWrapper>
+            <DataTable
+              data={mockData}
+              columns={sortableColumns}
+              orderByDefault={(row: any) => row.age}
+              showHeader={false}
+              rowsPerPage={null}
+            />
+          </TestWrapper>
+        );
+
+        const rows = container.querySelectorAll('tbody tr');
+        expect(rows[0]).toHaveTextContent('Jane Smith'); // age 25
+        expect(rows[2]).toHaveTextContent('Bob Johnson'); // age 35
+      });
+
+      it('should use orderByDefaultDirection desc', () => {
+        const { container } = render(
+          <TestWrapper>
+            <DataTable
+              data={mockData}
+              columns={sortableColumns}
+              orderByDefault="age"
+              orderByDefaultDirection="desc"
+              showHeader={false}
+              rowsPerPage={null}
+            />
+          </TestWrapper>
+        );
+
+        const rows = container.querySelectorAll('tbody tr');
+        expect(rows[0]).toHaveTextContent('Bob Johnson'); // age 35
+        expect(rows[2]).toHaveTextContent('Jane Smith'); // age 25
+      });
+    });
+
+    describe('Pagination Navigation', () => {
+      const paginationData = Array(25).fill(null).map((_, i) => ({
+        id: i + 1,
+        name: `User ${i + 1}`,
+        email: `user${i + 1}@example.com`,
+        age: 20 + i,
+      }));
+
+      it('should navigate forward and backward with pagination buttons', () => {
+        const { getByText, container } = render(
+          <TestWrapper>
+            <DataTable
+              data={paginationData}
+              columns={mockColumns}
+              rowsPerPage={5}
+              showHeader={{ pagination: true }}
+            />
+          </TestWrapper>
+        );
+
+        // Page 1
+        expect(getByText('1')).toBeInTheDocument();
+        let rows = container.querySelectorAll('tbody tr');
+        expect(rows).toHaveLength(5);
+
+        // Click next (>)
+        fireEvent.click(getByText('>'));
+        expect(getByText('2')).toBeInTheDocument();
+
+        // Click last (>>)
+        fireEvent.click(getByText('>>'));
+        expect(getByText('5')).toBeInTheDocument();
+
+        // Click prev (<)
+        fireEvent.click(getByText('<'));
+        expect(getByText('4')).toBeInTheDocument();
+
+        // Click first (<<)
+        fireEvent.click(getByText('<<'));
+        expect(getByText('1')).toBeInTheDocument();
+      });
+
+      it('should disable first/prev buttons on first page', () => {
+        const { getByText } = render(
+          <TestWrapper>
+            <DataTable
+              data={paginationData}
+              columns={mockColumns}
+              rowsPerPage={5}
+              showHeader={{ pagination: true }}
+            />
+          </TestWrapper>
+        );
+
+        expect(getByText('<<').closest('button')).toBeDisabled();
+        expect(getByText('<').closest('button')).toBeDisabled();
+        expect(getByText('>').closest('button')).not.toBeDisabled();
+        expect(getByText('>>').closest('button')).not.toBeDisabled();
+      });
+
+      it('should disable next/last buttons on last page', () => {
+        const { getByText } = render(
+          <TestWrapper>
+            <DataTable
+              data={paginationData}
+              columns={mockColumns}
+              rowsPerPage={5}
+              showHeader={{ pagination: true }}
+            />
+          </TestWrapper>
+        );
+
+        // Go to last page
+        fireEvent.click(getByText('>>'));
+
+        expect(getByText('<<').closest('button')).not.toBeDisabled();
+        expect(getByText('<').closest('button')).not.toBeDisabled();
+        expect(getByText('>').closest('button')).toBeDisabled();
+        expect(getByText('>>').closest('button')).toBeDisabled();
+      });
+    });
+
+    describe('Rows Per Page Selector', () => {
+      const selectorData = Array(30).fill(null).map((_, i) => ({
+        id: i + 1,
+        name: `User ${i + 1}`,
+        email: `user${i + 1}@example.com`,
+        age: 20 + i,
+      }));
+
+      it('should change rows per page when selector changes', () => {
+        const { container } = render(
+          <TestWrapper>
+            <DataTable
+              data={selectorData}
+              columns={mockColumns}
+              rowsPerPage={10}
+              rowsPerPageOptions={[5, 10, 25, null]}
+              showHeader={{ numberOfRows: true }}
+            />
+          </TestWrapper>
+        );
+
+        const select = container.querySelector('select[name="table-pagination-options"]') as HTMLSelectElement;
+        expect(select).toBeInTheDocument();
+
+        // Change to 5 rows per page
+        fireEvent.change(select, { target: { value: '5' } });
+        let rows = container.querySelectorAll('tbody tr');
+        expect(rows).toHaveLength(5);
+
+        // Change to show everything
+        fireEvent.change(select, { target: { value: 'everything' } });
+        rows = container.querySelectorAll('tbody tr');
+        expect(rows).toHaveLength(30);
+      });
+
+      it('should render null option as "Everything"', () => {
+        const { getByText } = render(
+          <TestWrapper>
+            <DataTable
+              data={selectorData}
+              columns={mockColumns}
+              showHeader={{ numberOfRows: true }}
+              rowsPerPageOptions={[10, 25, null]}
+            />
+          </TestWrapper>
+        );
+
+        expect(getByText('Everything')).toBeInTheDocument();
+      });
+    });
+
+    describe('Column onClick Handler', () => {
+      it('should call column-level onClick when cell is clicked', () => {
+        const mockColumnClick = jest.fn();
+        const columnsWithClick = [
+          { name: 'Name', selector: 'name' as const },
+          { name: 'Action', selector: 'name' as const, onClick: mockColumnClick },
+        ];
+
+        const { container } = render(
+          <TestWrapper>
+            <DataTable data={mockData} columns={columnsWithClick} showHeader={false} rowsPerPage={null} />
+          </TestWrapper>
+        );
+
+        // Click the second column cell in first row
+        const firstRow = container.querySelector('tbody tr')!;
+        const cells = firstRow.querySelectorAll('td');
+        fireEvent.click(cells[1]);
+
+        expect(mockColumnClick).toHaveBeenCalledWith(mockData[0]);
+      });
+    });
+
+    describe('Row className', () => {
+      it('should apply string rowClassName to rows', () => {
+        const { container } = render(
+          <TestWrapper>
+            <DataTable
+              data={mockData}
+              columns={mockColumns}
+              rowClassName="custom-row"
+              showHeader={false}
+              rowsPerPage={null}
+            />
+          </TestWrapper>
+        );
+
+        const rows = container.querySelectorAll('tbody tr');
+        rows.forEach(row => expect(row).toHaveClass('custom-row'));
+      });
+
+      it('should apply function rowClassName to rows', () => {
+        const { container } = render(
+          <TestWrapper>
+            <DataTable
+              data={mockData}
+              columns={mockColumns}
+              rowClassName={(row: any) => row.age > 30 ? 'senior' : 'junior'}
+              showHeader={false}
+              rowsPerPage={null}
+            />
+          </TestWrapper>
+        );
+
+        const rows = container.querySelectorAll('tbody tr');
+        // John (30): junior, Jane (25): junior, Bob (35): senior
+        // But order may depend on default sorting
+        const classNames = Array.from(rows).map(r => r.className);
+        expect(classNames).toContain('senior');
+        expect(classNames).toContain('junior');
+      });
+    });
+
+    describe('Empty State', () => {
+      it('should show default empty text', () => {
+        const { getByText } = render(
+          <TestWrapper>
+            <DataTable data={[]} columns={mockColumns} />
+          </TestWrapper>
+        );
+
+        expect(getByText('No information to display')).toBeInTheDocument();
+      });
+
+      it('should show custom textOnEmpty', () => {
+        const { getByText } = render(
+          <TestWrapper>
+            <DataTable data={[]} columns={mockColumns} textOnEmpty="Nothing here" />
+          </TestWrapper>
+        );
+
+        expect(getByText('Nothing here')).toBeInTheDocument();
+      });
+
+      it('should return null when data is null', () => {
+        const { container } = render(
+          <TestWrapper>
+            <DataTable data={null as any} columns={mockColumns} />
+          </TestWrapper>
+        );
+
+        expect(container.querySelector('table')).not.toBeInTheDocument();
+      });
+    });
+
+    describe('showHeader false', () => {
+      it('should not render header row when showHeader is false', () => {
+        const { container, queryByRole } = render(
+          <TestWrapper>
+            <DataTable data={mockData} columns={mockColumns} showHeader={false} />
+          </TestWrapper>
+        );
+
+        // No search input
+        expect(container.querySelector('input[type="text"]')).not.toBeInTheDocument();
+        // Table still renders
+        expect(container.querySelector('table')).toBeInTheDocument();
+      });
+    });
+
+    describe('Sum Footer', () => {
+      it('should render sum with formatSum function', () => {
+        const columnsWithSum = [
+          { name: 'Name', selector: 'name' as const },
+          {
+            name: 'Age',
+            selector: 'age' as const,
+            value: (row: any) => row.age,
+            formatSum: (val: number) => `Total: ${val}`,
+          },
+        ];
+
+        const { getByText } = render(
+          <TestWrapper>
+            <DataTable data={mockData} columns={columnsWithSum} showSum={true} showHeader={false} rowsPerPage={null} />
+          </TestWrapper>
+        );
+
+        // 30 + 25 + 35 = 90
+        expect(getByText('Total: 90')).toBeInTheDocument();
+      });
+
+      it('should render sum with string value key', () => {
+        const columnsWithSum = [
+          { name: 'Name', selector: 'name' as const },
+          { name: 'Age', selector: 'age' as const, value: 'age' as const },
+        ];
+
+        const { container } = render(
+          <TestWrapper>
+            <DataTable data={mockData} columns={columnsWithSum} showSum={true} showHeader={false} rowsPerPage={null} />
+          </TestWrapper>
+        );
+
+        const tfoot = container.querySelector('tfoot');
+        expect(tfoot).toBeInTheDocument();
+        // 30 + 25 + 35 = 90
+        expect(tfoot).toHaveTextContent('90');
+      });
+
+      it('should render formatSum as static value when no value prop', () => {
+        const columnsWithSum = [
+          { name: 'Name', selector: 'name' as const, formatSum: 'Total:' },
+          { name: 'Age', selector: 'age' as const, value: 'age' as const },
+        ];
+
+        const { container } = render(
+          <TestWrapper>
+            <DataTable data={mockData} columns={columnsWithSum} showSum={true} showHeader={false} rowsPerPage={null} />
+          </TestWrapper>
+        );
+
+        const tfoot = container.querySelector('tfoot');
+        expect(tfoot).toHaveTextContent('Total:');
+      });
+    });
+
+    describe('Options Dropdown in Column Header', () => {
+      it('should render selected option text in header', () => {
+        const mockOnSelect = jest.fn();
+        const columnsWithDropdown = [
+          {
+            name: 'Status',
+            selector: 'status' as const,
+            optionsDropdown: {
+              onSelect: mockOnSelect,
+              selected: 'active',
+              options: { all: 'All', active: 'Active', inactive: 'Inactive' },
+            },
+          },
+        ];
+
+        const dataWithStatus = mockData.map(item => ({ ...item, status: 'active' }));
+
+        const { container } = render(
+          <TestWrapper>
+            <DataTable data={dataWithStatus} columns={columnsWithDropdown} showHeader={false} rowsPerPage={null} />
+          </TestWrapper>
+        );
+
+        // When selected is 'active', the toggle shows 'Active' instead of column name
+        const toggle = container.querySelector('th .dropdown span');
+        expect(toggle).toHaveTextContent('Active');
+      });
+
+      it('should show column name when no option is selected', () => {
+        const mockOnSelect = jest.fn();
+        const columnsWithDropdown = [
+          {
+            name: 'Status',
+            selector: 'status' as const,
+            optionsDropdown: {
+              onSelect: mockOnSelect,
+              selected: null,
+              options: { all: 'All', active: 'Active', inactive: 'Inactive' },
+            },
+          },
+        ];
+
+        const dataWithStatus = mockData.map(item => ({ ...item, status: 'active' }));
+
+        const { getByText } = render(
+          <TestWrapper>
+            <DataTable data={dataWithStatus} columns={columnsWithDropdown} showHeader={false} rowsPerPage={null} />
+          </TestWrapper>
+        );
+
+        expect(getByText('Status')).toBeInTheDocument();
+      });
+
+      it('should call onSelect with key when dropdown item is clicked', () => {
+        const mockOnSelect = jest.fn();
+        const columnsWithDropdown = [
+          {
+            name: 'Status',
+            selector: 'status' as const,
+            optionsDropdown: {
+              onSelect: mockOnSelect,
+              selected: null,
+              options: { all: 'All', active: 'Active' },
+            },
+          },
+        ];
+
+        const dataWithStatus = mockData.map(item => ({ ...item, status: 'active' }));
+
+        const { getByText } = render(
+          <TestWrapper>
+            <DataTable data={dataWithStatus} columns={columnsWithDropdown} showHeader={false} rowsPerPage={null} />
+          </TestWrapper>
+        );
+
+        // Click the dropdown toggle
+        fireEvent.click(getByText('Status'));
+
+        // Click an option
+        fireEvent.click(getByText('All'));
+        expect(mockOnSelect).toHaveBeenCalledWith('all');
+      });
+
+      it('should deselect when clicking already selected option', () => {
+        const mockOnSelect = jest.fn();
+        const columnsWithDropdown = [
+          {
+            name: 'Status',
+            selector: 'status' as const,
+            optionsDropdown: {
+              onSelect: mockOnSelect,
+              selected: 'active',
+              options: { active: 'Active', inactive: 'Inactive' },
+            },
+          },
+        ];
+
+        const dataWithStatus = mockData.map(item => ({ ...item, status: 'active' }));
+
+        const { container } = render(
+          <TestWrapper>
+            <DataTable data={dataWithStatus} columns={columnsWithDropdown} showHeader={false} rowsPerPage={null} />
+          </TestWrapper>
+        );
+
+        // Click the dropdown toggle
+        const toggle = container.querySelector('th .dropdown span')!;
+        fireEvent.click(toggle);
+
+        // Click the already selected dropdown item
+        const activeItem = container.querySelector('.dropdown-item[eventkey="active"]');
+        if (activeItem) fireEvent.click(activeItem);
+
+        expect(mockOnSelect).toHaveBeenCalledWith(null);
+      });
+    });
+
+    describe('showEditModalOnClickRow', () => {
+      it('should not call showEditModal when there is no FormModalProvider', () => {
+        const mockOnClickRow = jest.fn();
+
+        const { container } = render(
+          <TestWrapper>
+            <DataTable
+              data={mockData}
+              columns={mockColumns}
+              onClickRow={mockOnClickRow}
+              showEditModalOnClickRow={true}
+              showHeader={false}
+              rowsPerPage={null}
+            />
+          </TestWrapper>
+        );
+
+        const firstRow = container.querySelector('tbody tr')!;
+        fireEvent.click(firstRow);
+        expect(mockOnClickRow).toHaveBeenCalled();
+      });
+    });
+
+    describe('Search with clear button', () => {
+      it('should clear filter text when close button is clicked', () => {
+        const { getByRole, queryByText, container } = render(
+          <TestWrapper>
+            <DataTable
+              data={mockData}
+              columns={mockColumns}
+              showHeader={{ search: true }}
+            />
+          </TestWrapper>
+        );
+
+        const searchInput = getByRole('textbox');
+        fireEvent.change(searchInput, { target: { value: 'John' } });
+        expect(queryByText('Jane Smith')).not.toBeInTheDocument();
+
+        // Click the clear button
+        const closeButton = container.querySelector('.btn-outline-secondary');
+        if (closeButton) fireEvent.click(closeButton);
+
+        expect(queryByText('Jane Smith')).toBeInTheDocument();
+      });
+    });
+
     describe('Advanced Features', () => {
       it('should handle drag and drop', () => {
         const mockOnMove = jest.fn();
