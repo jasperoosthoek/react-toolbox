@@ -90,16 +90,20 @@ export const FormModal = ({
 };
 
 // Component that renders all form fields using the form context
-export const FormFieldsRenderer = () => {
+export const FormFieldsRenderer = ({ keys }: { keys?: string[] } = {}) => {
   const { formFields, hasProvider } = useForm();
 
-  if (!hasProvider || !formFields) { 
+  if (!hasProvider || !formFields) {
     return null;
   }
 
+  const entries = keys
+    ? keys.filter(k => k in formFields).map(k => [k, formFields[k]] as const)
+    : Object.entries(formFields);
+
   return (
     <Form>
-      {Object.entries(formFields).map(([name, config]) => {
+      {entries.map(([name, config]) => {
         // Common props for all field types
         const commonProps = {
           name,

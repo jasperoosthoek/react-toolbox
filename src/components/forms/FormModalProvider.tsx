@@ -102,6 +102,7 @@ export type FormModalProviderProps<
   loading?: boolean;
   dialogClassName?: string;
   width?: Width;
+  modalChildren?: ReactNode;
   children: ReactNode;
 }
 
@@ -118,6 +119,7 @@ export const FormModalProvider: React.FC<FormModalProviderProps<T, K>> = ({
   onSave,
   dialogClassName,
   width,
+  modalChildren,
   children,
 }) => {
   const [createModalActive, setCreateModalActive] = useState(false);
@@ -205,7 +207,9 @@ export const FormModalProvider: React.FC<FormModalProviderProps<T, K>> = ({
             onHide={() => setCreateModalActive(false)}
             dialogClassName={dialogClassName}
             width={width}
-          />
+          >
+            {modalChildren}
+          </FormModal>
         </FormProvider>
       )}
       
@@ -224,7 +228,9 @@ export const FormModalProvider: React.FC<FormModalProviderProps<T, K>> = ({
             onHide={() => setEditModalState(null)}
             dialogClassName={dialogClassName}
             width={width}
-          />
+          >
+            {modalChildren}
+          </FormModal>
         </FormProvider>
       )}
     </FormModalContext.Provider>

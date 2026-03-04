@@ -414,6 +414,59 @@ describe('Form Modal Tests', () => {
         expect(getByText('Boolean Field')).toBeInTheDocument();
       });
     });
+
+    describe('FormFieldsRenderer with keys prop', () => {
+      it('should render only specified fields when keys is provided', () => {
+        const { getByText, queryByText } = render(
+          <RendererTestWrapper>
+            <FormFieldsRenderer keys={['name', 'email']} />
+          </RendererTestWrapper>
+        );
+
+        expect(getByText('Name')).toBeInTheDocument();
+        expect(getByText('Email')).toBeInTheDocument();
+        expect(queryByText('Age')).not.toBeInTheDocument();
+        expect(queryByText('Active')).not.toBeInTheDocument();
+        expect(queryByText('Category')).not.toBeInTheDocument();
+      });
+
+      it('should render fields in the order specified by keys', () => {
+        const { container } = render(
+          <RendererTestWrapper>
+            <FormFieldsRenderer keys={['email', 'name']} />
+          </RendererTestWrapper>
+        );
+
+        const labels = Array.from(container.querySelectorAll('label')).map(l => l.textContent?.replace('*', ''));
+        expect(labels).toEqual(['Email', 'Name']);
+      });
+
+      it('should ignore keys that do not exist in formFields', () => {
+        const { getByText, queryByText } = render(
+          <RendererTestWrapper>
+            <FormFieldsRenderer keys={['name', 'nonexistent', 'email']} />
+          </RendererTestWrapper>
+        );
+
+        expect(getByText('Name')).toBeInTheDocument();
+        expect(getByText('Email')).toBeInTheDocument();
+        expect(queryByText('nonexistent')).not.toBeInTheDocument();
+      });
+
+      it('should render all fields when keys is not provided', () => {
+        const { getByText } = render(
+          <RendererTestWrapper>
+            <FormFieldsRenderer />
+          </RendererTestWrapper>
+        );
+
+        expect(getByText('Name')).toBeInTheDocument();
+        expect(getByText('Email')).toBeInTheDocument();
+        expect(getByText('Age')).toBeInTheDocument();
+        expect(getByText('Active')).toBeInTheDocument();
+        expect(getByText('Category')).toBeInTheDocument();
+      });
+    });
   });
 
   describe('FormModalProvider Extended Tests', () => {
@@ -998,6 +1051,77 @@ describe('Form Modal Tests', () => {
       fireEvent.click(getByTestId('open'));
       // Modal renders with the title
       expect(getByText('Width Test')).toBeInTheDocument();
+    });
+  });
+
+  describe('FormModalProvider with modalChildren', () => {
+    const modalFormFields = {
+      name: { initialValue: '', label: 'Name', formProps: {} },
+      email: { initialValue: '', label: 'Email', formProps: {} },
+    };
+
+    it('should render modalChildren in create modal', () => {
+      const mockOnCreate = jest.fn();
+
+      const TestComponent = () => {
+        const { showCreateModal } = useFormModal();
+        return (
+          <button onClick={() => showCreateModal()} data-testid="open">
+            Create
+          </button>
+        );
+      };
+
+      const { getByTestId, getByText } = render(
+        <TestWrapper>
+          <FormModalProvider
+            formFields={modalFormFields}
+            initialState={{ name: '', email: '' }}
+            onCreate={mockOnCreate}
+            createModalTitle="Create With Children"
+            modalChildren={<div data-testid="custom-child">Custom Create Content</div>}
+          >
+            <TestComponent />
+          </FormModalProvider>
+        </TestWrapper>
+      );
+
+      fireEvent.click(getByTestId('open'));
+      expect(getByText('Create With Children')).toBeInTheDocument();
+      expect(getByTestId('custom-child')).toBeInTheDocument();
+      expect(getByTestId('custom-child')).toHaveTextContent('Custom Create Content');
+    });
+
+    it('should render modalChildren in edit modal', () => {
+      const mockOnUpdate = jest.fn();
+
+      const TestComponent = () => {
+        const { showEditModal } = useFormModal();
+        return (
+          <button onClick={() => showEditModal({ name: 'John', email: 'john@test.com' })} data-testid="edit">
+            Edit
+          </button>
+        );
+      };
+
+      const { getByTestId, getByText } = render(
+        <TestWrapper>
+          <FormModalProvider
+            formFields={modalFormFields}
+            initialState={{ name: '', email: '' }}
+            onUpdate={mockOnUpdate}
+            editModalTitle="Edit With Children"
+            modalChildren={<div data-testid="custom-edit-child">Custom Edit Content</div>}
+          >
+            <TestComponent />
+          </FormModalProvider>
+        </TestWrapper>
+      );
+
+      fireEvent.click(getByTestId('edit'));
+      expect(getByText('Edit With Children')).toBeInTheDocument();
+      expect(getByTestId('custom-edit-child')).toBeInTheDocument();
+      expect(getByTestId('custom-edit-child')).toHaveTextContent('Custom Edit Content');
     });
   });
 

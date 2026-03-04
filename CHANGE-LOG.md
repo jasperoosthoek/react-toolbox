@@ -387,3 +387,6 @@
 
 ##### Version 0.11.3
 - New `inputComponent` prop in `FormInput`
+
+##### Version 0.11.4
+- New `modalChildren` prop in `FormModalProvider` and `keys` prop in `FormFieldsRenderer` to customize modal content
