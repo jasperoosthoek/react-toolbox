@@ -45,8 +45,8 @@ export const useFormField = (componentProps: { name: string; label?: any; requir
     formFields, 
     formId,
     validationErrors, 
-    pristine, 
-    validated, 
+    submitAttempted,
+    validated,
     submit,
     hasProvider 
   } = useForm();
@@ -71,7 +71,7 @@ export const useFormField = (componentProps: { name: string; label?: any; requir
     console.error(`useFormField: No field configuration found for "${name}"`);
   }
   
-  const isInvalid = !pristine && !validated && !!validationErrors[name];
+  const isInvalid = submitAttempted && !validated && !!validationErrors[name];
   const error = isInvalid ? validationErrors[name] : null;
   
   // Priority order: component props > config props > defaults

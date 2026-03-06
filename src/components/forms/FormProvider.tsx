@@ -35,7 +35,8 @@ type FormContextType<T extends FormFields> = {
   formId: string;
   formData: { [key in keyof T]: FormValue } | null;
   initialFormData: { [key in keyof T]: FormValue } | null;
-  pristine: boolean;
+  submitAttempted: boolean;
+  modified: boolean;
   validated: boolean;
   validationErrors: { [key: string]: any };
   loading: boolean;
@@ -44,7 +45,7 @@ type FormContextType<T extends FormFields> = {
   setFormData: (data: Partial<{ [key in keyof T]: FormValue }>) => void;
   resetForm: () => void;
   submit: () => void;
-  setPristine: (pristine: boolean) => void;
+  setSubmitAttempted: (submitAttempted: boolean) => void;
   setLoading: (loading: boolean) => void;
   hasProvider: boolean;
 }
@@ -54,7 +55,8 @@ const defaultFormState: FormContextType<any> = {
   formId: '',
   formData: null,
   initialFormData: null,
-  pristine: true,
+  submitAttempted: false,
+  modified: false,
   validated: false,
   validationErrors: {},
   loading: false,
@@ -63,7 +65,7 @@ const defaultFormState: FormContextType<any> = {
   setFormData: () => console.error('setFormData should only be used within a FormProvider'),
   resetForm: () => console.error('resetForm should only be used within a FormProvider'),
   submit: () => console.error('submit should only be used within a FormProvider'),
-  setPristine: () => console.error('setPristine should only be used within a FormProvider'),
+  setSubmitAttempted: () => console.error('setSubmitAttempted should only be used within a FormProvider'),
   setLoading: () => console.error('setLoading should only be used within a FormProvider'),
   hasProvider: false,
 };
@@ -80,6 +82,7 @@ export type FormProviderProps<T extends FormFields> = {
   loading?: boolean;
   children: ReactNode;
   resetTrigger?: any; // When this value changes, the form will reset
+  resetAfterSubmit?: boolean; // When true, modified resets after successful submit
 }
 
 export const FormProvider = <T extends FormFields>({
@@ -90,6 +93,7 @@ export const FormProvider = <T extends FormFields>({
   loading = false,
   children,
   resetTrigger,
+  resetAfterSubmit,
 }: FormProviderProps<T>) => {
   const { strings } = useLocalization();
   const formId = useId();
@@ -106,8 +110,9 @@ export const FormProvider = <T extends FormFields>({
 
   const [initialFormData, setInitialFormData] = useState<{ [key in keyof T]: FormValue }>(getInitialFormData());
 
-  const [{ pristine, formData, internalLoading }, setState] = useSetState({
-    pristine: true,
+  const [{ submitAttempted, modified, formData, internalLoading }, setState] = useSetState({
+    submitAttempted: false,
+    modified: false,
     formData: initialFormData,
     internalLoading: false,
   });
@@ -119,7 +124,8 @@ export const FormProvider = <T extends FormFields>({
       const newInitialFormData = getInitialFormData();
       setInitialFormData(newInitialFormData);
       setState({
-        pristine: true,
+        submitAttempted: false,
+        modified: false,
         formData: newInitialFormData,
       });
     }
@@ -138,19 +144,20 @@ export const FormProvider = <T extends FormFields>({
     const newFormData = typeof fieldOnChange === 'function'
       ? { ...formData, ...fieldOnChange(value, formData) }
       : { ...formData, [key]: value };
-    
-    setState({ formData: newFormData });
+
+    setState({ formData: newFormData, modified: true });
   };
 
   const setFormData = (data: Partial<{ [key in keyof T]: FormValue }>) => {
-    setState({ formData: { ...formData, ...data } });
+    setState({ formData: { ...formData, ...data }, modified: true });
   };
 
   const resetForm = () => {
     const newInitialFormData = getInitialFormData();
     setInitialFormData(newInitialFormData);
     setState({
-      pristine: true,
+      submitAttempted: false,
+      modified: false,
       formData: newInitialFormData,
     });
   };
@@ -179,18 +186,23 @@ export const FormProvider = <T extends FormFields>({
   const validated = Object.values(validationErrors).length === 0;
 
   const submit = () => {
-    setState({ pristine: false });
+    setState({ submitAttempted: true });
     if (!validated) return;
-    
+
     setState({ internalLoading: true });
     onSubmit(
       formData,
-      () => setState({ internalLoading: false })
+      () => {
+        setState({ internalLoading: false, ...(resetAfterSubmit && { modified: false }) });
+        if (resetAfterSubmit) {
+          setInitialFormData(formData);
+        }
+      }
     );
   };
 
-  const setPristine = (pristine: boolean) => {
-    setState({ pristine });
+  const setSubmitAttempted = (submitAttempted: boolean) => {
+    setState({ submitAttempted });
   };
 
   const setLoading = (loading: boolean) => {
@@ -202,7 +214,8 @@ export const FormProvider = <T extends FormFields>({
     formId,
     formData,
     initialFormData,
-    pristine,
+    submitAttempted,
+    modified,
     validated,
     validationErrors,
     loading: loading || internalLoading,
@@ -211,7 +224,7 @@ export const FormProvider = <T extends FormFields>({
     setFormData,
     resetForm,
     submit,
-    setPristine,
+    setSubmitAttempted,
     setLoading,
     hasProvider: true,
   };

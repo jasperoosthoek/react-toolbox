@@ -390,3 +390,6 @@
 
 ##### Version 0.11.4
 - New `modalChildren` prop in `FormModalProvider` and `keys` prop in `FormFieldsRenderer` to customize modal content
+
+##### Version 0.11.5
+- Replace `pristine` by `submitAttempted` and new `modified` property in `FormProvider` context

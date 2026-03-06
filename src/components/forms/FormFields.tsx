@@ -17,7 +17,8 @@ export type FormOnChange = (
 
 export type FormComponentProps = {
   keyName?: string;
-  pristine?: boolean;
+  submitAttempted?: boolean;
+  modified?: boolean;
   isInvalid?: boolean;
   value: FormValue;
   state?: any;
@@ -34,7 +35,8 @@ export type FormType = {
   initialState: any;
   initialValue: any;
   keyName: string;
-  pristine: boolean;
+  submitAttempted: boolean;
+  modified: boolean;
 }
 
 export type DisabledProps = {

@@ -1661,19 +1661,20 @@ describe('Form Field Components Tests', () => {
       expect(getByLabelText('Name')).toHaveValue('initial');
     });
 
-    it('should expose setPristine and setLoading', () => {
+    it('should expose setSubmitAttempted, modified, and setLoading', () => {
       const formFields = {
         name: { initialValue: '', label: 'Name', required: true, formProps: {} },
       };
 
       const TestForm = () => {
-        const { setPristine, setLoading, pristine, loading } = useForm();
+        const { setSubmitAttempted, setLoading, submitAttempted, modified, loading } = useForm();
         return (
           <>
             <FormInput name="name" />
-            <span data-testid="pristine">{pristine.toString()}</span>
+            <span data-testid="submitAttempted">{submitAttempted.toString()}</span>
+            <span data-testid="modified">{modified.toString()}</span>
             <span data-testid="loading">{loading.toString()}</span>
-            <button data-testid="dirty" onClick={() => setPristine(false)}>Set Dirty</button>
+            <button data-testid="attempt" onClick={() => setSubmitAttempted(true)}>Set Attempted</button>
             <button data-testid="load" onClick={() => setLoading(true)}>Set Loading</button>
           </>
         );
@@ -1687,9 +1688,10 @@ describe('Form Field Components Tests', () => {
         </TestWrapper>
       );
 
-      expect(getByTestId('pristine')).toHaveTextContent('true');
-      fireEvent.click(getByTestId('dirty'));
-      expect(getByTestId('pristine')).toHaveTextContent('false');
+      expect(getByTestId('submitAttempted')).toHaveTextContent('false');
+      expect(getByTestId('modified')).toHaveTextContent('false');
+      fireEvent.click(getByTestId('attempt'));
+      expect(getByTestId('submitAttempted')).toHaveTextContent('true');
 
       expect(getByTestId('loading')).toHaveTextContent('false');
       fireEvent.click(getByTestId('load'));

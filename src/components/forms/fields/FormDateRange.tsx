@@ -28,14 +28,14 @@ export interface FormDateRangeProps<K1 extends string = 'from', K2 extends strin
 export const FormDateRange = <K1 extends string = 'from', K2 extends string = 'to'>(props: FormDateRangeProps<K1, K2>) => {
   const { fromKey = 'from' as K1, toKey = 'to' as K2, separator = <FaArrowRight />, inputComponent: InputComponent, ...componentProps } = props;
   const { value, onChange, label, required, mergedProps, formId, className } = useFormField(componentProps);
-  const { pristine } = useForm();
+  const { submitAttempted } = useForm();
   const { strings } = useLocalization();
 
   const rangeValue = isRecordValue(value) ? value : null;
-  const isFromInvalid = !pristine && required && !rangeValue?.[fromKey];
-  const isToInvalid = !pristine && required && !rangeValue?.[toKey];
+  const isFromInvalid = submitAttempted && required && !rangeValue?.[fromKey];
+  const isToInvalid = submitAttempted && required && !rangeValue?.[toKey];
   const isRangeInvalid = (
-    !pristine
+    submitAttempted
     && rangeValue?.[fromKey]
     && rangeValue?.[toKey]
     && rangeValue[toKey]! < rangeValue[fromKey]!

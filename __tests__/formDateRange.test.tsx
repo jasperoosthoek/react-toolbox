@@ -163,7 +163,7 @@ describe('FormDateRange Component', () => {
   });
 
   describe('Required Field Validation', () => {
-    it('should NOT show validation errors when pristine', () => {
+    it('should NOT show validation errors before submit attempt', () => {
       renderWithFormProvider(
         <FormDateRange name="dates" label="Date Range" required />,
         { initialState: { dates: { from: '', to: '' } } }
@@ -198,7 +198,7 @@ describe('FormDateRange Component', () => {
         </LocalizationProvider>
       );
 
-      // Submit to make form non-pristine
+      // Submit to trigger validation
       fireEvent.click(screen.getByTestId('submit-btn'));
 
       // Both required errors should be visible
