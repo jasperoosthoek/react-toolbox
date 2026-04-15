@@ -19,7 +19,7 @@ import {
   AiOutlineSave,
 } from 'react-icons/ai';
 import { IconType } from 'react-icons';
-import { FiCopy } from 'react-icons/fi';
+import { FiCopy, FiSend } from 'react-icons/fi';
 import { FaTimes, FaSort, FaSortUp, FaSortDown, FaRegFlag, FaSyncAlt } from 'react-icons/fa';
 import { CgTrash, CgNotes, CgSpinner } from 'react-icons/cg';
 import { BsArrowsMove, BsCardList, BsPencil } from 'react-icons/bs';
@@ -108,6 +108,7 @@ export const UploadButton = makeIconButton(AiOutlineUpload);
 export const QuestionnaireButton = makeIconButton(RiQuestionnaireLine);
 export const DropdownButton = makeIconButton(RiDropdownList);
 export const ResetButton = makeIconButton(RiResetLeftLine);
+export const SendButton = makeIconButton(FiSend);
 
 export interface UploadTextButtonProps extends ButtonProps {
   accept?: string;

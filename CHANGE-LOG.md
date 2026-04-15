@@ -393,3 +393,6 @@
 
 ##### Version 0.11.5
 - Replace `pristine` by `submitAttempted` and new `modified` property in `FormProvider` context
+
+##### Version 0.11.6
+- New `SendButton` component
