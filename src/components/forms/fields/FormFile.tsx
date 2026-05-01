@@ -119,7 +119,12 @@ export const FormFile = (props: FormFileProps) => {
           return rest;
         });
 
-        onChange([...filesRef.current, fileRef]);
+        if (!multiple && filesRef.current.length > 0) {
+          const previous = filesRef.current[0];
+          URL.revokeObjectURL(previous.previewUrl);
+          blobUrlsRef.current.delete(previous.previewUrl);
+        }
+        onChange(multiple ? [...filesRef.current, fileRef] : [fileRef]);
       } catch (err) {
         // Upload failed - revoke URL and show error
         URL.revokeObjectURL(previewUrl);
@@ -130,14 +135,14 @@ export const FormFile = (props: FormFileProps) => {
         }));
       }
     }
-  }, [maxSize, onUpload, onChange, strings]);
+  }, [maxSize, onUpload, onChange, strings, multiple]);
 
   const handleFileSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFiles = Array.from(e.target.files || []);
     // Reset input immediately so same file can be selected again
     e.target.value = '';
-    processFiles(selectedFiles);
-  }, [processFiles]);
+    processFiles(multiple ? selectedFiles : selectedFiles.slice(0, 1));
+  }, [processFiles, multiple]);
 
   const handleRemove = useCallback((index: number) => {
     const fileToRemove = files[index];
@@ -219,38 +224,41 @@ export const FormFile = (props: FormFileProps) => {
       ))}
 
       {/* Drop zone with hidden input */}
-      <div
-        role="button"
-        aria-label={strings.getString('file_upload')}
-        className={`form-file-dropzone border rounded p-3 text-center ${isInvalid ? 'border-danger' : 'border-secondary'}`}
-        onClick={() => inputRef.current?.click()}
-        onDragOver={(e) => {
-          e.preventDefault();
-          e.currentTarget.classList.add('bg-light');
-        }}
-        onDragLeave={(e) => {
-          e.preventDefault();
-          e.currentTarget.classList.remove('bg-light');
-        }}
-        onDrop={(e) => {
-          e.preventDefault();
-          e.currentTarget.classList.remove('bg-light');
-          if (e.dataTransfer.files.length > 0) {
-            processFiles(Array.from(e.dataTransfer.files));
-          }
-        }}
-      >
-        <input
-          ref={inputRef}
-          type="file"
-          multiple={multiple}
-          accept={accept}
-          onChange={handleFileSelect}
-          className="d-none"
-        />
-        <AiOutlineUpload className="form-file-dropzone-icon mb-2" />
-        <div className="text-muted small">{strings.getString('file_upload')}</div>
-      </div>
+      {(multiple || (files.length === 0 && !Object.values(uploading).some(u => !u.error))) && (
+        <div
+          role="button"
+          aria-label={strings.getString('file_upload')}
+          className={`form-file-dropzone border rounded p-3 text-center ${isInvalid ? 'border-danger' : 'border-secondary'}`}
+          onClick={() => inputRef.current?.click()}
+          onDragOver={(e) => {
+            e.preventDefault();
+            e.currentTarget.classList.add('bg-light');
+          }}
+          onDragLeave={(e) => {
+            e.preventDefault();
+            e.currentTarget.classList.remove('bg-light');
+          }}
+          onDrop={(e) => {
+            e.preventDefault();
+            e.currentTarget.classList.remove('bg-light');
+            if (e.dataTransfer.files.length > 0) {
+              const dropped = Array.from(e.dataTransfer.files);
+              processFiles(multiple ? dropped : dropped.slice(0, 1));
+            }
+          }}
+        >
+          <input
+            ref={inputRef}
+            type="file"
+            multiple={multiple}
+            accept={accept}
+            onChange={handleFileSelect}
+            className="d-none"
+          />
+          <AiOutlineUpload className="form-file-dropzone-icon mb-2" />
+          <div className="text-muted small">{strings.getString('file_upload')}</div>
+        </div>
+      )}
     </Form.Group>
   );
 };

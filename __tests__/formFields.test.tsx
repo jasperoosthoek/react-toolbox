@@ -1303,6 +1303,190 @@ describe('Form Field Components Tests', () => {
         });
       });
     });
+
+    describe('Single file mode (multiple={false})', () => {
+      it('hides the dropzone while a file is present and re-shows it after removal', async () => {
+        const mockOnUpload = createMockOnUpload();
+        const file = createMockFile('only.txt', 10, 'text/plain');
+
+        const { container, getByText } = render(
+          <TestWrapper>
+            <FormProvider formFields={fileFormFields} onSubmit={jest.fn()}>
+              <FormFile name="attachments" onUpload={mockOnUpload} multiple={false} />
+            </FormProvider>
+          </TestWrapper>
+        );
+
+        expect(container.querySelector('.form-file-dropzone')).toBeInTheDocument();
+
+        const input = container.querySelector('input[type="file"]') as HTMLInputElement;
+        fireEvent.change(input, { target: { files: [file] } });
+
+        await waitFor(() => expect(getByText('only.txt')).toBeInTheDocument());
+        await waitFor(() => expect(container.querySelector('.progress')).not.toBeInTheDocument());
+        expect(container.querySelector('.form-file-dropzone')).not.toBeInTheDocument();
+
+        const removeButton = container.querySelector('button') as HTMLButtonElement;
+        fireEvent.click(removeButton);
+
+        await waitFor(() => {
+          expect(container.querySelector('.form-file-dropzone')).toBeInTheDocument();
+        });
+      });
+
+      it('only uploads the first file when several are dropped at once', async () => {
+        const mockOnUpload = createMockOnUpload();
+        const a = createMockFile('a.txt', 10, 'text/plain');
+        const b = createMockFile('b.txt', 10, 'text/plain');
+        const c = createMockFile('c.txt', 10, 'text/plain');
+
+        const { container } = render(
+          <TestWrapper>
+            <FormProvider formFields={fileFormFields} onSubmit={jest.fn()}>
+              <FormFile name="attachments" onUpload={mockOnUpload} multiple={false} />
+            </FormProvider>
+          </TestWrapper>
+        );
+
+        const dropZone = container.querySelector('.form-file-dropzone') as HTMLElement;
+        fireEvent.drop(dropZone, { dataTransfer: { files: [a, b, c] } });
+
+        await waitFor(() => {
+          expect(container.querySelector('.form-file-dropzone')).not.toBeInTheDocument();
+        });
+        expect(mockOnUpload).toHaveBeenCalledTimes(1);
+        expect(mockOnUpload).toHaveBeenCalledWith(a, expect.any(Function));
+      });
+
+      it('only selects the first file when several are picked from the dialog', async () => {
+        const mockOnUpload = createMockOnUpload();
+        const a = createMockFile('a.txt', 10, 'text/plain');
+        const b = createMockFile('b.txt', 10, 'text/plain');
+
+        const { container } = render(
+          <TestWrapper>
+            <FormProvider formFields={fileFormFields} onSubmit={jest.fn()}>
+              <FormFile name="attachments" onUpload={mockOnUpload} multiple={false} />
+            </FormProvider>
+          </TestWrapper>
+        );
+
+        const input = container.querySelector('input[type="file"]') as HTMLInputElement;
+        fireEvent.change(input, { target: { files: [a, b] } });
+
+        await waitFor(() => {
+          expect(container.querySelector('.form-file-dropzone')).not.toBeInTheDocument();
+        });
+        expect(mockOnUpload).toHaveBeenCalledTimes(1);
+        expect(mockOnUpload).toHaveBeenCalledWith(a, expect.any(Function));
+      });
+
+      it('lets the user remove and upload again', async () => {
+        const mockOnUpload = createMockOnUpload();
+        const first = createMockFile('first.txt', 10, 'text/plain');
+        const second = createMockFile('second.txt', 10, 'text/plain');
+
+        const { container, getByText, queryByText } = render(
+          <TestWrapper>
+            <FormProvider formFields={fileFormFields} onSubmit={jest.fn()}>
+              <FormFile name="attachments" onUpload={mockOnUpload} multiple={false} />
+            </FormProvider>
+          </TestWrapper>
+        );
+
+        const firstInput = container.querySelector('input[type="file"]') as HTMLInputElement;
+        fireEvent.change(firstInput, { target: { files: [first] } });
+
+        await waitFor(() => expect(getByText('first.txt')).toBeInTheDocument());
+        await waitFor(() => expect(container.querySelector('.progress')).not.toBeInTheDocument());
+
+        fireEvent.click(container.querySelector('button') as HTMLButtonElement);
+
+        await waitFor(() => {
+          expect(container.querySelector('.form-file-dropzone')).toBeInTheDocument();
+        });
+
+        const secondInput = container.querySelector('input[type="file"]') as HTMLInputElement;
+        fireEvent.change(secondInput, { target: { files: [second] } });
+
+        await waitFor(() => expect(getByText('second.txt')).toBeInTheDocument());
+        expect(queryByText('first.txt')).not.toBeInTheDocument();
+      });
+
+      it('hides the dropzone while an upload is still in flight', async () => {
+        let resolveUpload: ((value: { path: string }) => void) | null = null;
+        const mockOnUpload = jest.fn((file: File, _onProgress: (progress: number) => void) =>
+          new Promise<{ path: string }>((resolve) => {
+            resolveUpload = () => resolve({ path: `/uploads/${file.name}` });
+          })
+        );
+        const file = createMockFile('slow.txt', 10, 'text/plain');
+
+        const { container, getByText } = render(
+          <TestWrapper>
+            <FormProvider formFields={fileFormFields} onSubmit={jest.fn()}>
+              <FormFile name="attachments" onUpload={mockOnUpload} multiple={false} />
+            </FormProvider>
+          </TestWrapper>
+        );
+
+        const input = container.querySelector('input[type="file"]') as HTMLInputElement;
+        fireEvent.change(input, { target: { files: [file] } });
+
+        await waitFor(() => {
+          expect(container.querySelector('.form-file-dropzone')).not.toBeInTheDocument();
+        });
+        // No file row yet, only the in-progress uploading panel.
+        expect(container.querySelector('.progress')).toBeInTheDocument();
+
+        resolveUpload!({ path: '/uploads/slow.txt' });
+        await waitFor(() => expect(getByText('slow.txt')).toBeInTheDocument());
+        expect(container.querySelector('.form-file-dropzone')).not.toBeInTheDocument();
+      });
+
+      it('still shows the dropzone after a failed upload (error in uploading panel)', async () => {
+        const mockOnUpload = createMockOnUpload(true);
+        const file = createMockFile('bad.txt', 10, 'text/plain');
+
+        const { container, getByText } = render(
+          <TestWrapper>
+            <FormProvider formFields={fileFormFields} onSubmit={jest.fn()}>
+              <FormFile name="attachments" onUpload={mockOnUpload} multiple={false} />
+            </FormProvider>
+          </TestWrapper>
+        );
+
+        const input = container.querySelector('input[type="file"]') as HTMLInputElement;
+        fireEvent.change(input, { target: { files: [file] } });
+
+        await waitFor(() => expect(getByText('Upload failed')).toBeInTheDocument());
+        expect(container.querySelector('.form-file-dropzone')).toBeInTheDocument();
+      });
+
+      it('appends when multiple is true (regression guard)', async () => {
+        const mockOnUpload = createMockOnUpload();
+        const first = createMockFile('first.txt', 10, 'text/plain');
+        const second = createMockFile('second.txt', 10, 'text/plain');
+
+        const { container, getByText } = render(
+          <TestWrapper>
+            <FormProvider formFields={fileFormFields} onSubmit={jest.fn()}>
+              <FormFile name="attachments" onUpload={mockOnUpload} multiple={true} />
+            </FormProvider>
+          </TestWrapper>
+        );
+
+        const input = container.querySelector('input[type="file"]') as HTMLInputElement;
+
+        fireEvent.change(input, { target: { files: [first] } });
+        await waitFor(() => expect(getByText('first.txt')).toBeInTheDocument());
+
+        fireEvent.change(input, { target: { files: [second] } });
+        await waitFor(() => expect(getByText('second.txt')).toBeInTheDocument());
+
+        expect(getByText('first.txt')).toBeInTheDocument();
+      });
+    });
   });
 
   describe('FormInput inputComponent prop', () => {

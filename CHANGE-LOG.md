@@ -396,3 +396,6 @@
 
 ##### Version 0.11.6
 - New `SendButton` component
+
+##### Version 0.11.7
+- `FormFile` honors `multiple={false}`: replaces instead of appending, hides the dropzone while a file is present or an upload is in flight, and limits multi-file selection/drop to the first file
