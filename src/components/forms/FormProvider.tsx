@@ -104,7 +104,7 @@ export const FormProvider = <T extends FormFields>({
   }
 
   const getInitialFormData = () => ({
-    ...Object.entries(formFields).reduce((o, [key, { initialValue }]) => ({ ...o, [key]: initialValue || '' }), {}),
+    ...Object.entries(formFields).reduce((o, [key, { initialValue }]) => ({ ...o, [key]: initialValue ?? '' }), {}),
     ...initialState || {},
   }) as { [key in keyof T]: FormValue };
 

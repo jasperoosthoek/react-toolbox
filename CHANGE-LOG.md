@@ -399,3 +399,7 @@
 
 ##### Version 0.11.7
 - `FormFile` honors `multiple={false}`: replaces instead of appending, hides the dropzone while a file is present or an upload is in flight, and limits multi-file selection/drop to the first file
+
+##### Version 0.11.8
+- Type tests for `FormProvider` / `useForm` / `OnSubmit<T>` / `InitialState<T>`: `tsc --noEmit` runs as a Jest case and a `*.probe.ts` file asserts inferred shapes with `@ts-expect-error` and typed bindings
+- `FormInput`, `FormDropdown`, and `DisabledFormField` (in `FormModal`) use `??` for the empty-string fallback so falsy-but-valid values (`0`, `false`) survive — completes the same fix that was applied to `FormProvider` and `FormSelect`

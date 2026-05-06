@@ -93,7 +93,7 @@ export const FormDropdown = <T,>(props: FormDropdownProps<T>) => {
       {isInvalid && <FormError error={error} />}
       
       <Form.Select
-        value={value || ''}
+        value={value ?? ''}
         isInvalid={isInvalid}
         onChange={(e) => onChange(e.target.value)}
         onKeyDown={(e: KeyboardEvent<HTMLSelectElement>) => {

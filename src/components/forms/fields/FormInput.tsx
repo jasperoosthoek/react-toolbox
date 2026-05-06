@@ -24,7 +24,7 @@ export const FormInput = ({ inputComponent: InputComponent, ...props }: FormInpu
       {isInvalid && <FormError error={error} id={errorId} />}
       {InputComponent ? (
         <InputComponent
-          value={value || ''}
+          value={value ?? ''}
           onChange={onChange}
           isInvalid={isInvalid}
           aria-describedby={errorId}
@@ -34,7 +34,7 @@ export const FormInput = ({ inputComponent: InputComponent, ...props }: FormInpu
         <Form.Control
           autoComplete="off"
           {...mergedProps}
-          value={value || ''}
+          value={value ?? ''}
           isInvalid={isInvalid}
           aria-describedby={errorId}
           onChange={(e: ChangeEvent<HTMLInputElement>) => {

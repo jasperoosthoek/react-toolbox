@@ -24,7 +24,7 @@ export const FormSelect = (props: FormSelectProps) => {
       {isInvalid && <FormError error={error} />}
       <Form.Select
         {...mergedProps}
-        value={value || ''}
+        value={value ?? ''}
         isInvalid={isInvalid}
         onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
           onChange(e.target.value);

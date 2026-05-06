@@ -185,6 +185,6 @@ export const DisabledFormField = ({ value }: any) => (
   <Form.Control
     as="input"
     disabled
-    value={value || ''}
+    value={value ?? ''}
   />
 );

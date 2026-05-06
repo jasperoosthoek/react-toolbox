@@ -8,7 +8,10 @@
     "dist",
     "dist-examples"
   ],
-  "include": ["src/**/*"],
+  "include": [
+    "src/**/*",
+    "__tests__/types.formProvider.probe.ts"
+  ],
   "compilerOptions": {
     "outDir": "./dist/",
     "noImplicitAny": true,

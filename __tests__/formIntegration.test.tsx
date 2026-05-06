@@ -34,6 +34,7 @@ import {
   TestWrapper,
   FormTestWrapper,
   render,
+  fireEvent,
 } from './utils';
 
 describe('Form Integration Tests', () => {
@@ -125,6 +126,77 @@ describe('Form Integration Tests', () => {
           </TestWrapper>
         );
       }).not.toThrow();
+    });
+
+    it('preserves falsy initial values (0, false) through submit', () => {
+      const mockSubmit = jest.fn();
+      const formFields = {
+        count: { initialValue: 0, required: false, type: 'number', label: 'Count' },
+        active: { initialValue: false, required: false, type: 'boolean', label: 'Active' },
+        name: { initialValue: '', required: false, type: 'string', label: 'Name' },
+      };
+
+      const SubmitButton = () => {
+        const { submit } = useForm();
+        return <button data-testid="submit-btn" onClick={submit}>Submit</button>;
+      };
+
+      const { getByTestId } = render(
+        <TestWrapper>
+          <FormProvider formFields={formFields} onSubmit={mockSubmit}>
+            <FormInput name="count" type="number" />
+            <FormCheckbox name="active" />
+            <FormInput name="name" />
+            <SubmitButton />
+          </FormProvider>
+        </TestWrapper>
+      );
+
+      fireEvent.click(getByTestId('submit-btn'));
+
+      expect(mockSubmit).toHaveBeenCalledTimes(1);
+      const [submitted] = mockSubmit.mock.calls[0];
+      expect(submitted.count).toBe(0);
+      expect(submitted.active).toBe(false);
+      expect(submitted.name).toBe('');
+    });
+
+    it('renders the correct FormInput value when initialValue is 0', () => {
+      const formFields = {
+        count: { initialValue: 0, required: false, type: 'number', label: 'Count' },
+      };
+
+      const { container } = render(
+        <TestWrapper>
+          <FormProvider formFields={formFields} onSubmit={jest.fn()}>
+            <FormInput name="count" type="number" />
+          </FormProvider>
+        </TestWrapper>
+      );
+
+      const input = container.querySelector('input[type="number"]') as HTMLInputElement;
+      expect(input.value).toBe('0');
+    });
+
+    it('selects the correct FormSelect option when value is the numeric 0', () => {
+      const formFields = {
+        priority: { initialValue: 0, required: false, type: 'select', label: 'Priority' },
+      };
+      const options = [
+        { value: 0, label: 'None' },
+        { value: 1, label: 'Low' },
+      ];
+
+      const { container } = render(
+        <TestWrapper>
+          <FormProvider formFields={formFields} onSubmit={jest.fn()}>
+            <FormSelect name="priority" options={options} />
+          </FormProvider>
+        </TestWrapper>
+      );
+
+      const select = container.querySelector('select') as HTMLSelectElement;
+      expect(select.value).toBe('0');
     });
   });
 
