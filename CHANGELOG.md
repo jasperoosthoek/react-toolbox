@@ -403,3 +403,9 @@
 ##### Version 0.11.8
 - Type tests for `FormProvider` / `useForm` / `OnSubmit<T>` / `InitialState<T>`: `tsc --noEmit` runs as a Jest case and a `*.probe.ts` file asserts inferred shapes with `@ts-expect-error` and typed bindings
 - `FormInput`, `FormDropdown`, and `DisabledFormField` (in `FormModal`) use `??` for the empty-string fallback so falsy-but-valid values (`0`, `false`) survive — completes the same fix that was applied to `FormProvider` and `FormSelect`
+
+##### Version 0.11.9
+- `FormComponentProps` narrowed to `{name, label?, placeholder?, required?}` to match what `FormFieldsRenderer` actually passes.
+- Custom components destructuring `value` or `onChange` now get a compile error; use `useFormField` instead.
+- Unused `FormType` removed
+- `DisabledProps` deduplicated.

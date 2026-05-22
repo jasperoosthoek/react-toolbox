@@ -16,27 +16,10 @@ export type FormOnChange = (
 );
 
 export type FormComponentProps = {
-  keyName?: string;
-  submitAttempted?: boolean;
-  modified?: boolean;
-  isInvalid?: boolean;
-  value: FormValue;
-  state?: any;
-  setState?: (newState: any) => void;
-  onChange?: FormOnChange;
-  initialState?: any;
-  initialValue?: any;
+  name: string;
   label?: ReactElement | string;
-}
-
-export type FormType = {
-  state: any;
-  setState: (obj: any) => void;
-  initialState: any;
-  initialValue: any;
-  keyName: string;
-  submitAttempted: boolean;
-  modified: boolean;
+  placeholder?: string;
+  required?: boolean;
 }
 
 export type DisabledProps = {

@@ -4,14 +4,7 @@ import { useFormField } from '../FormField';
 import { FormError } from './FormError';
 import { useLocalization } from '../../../localization/LocalizationContext';
 import { IsRequiredAsterisk } from './FormInput';
-
-type DisabledProps = {
-  list: any[];
-  value: string | number;
-  state: any;
-  initialState: any;
-  initialValue: any;
-}
+import { DisabledProps } from '../FormFields';
 
 export interface FormDropdownProps<T> extends Omit<
   React.InputHTMLAttributes<HTMLInputElement>,
