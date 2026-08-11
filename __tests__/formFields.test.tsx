@@ -17,6 +17,8 @@ import {
   FormCheckbox,
   FormSwitch
 } from '../src/components/forms/fields/FormCheckbox';
+import { FormCheckboxGroup } from '../src/components/forms/fields/FormCheckboxGroup';
+import { FormBadgePicker } from '../src/components/forms/fields/FormBadgePicker';
 import { FormSelect } from '../src/components/forms/fields/FormSelect';
 import { FormDropdown } from '../src/components/forms/fields/FormDropdown';
 import {
@@ -526,6 +528,387 @@ describe('Form Field Components Tests', () => {
     });
   });
 
+  describe('FormCheckboxGroup Component', () => {
+    const checkboxGroupFormFields = {
+      roles: {
+        initialValue: [],
+        label: 'Roles',
+        required: false,
+        formProps: {},
+      },
+    };
+
+    const checkboxGroupOptions = [
+      { value: 1, label: 'React' },
+      { value: 2, label: 'TypeScript' },
+      { value: 3, label: 'JavaScript', disabled: true },
+    ];
+
+    const renderWithFormProvider = (
+      ui: React.ReactElement,
+      formValues = { roles: [1] },
+      additionalProps = {}
+    ) => {
+      return render(
+        <FormProvider
+          formFields={checkboxGroupFormFields}
+          initialState={formValues}
+          onSubmit={jest.fn()}
+          {...additionalProps}
+        >
+          {ui}
+        </FormProvider>
+      );
+    };
+
+    it('should render checkbox group with label and options', () => {
+      const { getByText } = renderWithFormProvider(
+        <FormCheckboxGroup name="roles" options={checkboxGroupOptions} />
+      );
+
+      expect(getByText('Roles')).toBeInTheDocument();
+      expect(getByText('React')).toBeInTheDocument();
+      expect(getByText('TypeScript')).toBeInTheDocument();
+      expect(getByText('JavaScript')).toBeInTheDocument();
+    });
+
+    it('should mark selected options as checked when value is an array', () => {
+      renderWithFormProvider(
+        <FormCheckboxGroup name="roles" options={checkboxGroupOptions} />,
+        { roles: [1, 2] }
+      );
+
+      expect(screen.getByLabelText('React')).toBeChecked();
+      expect(screen.getByLabelText('TypeScript')).toBeChecked();
+      expect(screen.getByLabelText('JavaScript')).not.toBeChecked();
+    });
+
+    it('should normalize a non-array value into a single selected checkbox', () => {
+      renderWithFormProvider(
+        <FormCheckboxGroup name="roles" options={checkboxGroupOptions} />,
+        { roles: 2 as any }
+      );
+
+      expect(screen.getByLabelText('React')).not.toBeChecked();
+      expect(screen.getByLabelText('TypeScript')).toBeChecked();
+    });
+
+    it('should treat an empty-string value as no selection and allow omitting the group label', () => {
+      const formFieldsWithoutLabel = {
+        roles: {
+          initialValue: '',
+          required: false,
+          formProps: {},
+        },
+      };
+
+      render(
+        <FormProvider formFields={formFieldsWithoutLabel} onSubmit={jest.fn()}>
+          <FormCheckboxGroup name="roles" options={checkboxGroupOptions} />
+        </FormProvider>
+      );
+
+      expect(screen.queryByText('Roles')).not.toBeInTheDocument();
+      expect(screen.getByLabelText('React')).not.toBeChecked();
+      expect(screen.getByLabelText('TypeScript')).not.toBeChecked();
+      expect(screen.getByLabelText('JavaScript')).not.toBeChecked();
+    });
+
+    it('should handle omitted options by rendering no checkboxes', () => {
+      const { container } = renderWithFormProvider(
+        <FormCheckboxGroup name="roles" options={undefined as any} />
+      );
+
+      expect(container.querySelectorAll('input[type="checkbox"]')).toHaveLength(0);
+    });
+
+    it('should toggle checkbox values on and off', () => {
+      renderWithFormProvider(
+        <FormCheckboxGroup name="roles" options={checkboxGroupOptions} />,
+        { roles: [1] }
+      );
+
+      const reactCheckbox = screen.getByLabelText('React');
+      const typescriptCheckbox = screen.getByLabelText('TypeScript');
+
+      expect(reactCheckbox).toBeChecked();
+      expect(typescriptCheckbox).not.toBeChecked();
+
+      fireEvent.click(typescriptCheckbox);
+      expect(reactCheckbox).toBeChecked();
+      expect(typescriptCheckbox).toBeChecked();
+
+      fireEvent.click(reactCheckbox);
+      expect(reactCheckbox).not.toBeChecked();
+      expect(typescriptCheckbox).toBeChecked();
+    });
+
+    it('should compare values as integers when integer is true', () => {
+      renderWithFormProvider(
+        <FormCheckboxGroup name="roles" options={checkboxGroupOptions} integer />,
+        { roles: ['2'] as any }
+      );
+
+      expect(screen.getByLabelText('React')).not.toBeChecked();
+      expect(screen.getByLabelText('TypeScript')).toBeChecked();
+    });
+
+    it('should respect component and option disabled states', () => {
+      const { rerender } = render(
+        <FormProvider
+          formFields={checkboxGroupFormFields}
+          initialState={{ roles: [] }}
+          onSubmit={jest.fn()}
+        >
+          <FormCheckboxGroup name="roles" options={checkboxGroupOptions} />
+        </FormProvider>
+      );
+
+      expect(screen.getByLabelText('React')).not.toBeDisabled();
+      expect(screen.getByLabelText('JavaScript')).toBeDisabled();
+
+      rerender(
+        <FormProvider
+          formFields={checkboxGroupFormFields}
+          initialState={{ roles: [] }}
+          onSubmit={jest.fn()}
+        >
+          <FormCheckboxGroup name="roles" options={checkboxGroupOptions} disabled />
+        </FormProvider>
+      );
+
+      expect(screen.getByLabelText('React')).toBeDisabled();
+      expect(screen.getByLabelText('TypeScript')).toBeDisabled();
+      expect(screen.getByLabelText('JavaScript')).toBeDisabled();
+    });
+
+    it('should show validation error styling for a required group after submit', () => {
+      const requiredFormFields = {
+        roles: {
+          initialValue: '',
+          label: 'Roles',
+          required: true,
+          formProps: {},
+        },
+      };
+
+      const SubmitButton = () => {
+        const { submit } = useForm();
+        return <button data-testid="submit-btn" onClick={submit}>Submit</button>;
+      };
+
+      const { container } = render(
+        <TestWrapper>
+          <FormProvider formFields={requiredFormFields} onSubmit={jest.fn()}>
+            <FormCheckboxGroup name="roles" options={checkboxGroupOptions} />
+            <SubmitButton />
+          </FormProvider>
+        </TestWrapper>
+      );
+
+      fireEvent.click(screen.getByTestId('submit-btn'));
+
+      expect(screen.getByText('required')).toBeInTheDocument();
+      expect(container.querySelector('.is-invalid')).toBeInTheDocument();
+      expect(screen.getByLabelText('React')).toHaveAttribute('aria-describedby');
+    });
+  });
+
+  describe('FormBadgePicker Component', () => {
+    const pickerFormFields = {
+      tags: {
+        initialValue: [],
+        label: 'Tags',
+        required: false,
+        formProps: {},
+      },
+    };
+
+    const pickerOptions = [
+      { value: 1, label: 'React' },
+      { value: 2, label: 'TypeScript' },
+      { value: 3, label: 'JavaScript', disabled: true },
+    ];
+
+    const renderWithFormProvider = (
+      ui: React.ReactElement,
+      formValues = { tags: [1] },
+      additionalProps = {}
+    ) => {
+      return render(
+        <TestWrapper>
+          <FormProvider
+            formFields={pickerFormFields}
+            initialState={formValues}
+            onSubmit={jest.fn()}
+            {...additionalProps}
+          >
+            {ui}
+          </FormProvider>
+        </TestWrapper>
+      );
+    };
+
+    it('should render selected badges and a dropdown toggle', () => {
+      const { container, getByText } = renderWithFormProvider(
+        <FormBadgePicker name="tags" list={pickerOptions} multiple />
+      );
+
+      expect(getByText('Tags')).toBeInTheDocument();
+      expect(screen.getByTestId('tags-toggle')).toHaveClass('form-select', 'text-start');
+      expect(screen.getByTestId('tags-toggle')).toHaveTextContent('Select');
+      expect(container.querySelectorAll('.badge')).toHaveLength(1);
+      expect(container.querySelector('.badge')).toHaveTextContent('React');
+      expect(screen.getByTestId('tags-option-1')).toBeInTheDocument();
+      expect(screen.getByTestId('tags-option-checkbox-1')).toBeChecked();
+      expect(screen.getByTestId('tags-option-checkbox-2')).not.toBeChecked();
+      expect(screen.getByTestId('tags-option-block-1')).toHaveClass('bg-secondary', 'text-white');
+    });
+
+    it('should show placeholder text when nothing is selected', () => {
+      const { container } = renderWithFormProvider(
+        <FormBadgePicker name="tags" list={pickerOptions} multiple />,
+        { tags: [] }
+      );
+
+      expect(screen.getByTestId('tags-toggle')).toHaveTextContent('Choose one');
+      expect(screen.getByTestId('tags-toggle')).toHaveClass('text-muted');
+      expect(container.querySelectorAll('.badge')).toHaveLength(0);
+      expect(screen.queryByTestId('tags-selected-values')).not.toBeInTheDocument();
+      expect(screen.getByTestId('tags-option-1')).toBeInTheDocument();
+      expect(screen.getByTestId('tags-option-2')).toBeInTheDocument();
+      expect(screen.getByTestId('tags-option-3')).toBeInTheDocument();
+    });
+
+    it('should add values from the dropdown options', () => {
+      const { container } = renderWithFormProvider(
+        <FormBadgePicker name="tags" list={pickerOptions} multiple />,
+        { tags: [1] }
+      );
+
+      fireEvent.click(screen.getByTestId('tags-option-2'));
+
+      const badges = Array.from(container.querySelectorAll('.badge')).map((badge) => badge.textContent);
+      expect(badges).toContain('React');
+      expect(badges).toContain('TypeScript');
+      expect(screen.getByTestId('tags-toggle')).toHaveTextContent('Select');
+      expect(screen.getByTestId('tags-option-checkbox-1')).toBeChecked();
+      expect(screen.getByTestId('tags-option-checkbox-2')).toBeChecked();
+      expect(screen.getByTestId('tags-option-block-1')).toHaveClass('bg-secondary', 'text-white');
+      expect(screen.getByTestId('tags-option-block-2')).toHaveClass('bg-secondary', 'text-white');
+    });
+
+    it('should remove selected values when clicked again in the dropdown', () => {
+      const { container } = renderWithFormProvider(
+        <FormBadgePicker name="tags" list={pickerOptions} multiple />,
+        { tags: [1, 2] }
+      );
+
+      fireEvent.click(screen.getByTestId('tags-option-1'));
+
+      const badges = Array.from(container.querySelectorAll('.badge')).map((badge) => badge.textContent);
+      expect(badges).toEqual(['TypeScript']);
+      expect(screen.getByTestId('tags-toggle')).toHaveTextContent('Select');
+      expect(screen.getByTestId('tags-option-checkbox-1')).not.toBeChecked();
+      expect(screen.getByTestId('tags-option-checkbox-2')).toBeChecked();
+      expect(screen.getByTestId('tags-option-block-1')).not.toHaveClass('bg-secondary', 'text-white');
+    });
+
+    it('should remove selected values when clicking a badge', () => {
+      const { container } = renderWithFormProvider(
+        <FormBadgePicker name="tags" list={pickerOptions} multiple />,
+        { tags: [1, 2] }
+      );
+
+      const reactBadge = Array.from(screen.getByTestId('tags-selected-values').querySelectorAll('.badge'))
+        .find((badge) => badge.textContent === 'React') as HTMLElement;
+
+      fireEvent.click(reactBadge);
+
+      const badges = Array.from(container.querySelectorAll('.badge')).map((badge) => badge.textContent);
+      expect(badges).toEqual(['TypeScript']);
+      expect(screen.getByTestId('tags-option-checkbox-1')).not.toBeChecked();
+      expect(screen.getByTestId('tags-option-checkbox-2')).toBeChecked();
+    });
+
+    it('should replace the current value in single-select mode', () => {
+      const { container } = renderWithFormProvider(
+        <FormBadgePicker name="tags" list={pickerOptions} multiple={false} />,
+        { tags: 1 as any }
+      );
+
+      fireEvent.click(screen.getByTestId('tags-option-2'));
+
+      expect(container.querySelectorAll('.badge')).toHaveLength(1);
+      expect(container.querySelector('.badge')).toHaveTextContent('TypeScript');
+      expect(screen.getByTestId('tags-toggle')).toHaveTextContent('Select');
+      expect(screen.getByTestId('tags-option-checkbox-1')).not.toBeChecked();
+      expect(screen.getByTestId('tags-option-checkbox-2')).toBeChecked();
+    });
+
+    it('should normalize values as integers when integer is true', () => {
+      const { container } = renderWithFormProvider(
+        <FormBadgePicker name="tags" list={pickerOptions} multiple integer />,
+        { tags: ['2'] as any }
+      );
+
+      expect(container.querySelectorAll('.badge')).toHaveLength(1);
+      expect(container.querySelector('.badge')).toHaveTextContent('TypeScript');
+      expect(screen.getByTestId('tags-toggle')).toHaveTextContent('Select');
+      expect(screen.getByTestId('tags-option-checkbox-2')).toBeChecked();
+
+      fireEvent.click(screen.getByTestId('tags-option-1'));
+      const badges = Array.from(container.querySelectorAll('.badge')).map((badge) => badge.textContent);
+      expect(badges).toContain('React');
+      expect(badges).toContain('TypeScript');
+      expect(screen.getByTestId('tags-option-checkbox-1')).toBeChecked();
+      expect(screen.getByTestId('tags-option-checkbox-2')).toBeChecked();
+    });
+
+    it('should respect disabled state for selected badges and dropdown items', () => {
+      const { container, getByText, rerender } = render(
+        <TestWrapper>
+          <FormProvider
+            formFields={pickerFormFields}
+            initialState={{ tags: [1] }}
+            onSubmit={jest.fn()}
+          >
+            <FormBadgePicker name="tags" list={pickerOptions} multiple />
+          </FormProvider>
+        </TestWrapper>
+      );
+
+      const dropdownItems = container.querySelectorAll('.dropdown-item');
+      expect(dropdownItems).toHaveLength(3);
+      expect(screen.getByTestId('tags-option-1')).not.toHaveAttribute('disabled');
+      expect(screen.getByTestId('tags-option-checkbox-1')).toBeChecked();
+      expect(screen.getByTestId('tags-option-3')).toHaveAttribute('disabled');
+      expect(container.querySelectorAll('.badge')).toHaveLength(1);
+
+      fireEvent.click(screen.getByTestId('tags-option-3'));
+      expect(screen.getByTestId('tags-option-checkbox-1')).toBeChecked();
+      expect(screen.getByTestId('tags-option-checkbox-3')).not.toBeChecked();
+
+      rerender(
+        <TestWrapper>
+          <FormProvider
+            formFields={pickerFormFields}
+            initialState={{ tags: [1] }}
+            onSubmit={jest.fn()}
+          >
+            <FormBadgePicker name="tags" list={pickerOptions} multiple disabled />
+          </FormProvider>
+        </TestWrapper>
+      );
+
+      expect(screen.getByTestId('tags-toggle')).toBeDisabled();
+      expect(screen.getByTestId('tags-option-1')).toHaveAttribute('disabled');
+      fireEvent.click(screen.getByTestId('tags-option-1'));
+      expect(screen.getByTestId('tags-option-checkbox-1')).toBeChecked();
+      expect(container.querySelectorAll('.badge')).toHaveLength(1);
+    });
+  });
+
   describe('FormSelect Component', () => {
     const selectFormFields = {
       status: {
@@ -617,9 +1000,18 @@ describe('Form Field Components Tests', () => {
       );
 
       const input = container.querySelector('input') as HTMLInputElement;
-      // Value comes from form context and FormDateTime formats for datetime-local
+      const expected = (() => {
+        const date = new Date('2024-06-15T14:30:00.000Z');
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+        return `${year}-${month}-${day}T${hours}:${minutes}`;
+      })();
       expect(input).toBeInTheDocument();
       expect(input).toHaveAttribute('type', 'datetime-local');
+      expect(input.value).toBe(expected);
     });
 
     it('should handle form value changes through FormDateTime', () => {
@@ -670,6 +1062,8 @@ describe('Form Field Components Tests', () => {
       expect(typeof FormDateTime).toBe('function');
       expect(typeof FormCheckbox).toBe('function');
       expect(typeof FormSwitch).toBe('function');
+      expect(typeof FormCheckboxGroup).toBe('function');
+      expect(typeof FormBadgePicker).toBe('function');
       expect(typeof FormSelect).toBe('function');
       expect(typeof FormDropdown).toBe('function');
       expect(typeof FormBadgesSelection).toBe('function');
@@ -1582,6 +1976,24 @@ describe('Form Field Components Tests', () => {
   });
 
   describe('FormDateTime edge cases', () => {
+    it('should format an external Date value for datetime-local input', () => {
+      const explicitDate = new Date(2024, 5, 15, 14, 30);
+
+      const { container } = render(
+        <FormTestWrapper>
+          <FormDateTime
+            name="dt"
+            label="DateTime"
+            value={explicitDate}
+            onChange={jest.fn()}
+          />
+        </FormTestWrapper>
+      );
+
+      const input = container.querySelector('input') as HTMLInputElement;
+      expect(input.value).toBe('2024-06-15T14:30');
+    });
+
     it('should handle empty string onChange', () => {
       const dateTimeFormFields = {
         'dt': { initialValue: '2024-06-15T14:30:00.000Z', label: 'DateTime', formProps: {} },
@@ -1598,49 +2010,127 @@ describe('Form Field Components Tests', () => {
       expect(input).toBeInTheDocument();
     });
 
-    it('should handle invalid date input gracefully', () => {
-      const dateTimeFormFields = {
-        'dt': { initialValue: '', label: 'DateTime', formProps: {} },
-      };
+    it('should not throw when no onChange handler is available', () => {
+      const consoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
 
       const { container } = render(
-        <FormTestWrapper formFields={dateTimeFormFields}>
-          <FormDateTime name="dt" />
+        <FormDateTime
+          name="dt"
+          value={new Date(2024, 5, 15, 14, 30)}
+        />
+      );
+
+      const input = container.querySelector('input') as HTMLInputElement;
+      expect(() => {
+        fireEvent.change(input, { target: { value: '2024-06-16T09:45' } });
+      }).not.toThrow();
+
+      consoleError.mockRestore();
+    });
+
+    it('should handle invalid date input gracefully', () => {
+      const mockOnChange = jest.fn();
+
+      const { container } = render(
+        <FormTestWrapper>
+          <FormDateTime
+            name="dt"
+            label="DateTime"
+            value={new Date(2024, 5, 15, 14, 30)}
+            onChange={mockOnChange}
+          />
         </FormTestWrapper>
       );
 
       const input = container.querySelector('input') as HTMLInputElement;
       fireEvent.change(input, { target: { value: 'invalid-date' } });
-      expect(input).toBeInTheDocument();
+      expect(mockOnChange).toHaveBeenCalledWith('');
     });
 
     it('should convert valid datetime-local input to ISO string', () => {
-      const mockSubmit = jest.fn();
+      const mockOnChange = jest.fn();
       const dateTimeFormFields = {
-        'dt': { initialValue: '', label: 'DateTime', formProps: {} },
-      };
-
-      const TestForm = () => {
-        const { getValue } = useForm();
-        return (
-          <>
-            <FormDateTime name="dt" />
-            <span data-testid="val">{String(getValue('dt'))}</span>
-          </>
-        );
+        dt: { initialValue: '', label: 'DateTime', formProps: {} },
       };
 
       const { container, getByTestId } = render(
-        <TestWrapper>
-          <FormProvider formFields={dateTimeFormFields} onSubmit={mockSubmit}>
-            <TestForm />
-          </FormProvider>
-        </TestWrapper>
+        <FormTestWrapper formFields={dateTimeFormFields}>
+          <>
+            <FormDateTime
+              name="dt"
+              label="DateTime"
+              value={new Date(2024, 5, 15, 14, 30)}
+              onChange={mockOnChange}
+            />
+            <span data-testid="expected">{new Date('2024-06-16T09:45').toISOString()}</span>
+          </>
+        </FormTestWrapper>
       );
 
       const input = container.querySelector('input') as HTMLInputElement;
-      fireEvent.change(input, { target: { value: '2024-06-15T14:30' } });
-      expect(getByTestId('val').textContent).toContain('2024-06-15');
+      fireEvent.change(input, { target: { value: '2024-06-16T09:45' } });
+      expect(mockOnChange).toHaveBeenCalledWith(getByTestId('expected').textContent);
+    });
+
+    it('should return an empty string when formatting throws', () => {
+      const invalidDateLike = {
+        getTime: () => 0,
+        getFullYear: () => {
+          throw new Error('broken date');
+        },
+        getMonth: () => 0,
+        getDate: () => 1,
+        getHours: () => 0,
+        getMinutes: () => 0,
+      } as any;
+
+      const { container } = render(
+        <FormTestWrapper>
+          <FormDateTime
+            name="dt"
+            label="DateTime"
+            value={invalidDateLike}
+            onChange={jest.fn()}
+          />
+        </FormTestWrapper>
+      );
+
+      const input = container.querySelector('input') as HTMLInputElement;
+      expect(input.value).toBe('');
+    });
+
+    it('should return an empty string when Date construction throws during change handling', () => {
+      const mockOnChange = jest.fn();
+      const RealDate = Date;
+      const throwingDate = class extends RealDate {
+        constructor(value?: string | number | Date) {
+          if (value === 'boom') {
+            throw new Error('boom');
+          }
+          super(value as any);
+        }
+      };
+
+      // `new Date(inputValue)` is intentionally exercised here.
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (global as any).Date = throwingDate;
+
+      const { container } = render(
+        <FormTestWrapper>
+          <FormDateTime
+            name="dt"
+            label="DateTime"
+            value={new RealDate(2024, 5, 15, 14, 30)}
+            onChange={mockOnChange}
+          />
+        </FormTestWrapper>
+      );
+
+      const input = container.querySelector('input') as HTMLInputElement;
+      fireEvent.change(input, { target: { value: 'boom' } });
+      expect(mockOnChange).toHaveBeenCalledWith('');
+
+      (global as any).Date = RealDate;
     });
   });
 

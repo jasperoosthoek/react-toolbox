@@ -22,6 +22,8 @@ import {
   FormCheckbox,
   FormSwitch
 } from '../src/components/forms/fields/FormCheckbox';
+import { FormCheckboxGroup } from '../src/components/forms/fields/FormCheckboxGroup';
+import { FormBadgePicker } from '../src/components/forms/fields/FormBadgePicker';
 import { FormSelect } from '../src/components/forms/fields/FormSelect';
 import { FormDropdown } from '../src/components/forms/fields/FormDropdown';
 import {
@@ -307,6 +309,8 @@ describe('Form Integration Tests', () => {
       expect(typeof FormDateTime).toBe('function');
       expect(typeof FormCheckbox).toBe('function');
       expect(typeof FormSwitch).toBe('function');
+      expect(typeof FormCheckboxGroup).toBe('function');
+      expect(typeof FormBadgePicker).toBe('function');
       expect(typeof FormSelect).toBe('function');
       expect(typeof FormDropdown).toBe('function');
       expect(typeof FormBadgesSelection).toBe('function');

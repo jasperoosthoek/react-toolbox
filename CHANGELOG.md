@@ -409,3 +409,9 @@
 - Custom components destructuring `value` or `onChange` now get a compile error; use `useFormField` instead.
 - Unused `FormType` removed
 - `DisabledProps` deduplicated.
+
+##### Version 0.11.10
+- New `FormCheckboxGroup` component
+
+##### Version 0.11.11
+- New `FormBadgePicker` component
