@@ -4,6 +4,7 @@ export * from './FormInput';
 export * from './FormSelect';
 export * from './FormCheckbox';
 export * from './FormCheckboxGroup';
+export * from './FormRadioGroup';
 export * from './FormBadgePicker';
 export * from './FormDropdown';
 export * from './FormDateRange';

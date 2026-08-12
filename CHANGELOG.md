@@ -415,3 +415,6 @@
 
 ##### Version 0.11.11
 - New `FormBadgePicker` component
+
+##### Version 0.11.12
+- New `FormRadioGroup` component

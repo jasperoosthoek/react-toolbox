@@ -18,6 +18,7 @@ import {
   FormSwitch
 } from '../src/components/forms/fields/FormCheckbox';
 import { FormCheckboxGroup } from '../src/components/forms/fields/FormCheckboxGroup';
+import { FormRadioGroup } from '../src/components/forms/fields/FormRadioGroup';
 import { FormBadgePicker } from '../src/components/forms/fields/FormBadgePicker';
 import { FormSelect } from '../src/components/forms/fields/FormSelect';
 import { FormDropdown } from '../src/components/forms/fields/FormDropdown';
@@ -714,6 +715,189 @@ describe('Form Field Components Tests', () => {
     });
   });
 
+  describe('FormRadioGroup Component', () => {
+    const radioGroupFormFields = {
+      role: {
+        initialValue: 1,
+        label: 'Role',
+        required: false,
+        formProps: {},
+      },
+    };
+
+    const radioGroupOptions = [
+      { value: 1, label: 'React' },
+      { value: 2, label: 'TypeScript' },
+      { value: 3, label: 'JavaScript', disabled: true },
+    ];
+
+    const renderWithFormProvider = (
+      ui: React.ReactElement,
+      formValues = { role: 1 },
+      additionalProps = {}
+    ) => {
+      return render(
+        <FormProvider
+          formFields={radioGroupFormFields}
+          initialState={formValues}
+          onSubmit={jest.fn()}
+          {...additionalProps}
+        >
+          {ui}
+        </FormProvider>
+      );
+    };
+
+    it('should render radio group with label and options', () => {
+      const { getByText } = renderWithFormProvider(
+        <FormRadioGroup name="role" options={radioGroupOptions} />
+      );
+
+      expect(getByText('Role')).toBeInTheDocument();
+      expect(getByText('React')).toBeInTheDocument();
+      expect(getByText('TypeScript')).toBeInTheDocument();
+      expect(getByText('JavaScript')).toBeInTheDocument();
+    });
+
+    it('should mark the selected option as checked when value is scalar', () => {
+      renderWithFormProvider(
+        <FormRadioGroup name="role" options={radioGroupOptions} />,
+        { role: 2 }
+      );
+
+      expect(screen.getByLabelText('React')).not.toBeChecked();
+      expect(screen.getByLabelText('TypeScript')).toBeChecked();
+      expect(screen.getByLabelText('JavaScript')).not.toBeChecked();
+    });
+
+    it('should normalize an array value into the first selected radio', () => {
+      renderWithFormProvider(
+        <FormRadioGroup name="role" options={radioGroupOptions} />,
+        { role: [2] as any }
+      );
+
+      expect(screen.getByLabelText('React')).not.toBeChecked();
+      expect(screen.getByLabelText('TypeScript')).toBeChecked();
+    });
+
+    it('should treat an empty-string value as no selection and allow omitting the group label', () => {
+      const formFieldsWithoutLabel = {
+        role: {
+          initialValue: '',
+          required: false,
+          formProps: {},
+        },
+      };
+
+      render(
+        <FormProvider formFields={formFieldsWithoutLabel} onSubmit={jest.fn()}>
+          <FormRadioGroup name="role" options={radioGroupOptions} />
+        </FormProvider>
+      );
+
+      expect(screen.queryByText('Role')).not.toBeInTheDocument();
+      expect(screen.getByLabelText('React')).not.toBeChecked();
+      expect(screen.getByLabelText('TypeScript')).not.toBeChecked();
+      expect(screen.getByLabelText('JavaScript')).not.toBeChecked();
+    });
+
+    it('should handle omitted options by rendering no radios', () => {
+      const { container } = renderWithFormProvider(
+        <FormRadioGroup name="role" options={undefined as any} />
+      );
+
+      expect(container.querySelectorAll('input[type="radio"]')).toHaveLength(0);
+    });
+
+    it('should switch the selected radio value', () => {
+      renderWithFormProvider(
+        <FormRadioGroup name="role" options={radioGroupOptions} />,
+        { role: 1 }
+      );
+
+      const reactRadio = screen.getByLabelText('React');
+      const typescriptRadio = screen.getByLabelText('TypeScript');
+
+      expect(reactRadio).toBeChecked();
+      expect(typescriptRadio).not.toBeChecked();
+
+      fireEvent.click(typescriptRadio);
+
+      expect(reactRadio).not.toBeChecked();
+      expect(typescriptRadio).toBeChecked();
+    });
+
+    it('should compare values as integers when integer is true', () => {
+      renderWithFormProvider(
+        <FormRadioGroup name="role" options={radioGroupOptions} integer />,
+        { role: '2' as any }
+      );
+
+      expect(screen.getByLabelText('React')).not.toBeChecked();
+      expect(screen.getByLabelText('TypeScript')).toBeChecked();
+    });
+
+    it('should respect component and option disabled states', () => {
+      const { rerender } = render(
+        <FormProvider
+          formFields={radioGroupFormFields}
+          initialState={{ role: '' }}
+          onSubmit={jest.fn()}
+        >
+          <FormRadioGroup name="role" options={radioGroupOptions} />
+        </FormProvider>
+      );
+
+      expect(screen.getByLabelText('React')).not.toBeDisabled();
+      expect(screen.getByLabelText('JavaScript')).toBeDisabled();
+
+      rerender(
+        <FormProvider
+          formFields={radioGroupFormFields}
+          initialState={{ role: '' }}
+          onSubmit={jest.fn()}
+        >
+          <FormRadioGroup name="role" options={radioGroupOptions} disabled />
+        </FormProvider>
+      );
+
+      expect(screen.getByLabelText('React')).toBeDisabled();
+      expect(screen.getByLabelText('TypeScript')).toBeDisabled();
+      expect(screen.getByLabelText('JavaScript')).toBeDisabled();
+    });
+
+    it('should show validation error styling for a required group after submit', () => {
+      const requiredFormFields = {
+        role: {
+          initialValue: '',
+          label: 'Role',
+          required: true,
+          formProps: {},
+        },
+      };
+
+      const SubmitButton = () => {
+        const { submit } = useForm();
+        return <button data-testid="submit-btn" onClick={submit}>Submit</button>;
+      };
+
+      const { container } = render(
+        <TestWrapper>
+          <FormProvider formFields={requiredFormFields} onSubmit={jest.fn()}>
+            <FormRadioGroup name="role" options={radioGroupOptions} />
+            <SubmitButton />
+          </FormProvider>
+        </TestWrapper>
+      );
+
+      fireEvent.click(screen.getByTestId('submit-btn'));
+
+      expect(screen.getByText('required')).toBeInTheDocument();
+      expect(container.querySelector('.is-invalid')).toBeInTheDocument();
+      expect(screen.getByLabelText('React')).toHaveAttribute('aria-describedby');
+    });
+  });
+
   describe('FormBadgePicker Component', () => {
     const pickerFormFields = {
       tags: {
@@ -1063,6 +1247,7 @@ describe('Form Field Components Tests', () => {
       expect(typeof FormCheckbox).toBe('function');
       expect(typeof FormSwitch).toBe('function');
       expect(typeof FormCheckboxGroup).toBe('function');
+      expect(typeof FormRadioGroup).toBe('function');
       expect(typeof FormBadgePicker).toBe('function');
       expect(typeof FormSelect).toBe('function');
       expect(typeof FormDropdown).toBe('function');
@@ -2458,6 +2643,30 @@ describe('Form Field Components Tests', () => {
 
       expect(getByText('Red')).toBeInTheDocument();
       expect(getByText('Blue')).toBeInTheDocument();
+    });
+
+    it('should render radio type via FormFieldsRenderer', () => {
+      const formFields = {
+        stack: {
+          initialValue: 'frontend',
+          label: 'Stack',
+          type: 'radio' as const,
+          options: [
+            { value: 'frontend', label: 'Frontend' },
+            { value: 'backend', label: 'Backend' },
+          ],
+          formProps: {},
+        },
+      };
+
+      render(
+        <FormTestWrapper formFields={formFields}>
+          <FormFieldsRenderer />
+        </FormTestWrapper>
+      );
+
+      expect(screen.getByLabelText('Frontend')).toBeChecked();
+      expect(screen.getByLabelText('Backend')).not.toBeChecked();
     });
 
     it('should render number type as text input', () => {
