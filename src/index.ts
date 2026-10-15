@@ -18,6 +18,7 @@ export * from './components/indicators/FixedLoadingIndicator';
 export * from './components/tables/DataTable';
 export * from './components/tables/DragAndDropList';
 export * from './components/tables/SearchBox';
+export * from './components/tables/NumericalEditableCell';
 
 export * from './components/errors/Errors';
 export * from './components/errors/ErrorBoundary';

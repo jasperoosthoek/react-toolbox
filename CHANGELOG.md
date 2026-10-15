@@ -418,3 +418,7 @@
 
 ##### Version 0.11.12
 - New `FormRadioGroup` component
+
+##### Version 0.11.13
+- New `NumericalEditableCell` component with `EditCellProvider` / `useEditCell`: click-to-edit number cell that saves on Enter or blur, cancels on Escape and supports an optional menu of extra actions below the input
+- Fix `DataTable` search crashing on special characters such as `(` or `C++`: the search text is now matched as plain text (case-insensitive) instead of as a regular expression

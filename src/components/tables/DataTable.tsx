@@ -31,6 +31,8 @@ const PaginationButton = (props: ButtonProps) => (
   <Button variant='outline-secondary' size='sm' {...props} />
 )
 
+const escapeRegExp = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
 export type OrderByColumn<R> = string | ((row: R) => string | number);
 
 export type OptionsDropdown = {
@@ -124,11 +126,12 @@ export const DataTable = <D extends any[]>({
   const [rowsPerPage, setRowsPerPage] = useState(rowsPerPageDefault);
   const [page, setPage] = useState(0);
   
+  // Search text is plain text: escape regex metacharacters so input like "C++" or "(" can't throw
+  const regex = filterText ? new RegExp(escapeRegExp(filterText), 'i') : null;
+
   let data = allData && (
     Object.values(allData).filter(row => {
-      if (!filterText) return true;
-
-      const regex = new RegExp(filterText, 'i');
+      if (!regex) return true;
 
       for (const { search } of columns) {
         if (!search) continue;

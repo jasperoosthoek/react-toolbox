@@ -421,6 +421,63 @@ describe('Table Components Tests', () => {
         expect(queryByText('Jane Smith')).toBeInTheDocument();
         expect(queryByText('John Doe')).not.toBeInTheDocument();
       });
+
+      describe('special characters', () => {
+        const specialData = [
+          { id: 1, name: 'C++ developer (m/v)', email: 'a@example.com', age: 30 },
+          { id: 2, name: '[remote] a.b', email: 'b@example.com', age: 25 },
+          { id: 3, name: 'axb', email: 'c@example.com', age: 35 },
+        ];
+
+        const renderSearchTable = () => {
+          const utils = render(
+            <TestWrapper>
+              <DataTable
+                data={specialData}
+                columns={mockColumns}
+                showHeader={{ search: true }}
+              />
+            </TestWrapper>
+          );
+          return { ...utils, searchInput: utils.getByRole('textbox') };
+        };
+
+        it.each(['(', '[', '*', '+', 'C++', '\\'])('should not crash when searching for %s', (text) => {
+          const { searchInput, container } = renderSearchTable();
+          expect(() => fireEvent.change(searchInput, { target: { value: text } })).not.toThrow();
+          expect(container.querySelector('table')).toBeInTheDocument();
+        });
+
+        it('should find rows containing the literal text', () => {
+          const { searchInput, queryByText } = renderSearchTable();
+
+          fireEvent.change(searchInput, { target: { value: 'C++' } });
+          expect(queryByText('C++ developer (m/v)')).toBeInTheDocument();
+          expect(queryByText('axb')).not.toBeInTheDocument();
+
+          fireEvent.change(searchInput, { target: { value: '(m/v)' } });
+          expect(queryByText('C++ developer (m/v)')).toBeInTheDocument();
+          expect(queryByText('[remote] a.b')).not.toBeInTheDocument();
+
+          fireEvent.change(searchInput, { target: { value: '[remote]' } });
+          expect(queryByText('[remote] a.b')).toBeInTheDocument();
+          expect(queryByText('C++ developer (m/v)')).not.toBeInTheDocument();
+        });
+
+        it('should treat a dot as a literal dot, not a wildcard', () => {
+          const { searchInput, queryByText } = renderSearchTable();
+          fireEvent.change(searchInput, { target: { value: 'a.b' } });
+          expect(queryByText('[remote] a.b')).toBeInTheDocument();
+          expect(queryByText('axb')).not.toBeInTheDocument();
+        });
+
+        it('should stay case-insensitive', () => {
+          const { searchInput, queryByText } = renderSearchTable();
+          fireEvent.change(searchInput, { target: { value: 'c++ DEVELOPER (M/V)' } });
+          expect(queryByText('C++ developer (m/v)')).toBeInTheDocument();
+          expect(queryByText('axb')).not.toBeInTheDocument();
+        });
+      });
     });
 
     describe('Sorting', () => {
