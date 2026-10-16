@@ -70,7 +70,7 @@ const BasicLocalizationExampleComponent = () => {
                 <strong>Are you sure?:</strong> {text`are_you_sure`}
               </div>
               <div className="mb-2">
-                <strong>Required field:</strong> {text`required_field`}
+                <strong>Required field:</strong> {text`error_required_field`}
               </div>
             </div>
 
@@ -157,7 +157,7 @@ const MyLocalizationDemo = () => {
                 <strong>Are you sure?:</strong> {text\`are_you_sure\`}
               </div>
               <div className="mb-2">
-                <strong>Required field:</strong> {text\`required_field\`}
+                <strong>Required field:</strong> {text\`error_required_field\`}
               </div>
             </div>
 
@@ -906,9 +906,9 @@ const LocalizationReferenceExampleComponent = () => {
                 <td>text`enter_password`</td>
               </tr>
               <tr>
-                <td><code>required_field</code></td>
-                <td>{text`required_field`}</td>
-                <td>text`required_field`</td>
+                <td><code>error_required_field</code></td>
+                <td>{text`error_required_field`}</td>
+                <td>text`error_required_field`</td>
               </tr>
               <tr>
                 <td><code>choose_one</code></td>
@@ -980,7 +980,7 @@ const DefaultStrings = () => {
       <div>{text\`enter_password\`}</div>
 
       {/* Forms */}
-      <div>{text\`required_field\`}</div>
+      <div>{text\`error_required_field\`}</div>
       <div>{text\`choose_one\`}</div>
       <div>{text\`everything\`}</div>
 
