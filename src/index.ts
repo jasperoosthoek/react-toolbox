@@ -35,3 +35,4 @@ export * from './utils/utils';
 
 export * from './localization/localization';
 export * from './localization/LocalizationContext';
+export * from './localization/text';

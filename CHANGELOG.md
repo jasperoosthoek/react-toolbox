@@ -426,3 +426,11 @@
 ##### Version 0.11.14
 - Fix `DataTable` remounting all rows on every render, which lost focus and state inside cells
 - Fix early return before hook in `DataTable`
+
+##### Version 0.12.0
+- New `@jasperoosthoek/react-toolbox/localization` entry without React (for React Server Components and plain Node) with `createText(localization, lang, defaultLanguage?)`; `text` gets `text.byKey(key, ...values)` and `text.hasKey(key)`
+- `text` now falls back to the default language (the first of the provider's `languages`, `en` by default) when a key is missing or `""` in the current language; before, it logged an error and returned the key
+- Fix `LocalizationProvider` ignoring changes of its `lang` and `localization` props after the first render
+- Fix `text` and `textByLang` getting a new identity on every render
+- Fix `require()` of the package crashing with "is not a constructor"
+- Fix the published package not containing `CHANGELOG.md`

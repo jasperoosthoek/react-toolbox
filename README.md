@@ -95,6 +95,39 @@ const { text } = useLocalization();
 return <h1>{text`save`}</h1>;
 ```
 
+- **Values** go to a function message: `` text`greeting${name}` `` with ``greeting: (name) => `Hello ${name}` ``.
+- **Keys built at runtime**: the tag only sees the part before the first value (`` text`status_${s}` `` looks up
+  `status_`), so use `` text.byKey(`status_${s}`) ``. `text.hasKey(key)` tells whether a key exists, e.g. to show a
+  backend error message as it is when there is no translation for it.
+- **Fallback**: a key that is missing (or `""`) in the current language comes from the default language, the first of
+  the provider's `languages` (`en` by default).
+- **Keys are dot paths**: `"a.b"` looks up `a` and then `b`, so a flat key containing a literal dot can't be found.
+- The `lang` and `localization` props can change at any time. Pass a hoisted or memoized `localization` object if
+  `text` should keep its identity (e.g. as an effect dependency); an inline object literal gives a new `text` on every
+  render.
+
+#### Localization on the server
+
+`@jasperoosthoek/react-toolbox/localization` has the same lookup without React, so it works in React Server
+Components, route handlers and plain Node (the main entry creates React contexts when it loads, which Server
+Components don't allow). It exports `createText`, `combineLocalization`, `defaultLocalization`, `defaultLanguages` and
+the types (ESM only).
+
+```typescript
+import { createText } from '@jasperoosthoek/react-toolbox/localization';
+
+const text = createText(localization, lang);   // optional third argument: the default language
+text`save`;
+text.byKey(`status_${status}`);
+text.hasKey('status_open');
+```
+
+`createText` returns a snapshot for one language: it never changes and holds no shared state, so concurrent requests
+in different languages can't affect each other. Pass the language as an argument (also to cached functions, so it is
+part of the cache key). Texts rendered on the server follow the language only through a new server render (e.g. the
+language in the URL), not through `setLanguage` in the browser; the provider and `useLocalization` stay the way to
+switch languages on the client.
+
 > **See comprehensive examples**: Visit the [interactive examples](https://react-toolbox.vercel.app) or run `npm run dev` locally
 
 ## Development
@@ -106,6 +139,7 @@ npm run dev              # Start interactive examples locally (with SSR)
 npm run build           # Build library for npm distribution
 npm run test            # Run tests
 npm run build:examples  # Build examples for deployment (react-toolbox.vercel.app)
+npm run test:package    # Build, pack and test the package as a consumer loads it (before publishing)
 ```
 
 ### Project Structure
