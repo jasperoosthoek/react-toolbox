@@ -24,30 +24,30 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 ### Try It Now
 
-**Online:** Visit [react-toolbox.vercel.app](https://react-toolbox.vercel.app) for interactive examples with copy-pasteable code (server-side rendered)
+**Online:** Visit [react-toolbox.vercel.app](https://react-toolbox.vercel.app) for interactive examples (Storybook) with copy-pasteable code
 
 **Locally:**
 ```bash
 git clone https://github.com/jasperoosthoek/react-toolbox.git
 cd react-toolbox
 npm install
-npm run dev  # Interactive examples at localhost:5173
+npm run storybook  # Interactive examples at localhost:6006
 ```
 
 ## Documentation & Examples
 
 ### Live Interactive Examples
-- **[Interactive Examples](https://react-toolbox.vercel.app)** - Live component playground with copy-pasteable code (SSR-enabled)
+- **[Interactive Examples](https://react-toolbox.vercel.app)** - Storybook with every example and its copy-pasteable code
 - **[Live Dashboard Demo](https://dashboard-demo-olive-eight.vercel.app/employees)** - Complete real-world application
-- **[Local Development](##)** - Run `npm run dev` for local examples with hot reload
+- **[Local Development](#development)** - Run `npm run storybook` for local examples with hot reload
 
 ### Example Categories
 The live examples include comprehensive demonstrations with working code you can copy and paste:
 
-- **[DataTable Examples](https://github.com/jasperoosthoek/react-toolbox/blob/main/src/examples/components/DataTableExamples.tsx)** - Tables, pagination, editing, drag & drop
-- **[Form Examples](https://github.com/jasperoosthoek/react-toolbox/blob/main/src/examples/components/FormExamples.tsx)** - Forms, validation, modals
-- **[Button Examples](https://github.com/jasperoosthoek/react-toolbox/blob/main/src/examples/components/IconButtonsExamples.tsx)** - Icon buttons, confirmations
-- **[Localization Examples](https://github.com/jasperoosthoek/react-toolbox/blob/main/src/examples/components/LocalizationExamples.tsx)** - Multi-language support
+- **[DataTable Examples](https://github.com/jasperoosthoek/react-toolbox/blob/main/examples/components/DataTableExamples.tsx)** - Tables, pagination, editing, drag & drop
+- **[Form Examples](https://github.com/jasperoosthoek/react-toolbox/blob/main/examples/components/FormExamples.tsx)** - Forms, validation, modals
+- **[Button Examples](https://github.com/jasperoosthoek/react-toolbox/blob/main/examples/components/IconButtonsExamples.tsx)** - Icon buttons, confirmations
+- **[Localization Examples](https://github.com/jasperoosthoek/react-toolbox/blob/main/examples/components/LocalizationExamples.tsx)** - Multi-language support
 
 ## Core Components
 
@@ -128,17 +128,18 @@ part of the cache key). Texts rendered on the server follow the language only th
 language in the URL), not through `setLanguage` in the browser; the provider and `useLocalization` stay the way to
 switch languages on the client.
 
-> **See comprehensive examples**: Visit the [interactive examples](https://react-toolbox.vercel.app) or run `npm run dev` locally
+> **See comprehensive examples**: Visit the [interactive examples](https://react-toolbox.vercel.app) or run `npm run storybook` locally
 
 ## Development
 
 ### Available Scripts
 
 ```bash
-npm run dev              # Start interactive examples locally (with SSR)
-npm run build           # Build library for npm distribution
+npm run storybook       # Start Storybook with the examples at localhost:6006 (stories/)
+npm run build:storybook # Build the static Storybook to storybook-static/ (deployed to react-toolbox.vercel.app)
+npm run build:lib       # Build library for npm distribution
+npm run build           # Build the library and the static Storybook
 npm run test            # Run tests
-npm run build:examples  # Build examples for deployment (react-toolbox.vercel.app)
 npm run test:package    # Build, pack and test the package as a consumer loads it (before publishing)
 ```
 
@@ -151,8 +152,10 @@ src/
 │   ├── forms/         # Form system
 │   ├── tables/        # DataTable components
 │   └── ...
-├── examples/          # Interactive examples (deployed to react-toolbox.vercel.app)
 └── utils/             # Hooks and utilities
+examples/              # Example components and mock data used by the stories
+stories/               # Storybook stories (deployed to react-toolbox.vercel.app)
+.storybook/            # Storybook configuration: providers and the Language toolbar
 ```
 
 ### Testing & TypeScript
@@ -168,11 +171,11 @@ src/
 git clone https://github.com/jasperoosthoek/react-toolbox.git
 cd react-toolbox
 npm install
-npm run dev
+npm run storybook
 ```
 
 ### Guidelines
-- Add working examples for new components
+- Add a working example and a Storybook story (`stories/`) for new components
 - Maintain test coverage
 - Follow TypeScript best practices
 - Update documentation as needed
@@ -182,7 +185,7 @@ npm run dev
 - **TypeScript**: Full type definitions included
 - **Tree Shaking**: ES modules supported
 - **Bundle Size**: Optimized for production
-- **SSR Compatible**: Server-side rendering ready with 4x performance improvement
+- **SSR Compatible**: Server-side rendering ready; `@jasperoosthoek/react-toolbox/localization` also works in React Server Components
 - **Peer Dependencies**: Uses your existing React/Bootstrap setup
 
 ## Links

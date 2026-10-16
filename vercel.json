@@ -1,11 +1,6 @@
 {
-  "buildCommand": "npm run build:examples",
-  "outputDirectory": "dist-examples",
-  "functions": {
-    "api/ssr.js": {
-      "maxDuration": 10
-    }
-  },
+  "buildCommand": "npm run build:storybook",
+  "outputDirectory": "storybook-static",
   "headers": [
     {
       "source": "/assets/:path*",
@@ -15,57 +10,6 @@
           "value": "public, max-age=31536000, immutable"
         }
       ]
-    },
-    {
-      "source": "/favicon.png",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=31536000"
-        }
-      ]
-    },
-    {
-      "source": "/:file*.(png|jpg|jpeg|gif|webp|svg|ico)",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=31536000"
-        }
-      ]
-    },
-    {
-      "source": "/:file*.(css|js)",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=31536000, immutable"
-        }
-      ]
     }
-  ],
-  "rewrites": [
-    {
-      "source": "/assets/:path*",
-      "destination": "/assets/:path*"
-    },
-    {
-      "source": "/favicon.png",
-      "destination": "/favicon.png"
-    },
-    {
-      "source": "/favicon.ico",
-      "destination": "/favicon.png"
-    },
-    {
-      "source": "/:file*.(png|jpg|jpeg|gif|webp|svg|ico|css|js|json|txt)",
-      "destination": "/:file*"
-    },
-    {
-      "source": "/:path*",
-      "destination": "/api/ssr"
-    }
-  ],
-  "trailingSlash": false,
-  "cleanUrls": true
+  ]
 }
