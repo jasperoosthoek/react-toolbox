@@ -403,3 +403,34 @@
 ##### Version 0.11.8
 - Type tests for `FormProvider` / `useForm` / `OnSubmit<T>` / `InitialState<T>`: `tsc --noEmit` runs as a Jest case and a `*.probe.ts` file asserts inferred shapes with `@ts-expect-error` and typed bindings
 - `FormInput`, `FormDropdown`, and `DisabledFormField` (in `FormModal`) use `??` for the empty-string fallback so falsy-but-valid values (`0`, `false`) survive — completes the same fix that was applied to `FormProvider` and `FormSelect`
+
+##### Version 0.11.9
+- `FormComponentProps` narrowed to `{name, label?, placeholder?, required?}` to match what `FormFieldsRenderer` actually passes.
+- Custom components destructuring `value` or `onChange` now get a compile error; use `useFormField` instead.
+- Unused `FormType` removed
+- `DisabledProps` deduplicated.
+
+##### Version 0.11.10
+- New `FormCheckboxGroup` component
+
+##### Version 0.11.11
+- New `FormBadgePicker` component
+
+##### Version 0.11.12
+- New `FormRadioGroup` component
+
+##### Version 0.11.13
+- New `NumericalEditableCell` component with `EditCellProvider` / `useEditCell`: click-to-edit number cell that saves on Enter or blur, cancels on Escape and supports an optional menu of extra actions below the input
+- Fix `DataTable` search crashing on special characters such as `(` or `C++`: the search text is now matched as plain text (case-insensitive) instead of as a regular expression
+
+##### Version 0.11.14
+- Fix `DataTable` remounting all rows on every render, which lost focus and state inside cells
+- Fix early return before hook in `DataTable`
+
+##### Version 0.12.0
+- New `@jasperoosthoek/react-toolbox/localization` entry without React (for React Server Components and plain Node) with `createText(localization, lang, defaultLanguage?)`; `text` gets `text.byKey(key, ...values)` and `text.hasKey(key)`
+- `text` now falls back to the default language (the first of the provider's `languages`, `en` by default) when a key is missing or `""` in the current language; before, it logged an error and returned the key
+- Fix `LocalizationProvider` ignoring changes of its `lang` and `localization` props after the first render
+- Fix `text` and `textByLang` getting a new identity on every render
+- Fix `require()` of the package crashing with "is not a constructor"
+- Fix the published package not containing `CHANGELOG.md`

@@ -10,6 +10,7 @@ import {
   defaultLocalization, 
   defaultLanguages 
 } from '../src/localization/localization';
+import { createText, Text } from '../src/localization/text';
 
 describe('Localization Tests', () => {
   afterEach(() => {
@@ -459,4 +460,175 @@ describe('Localization Tests', () => {
       expect(typeof defaultLanguages).toBe('object');
     });
   });
+
+  describe('Provider built on createText', () => {
+    const loc = {
+      en: { hello: 'Hello', greet: (n: string | number) => `Hi ${n}`, only_en: 'Only English' },
+      nl: { hello: 'Hallo', greet: (n: string | number) => `Hoi ${n}` },
+      de: { hello: 'Hallo auf Deutsch' },
+    };
+
+    const Show = ({ k }: { k: string }) => {
+      const { text } = useLocalization();
+      return <span data-testid={k}>{text.byKey(k)}</span>;
+    };
+
+    it('gives the same results as createText, including the error cases', () => {
+      const cases: [string, (string | number)[]][] = [
+        ['hello', []], ['hello', [1]], ['greet', ['x']], ['greet', []], ['only_en', []], ['unknown', []], ['cancel', []],
+      ];
+      const run = (text: Text) => cases.map(([key, values]) => {
+        const spy = jest.spyOn(console, 'error').mockImplementation(() => {});
+        const result = text.byKey(key, ...values);
+        const calls = spy.mock.calls;
+        spy.mockRestore();
+        return [result, calls];
+      });
+
+      let fromProvider: any[] = [];
+      const Probe = () => {
+        fromProvider = run(useLocalization().text);
+        return null;
+      };
+      render(<LocalizationProvider lang="nl" localization={loc}><Probe /></LocalizationProvider>);
+
+      expect(fromProvider).toEqual(run(createText(loc, 'nl')));
+    });
+
+    it('textByLang gives the requested language, not the current one', () => {
+      const Probe = () => {
+        const { textByLang } = useLocalization();
+        return <span data-testid="de">{textByLang('de')`hello`}</span>;
+      };
+      const { getByTestId } = render(
+        <LocalizationProvider lang="en" localization={loc}><Probe /></LocalizationProvider>
+      );
+      expect(getByTestId('de')).toHaveTextContent('Hallo auf Deutsch');
+    });
+
+    it('exposes byKey and hasKey on text', () => {
+      const Probe = () => {
+        const { text } = useLocalization();
+        const status = 'hello';
+        return <span data-testid="out">{`${text.byKey(status)} ${text.hasKey('only_en')} ${text.hasKey('nope')}`}</span>;
+      };
+      const { getByTestId } = render(
+        <LocalizationProvider lang="nl" localization={loc}><Probe /></LocalizationProvider>
+      );
+      expect(getByTestId('out')).toHaveTextContent('Hallo true false');
+    });
+
+    it('falls back to the first of its languages', () => {
+      const { getByTestId } = render(
+        <LocalizationProvider lang="en" languages={['nl', 'en']} localization={{ nl: { only_nl: 'Alleen Nederlands' } }}>
+          <Show k="only_nl" />
+        </LocalizationProvider>
+      );
+      expect(getByTestId('only_nl')).toHaveTextContent('Alleen Nederlands');
+    });
+
+    it('falls back to English for a key missing in the current language', () => {
+      const { getByTestId } = render(
+        <LocalizationProvider lang="nl" localization={loc}><Show k="only_en" /></LocalizationProvider>
+      );
+      expect(getByTestId('only_en')).toHaveTextContent('Only English');
+    });
+  });
+
+  describe('Provider props after the first render', () => {
+    // A child with its own state, to detect remounts
+    const Child = () => {
+      const { text, setLanguage, setLocalization } = useLocalization();
+      const [clicks, setClicks] = React.useState(0);
+      return (
+        <div>
+          <span data-testid="cancel">{text`cancel`}</span>
+          <span data-testid="custom">{text.hasKey('custom') ? text`custom` : '-'}</span>
+          <span data-testid="clicks">{clicks}</span>
+          <button data-testid="click" onClick={() => setClicks(clicks + 1)} />
+          <button data-testid="to-nl" onClick={() => setLanguage('nl')} />
+          <button data-testid="add" onClick={() => setLocalization({ en: { added: 'Added' }, nl: { added: 'Toegevoegd' } })} />
+          <span data-testid="added">{text.hasKey('added') ? text`added` : '-'}</span>
+        </div>
+      );
+    };
+
+    it('follows a changed lang prop without remounting children', () => {
+      const { getByTestId, rerender } = render(<LocalizationProvider lang="en"><Child /></LocalizationProvider>);
+      fireEvent.click(getByTestId('click'));
+      expect(getByTestId('cancel')).toHaveTextContent('Cancel');
+
+      rerender(<LocalizationProvider lang="nl"><Child /></LocalizationProvider>);
+      expect(getByTestId('cancel')).toHaveTextContent('Annuleren');
+      expect(getByTestId('clicks')).toHaveTextContent('1');
+    });
+
+    it('keeps a language set with setLanguage when rerendered with the same lang prop', () => {
+      const { getByTestId, rerender } = render(<LocalizationProvider lang="en"><Child /></LocalizationProvider>);
+      fireEvent.click(getByTestId('to-nl'));
+      expect(getByTestId('cancel')).toHaveTextContent('Annuleren');
+
+      rerender(<LocalizationProvider lang="en"><Child /></LocalizationProvider>);
+      expect(getByTestId('cancel')).toHaveTextContent('Annuleren');
+    });
+
+    it('follows a new localization prop', () => {
+      const { getByTestId, rerender } = render(
+        <LocalizationProvider lang="en" localization={{ en: { custom: 'First' } }}><Child /></LocalizationProvider>
+      );
+      expect(getByTestId('custom')).toHaveTextContent('First');
+
+      rerender(
+        <LocalizationProvider lang="en" localization={{ en: { custom: 'Second', cancel: 'Stop' } }}><Child /></LocalizationProvider>
+      );
+      expect(getByTestId('custom')).toHaveTextContent('Second');
+      expect(getByTestId('cancel')).toHaveTextContent('Stop');
+    });
+
+    it('keeps setLocalization additions when rerendered with a new (equal) inline localization object', () => {
+      const { getByTestId, rerender } = render(
+        <LocalizationProvider lang="en" localization={{ en: { custom: 'Custom' } }}><Child /></LocalizationProvider>
+      );
+      fireEvent.click(getByTestId('add'));
+      expect(getByTestId('added')).toHaveTextContent('Added');
+
+      rerender(<LocalizationProvider lang="en" localization={{ en: { custom: 'Custom' } }}><Child /></LocalizationProvider>);
+      expect(getByTestId('added')).toHaveTextContent('Added');
+      expect(getByTestId('custom')).toHaveTextContent('Custom');
+
+      rerender(<LocalizationProvider lang="nl" localization={{ en: { custom: 'Custom' } }}><Child /></LocalizationProvider>);
+      expect(getByTestId('added')).toHaveTextContent('Toegevoegd');
+    });
+
+    it('keeps the identity of text and textByLang across rerenders without a localization prop', () => {
+      const effect = jest.fn();
+      const seen = new Set<unknown>();
+      const Probe = () => {
+        const { text, textByLang } = useLocalization();
+        seen.add(textByLang);
+        React.useEffect(() => { effect(); }, [text]);
+        return null;
+      };
+      const { rerender } = render(<LocalizationProvider lang="en" languages={['en', 'nl']}><Probe /></LocalizationProvider>);
+      rerender(<LocalizationProvider lang="en" languages={['en', 'nl']}><Probe /></LocalizationProvider>);
+      rerender(<LocalizationProvider lang="en" languages={['en', 'nl']}><Probe /></LocalizationProvider>);
+
+      expect(effect).toHaveBeenCalledTimes(1);
+      expect(seen.size).toBe(1);
+    });
+
+    it('keeps the identity of text with a hoisted localization object', () => {
+      const effect = jest.fn();
+      const hoisted = { en: { custom: 'Custom' } };
+      const Probe = () => {
+        const { text } = useLocalization();
+        React.useEffect(() => { effect(); }, [text]);
+        return null;
+      };
+      const { rerender } = render(<LocalizationProvider localization={hoisted}><Probe /></LocalizationProvider>);
+      rerender(<LocalizationProvider localization={hoisted}><Probe /></LocalizationProvider>);
+      expect(effect).toHaveBeenCalledTimes(1);
+    });
+  });
 });
+

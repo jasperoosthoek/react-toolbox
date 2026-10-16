@@ -4,7 +4,7 @@ import { SmallSpinner } from '../indicators/LoadingIndicator';
 import { useLocalization } from '../../localization/LocalizationContext';
 import { useForm } from './FormProvider';
 import { FormValue } from './FormFields';
-import { FormInput, FormSelect, FormCheckbox, FormDropdown } from './fields';
+import { FormInput, FormSelect, FormCheckbox, FormDropdown, FormRadioGroup } from './fields';
 
 export type ModalTitle = ReactElement | string;
 export type Width = 25 | 50 | 75 | 100;
@@ -143,6 +143,16 @@ export const FormFieldsRenderer = ({ keys }: { keys?: string[] } = {}) => {
               list={config.list || []}
               idKey={config.idKey}
               nameKey={config.nameKey}
+              key={name}
+            />
+          );
+        }
+
+        if (config.type === 'radio' && config.options) {
+          return (
+            <FormRadioGroup
+              {...commonProps}
+              options={config.options || []}
               key={name}
             />
           );

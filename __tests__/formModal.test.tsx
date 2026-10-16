@@ -4,6 +4,7 @@ import { LocalizationProvider } from '../src/localization/LocalizationContext';
 // Core Form Components
 import { FormProvider } from '../src/components/forms/FormProvider';
 import { FormModal, FormFieldsRenderer } from '../src/components/forms/FormModal';
+import { useFormField } from '../src/components/forms/FormField';
 
 // Import FormModalProvider components
 import {
@@ -363,6 +364,90 @@ describe('Form Modal Tests', () => {
         );
 
         expect(getByTestId('custom-custom-field')).toBeInTheDocument();
+      });
+
+      it('passes only {name, label, placeholder, required, ...formProps} to custom components', () => {
+        const receivedProps = jest.fn();
+        const SpyComponent = (props: any) => {
+          receivedProps(props);
+          return null;
+        };
+
+        const formFields = {
+          'spy-field': {
+            initialValue: 'some-value',
+            required: true,
+            label: 'Spy Field',
+            placeholder: 'Type here',
+            component: SpyComponent,
+            formProps: { customExtra: 'thing' },
+          },
+        };
+
+        render(
+          <RendererTestWrapper formFields={formFields}>
+            <FormFieldsRenderer />
+          </RendererTestWrapper>
+        );
+
+        expect(receivedProps).toHaveBeenCalledTimes(1);
+        const props = receivedProps.mock.calls[0][0];
+
+        // Whitelist — these are the documented props the renderer guarantees.
+        expect(props).toMatchObject({
+          name: 'spy-field',
+          label: 'Spy Field',
+          placeholder: 'Type here',
+          required: true,
+          customExtra: 'thing',
+        });
+
+        // Blacklist — legacy fields removed from FormComponentProps must not
+        // appear at runtime. If the renderer ever starts passing them again
+        // this test will fail, alerting us to the type/runtime drift.
+        expect(props).not.toHaveProperty('value');
+        expect(props).not.toHaveProperty('onChange');
+        expect(props).not.toHaveProperty('state');
+        expect(props).not.toHaveProperty('setState');
+        expect(props).not.toHaveProperty('initialValue');
+        expect(props).not.toHaveProperty('initialState');
+        expect(props).not.toHaveProperty('submitAttempted');
+        expect(props).not.toHaveProperty('isInvalid');
+        expect(props).not.toHaveProperty('modified');
+        expect(props).not.toHaveProperty('keyName');
+      });
+
+      it('custom components can read value and trigger onChange via useFormField', () => {
+        const HookedComponent = ({ name }: { name: string }) => {
+          const { value, onChange } = useFormField({ name });
+          return (
+            <input
+              data-testid={`hooked-${name}`}
+              value={value as string}
+              onChange={(e) => onChange(e.target.value)}
+            />
+          );
+        };
+
+        const formFields = {
+          'hooked-field': {
+            initialValue: 'hello',
+            label: 'Hooked Field',
+            component: HookedComponent,
+          },
+        };
+
+        const { getByTestId } = render(
+          <RendererTestWrapper formFields={formFields}>
+            <FormFieldsRenderer />
+          </RendererTestWrapper>
+        );
+
+        const input = getByTestId('hooked-hooked-field') as HTMLInputElement;
+        expect(input.value).toBe('hello');
+
+        fireEvent.change(input, { target: { value: 'world' } });
+        expect(input.value).toBe('world');
       });
 
       it('should handle select fields with options', () => {

@@ -6,8 +6,10 @@ import React, {
   ReactElement,
   ReactNode,
   ChangeEvent,
-  useMemo,
   Ref,
+  createContext,
+  useContext,
+  CSSProperties,
 } from 'react';
 import { FaSort, FaSortUp, FaSortDown } from 'react-icons/fa';
 import {
@@ -30,6 +32,8 @@ import { useFormModal } from '../forms/FormModalProvider';
 const PaginationButton = (props: ButtonProps) => (
   <Button variant='outline-secondary' size='sm' {...props} />
 )
+
+const escapeRegExp = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
 export type OrderByColumn<R> = string | ((row: R) => string | number);
 
@@ -74,6 +78,54 @@ export type DataTableHeader = {
   customHeader?: ReactElement | string;
 };
 
+type DataTableRowContextValue = {
+  columns: DataTableColumn<any>[];
+  rowClassName?: string | ((row: any) => string);
+  onClickRow?: (row: any) => void;
+};
+
+// Shared row settings live in a context instead of the row props, because DragAndDropList compares its propsArray with
+// JSON.stringify and columns may contain React elements
+const DataTableRowContext = createContext<DataTableRowContextValue>({ columns: [] });
+
+type DataTableRowProps = {
+  row: any;
+  style?: CSSProperties;
+  'data-handler-id'?: string | symbol | null;
+} & DragAndDropListComponentProps;
+
+// Defined at module level so the component type is stable: React updates rows in place instead of remounting them on
+// every render (which lost focus and local state inside cells)
+const DataTableRow = forwardRef<HTMLTableRowElement, DataTableRowProps>(
+  ({ row, style, 'data-handler-id': handlerId }, ref) => {
+    const { columns, rowClassName, onClickRow } = useContext(DataTableRowContext);
+    return (
+      <tr
+        ref={ref}
+        className={typeof rowClassName === 'function' ? rowClassName(row) : rowClassName}
+        style={style}
+        data-handler-id={handlerId}
+        onClick={onClickRow && (() => onClickRow(row))}
+      >
+        {columns.map(({ selector, className, onClick }, index) =>
+          <td
+            key={index}
+            className={className}
+            {...(typeof onClick === 'function')
+              ? { onClick: () => {
+                  if (onClick) onClick(row);
+                } }
+              : {}
+            }
+          >
+            {typeof selector === 'function' ? selector(row) : row[selector]}
+          </td>
+        )}
+      </tr>
+    );
+  }
+);
+
 export type DataTableProps<D extends any[]> = {
   data: D;
   columns: DataTableColumn<D[number]>[];
@@ -90,6 +142,7 @@ export type DataTableProps<D extends any[]> = {
   textOnEmpty?: ReactElement | string;
   className?: string;
   rowClassName?: string | ((row: D[number]) => string);
+  rowKey?: string | ((row: D[number]) => string | number);
   style?: any;
   showSum?: boolean;
 }
@@ -110,6 +163,7 @@ export const DataTable = <D extends any[]>({
   textOnEmpty,
   className,
   rowClassName,
+  rowKey,
   style,
   showSum,
   ...restProps
@@ -124,11 +178,12 @@ export const DataTable = <D extends any[]>({
   const [rowsPerPage, setRowsPerPage] = useState(rowsPerPageDefault);
   const [page, setPage] = useState(0);
   
+  // Search text is plain text: escape regex metacharacters so input like "C++" or "(" can't throw
+  const regex = filterText ? new RegExp(escapeRegExp(filterText), 'i') : null;
+
   let data = allData && (
     Object.values(allData).filter(row => {
-      if (!filterText) return true;
-
-      const regex = new RegExp(filterText, 'i');
+      if (!regex) return true;
 
       for (const { search } of columns) {
         if (!search) continue;
@@ -179,51 +234,33 @@ export const DataTable = <D extends any[]>({
     data = data.slice(page * rowsPerPage, (page + 1) * rowsPerPage);
   }
   
-  type ComponentProps<R> = { row: R } & DragAndDropListComponentProps;
-
-  const Component = forwardRef<HTMLTableRowElement, ComponentProps<R>>(
-    ({ row }, ref) => (
-    <tr
-      ref={ref}
-      {
-        ...typeof rowClassName === 'string'
-        ? { className: rowClassName }
-        : typeof rowClassName === 'function'
-        ? { className: rowClassName(row) }
-        : {}
-      }
-      {...{ ...(typeof onClickRow === 'function' || showEditModal)
-        ? { onClick: () => {
-            if (onClickRow) onClickRow(row);
-            if (hasProvider && showEditModalOnClickRow) showEditModal(row);
-          } }
-        : {}
-      }}
-    >
-      {columns.map(({ selector, className, onClick }, index) =>
-        <td
-        	key={index}
-          className={className}
-          {...(typeof onClick === 'function')
-            ? { onClick: () => {
-                if (onClick) onClick(row);
-              } }
-            : {}
-          }
-        >
-          {typeof selector === 'function' ? selector(row) : row[selector]}
-        </td>
-      )}
-    </tr>
-  ));
-
-  const sums = useMemo(() => columns.map(({ value }) => (
+  const sums = columns.map(({ value }) => (
     value && data.reduce((sum, row) => (
       sum + (typeof value === 'function' ? value(row) : row[value])
     ), 0)
-  )), [columns, data])
-  
-  if (!Component) return null;
+  ));
+
+  // Key rows by a stable id so React keeps per-row state with the row when sorting, filtering or paging. Without a
+  // rowKey prop, fall back to the index when rows have no unique id.
+  const rowKeys = data.map((row, index) => (
+    typeof rowKey === 'function'
+    ? rowKey(row)
+    : rowKey
+    ? row[rowKey]
+    : row?.id ?? index
+  ));
+  const keys = !rowKey && new Set(rowKeys).size !== rowKeys.length ? data.map((_, index) => index) : rowKeys;
+
+  const rowContext: DataTableRowContextValue = {
+    columns,
+    rowClassName,
+    onClickRow: (onClickRow || (hasProvider && showEditModalOnClickRow))
+      ? (row: R) => {
+          if (onClickRow) onClickRow(row);
+          if (hasProvider && showEditModalOnClickRow) showEditModal(row);
+        }
+      : undefined,
+  };
 
   const customHeader = showHeader && (showHeader as DataTableHeader).customHeader;
   const sm = customHeader ? 4 : 6; 
@@ -424,28 +461,30 @@ export const DataTable = <D extends any[]>({
               </td>
             </tr>
           }
-          {dragAndDrop
-            ? <DragAndDropList
-                component={Component as DragAndDropListComponent}
-                propsArray={(data && data 
-                  .map(row => ({
-                    row,
-                    // The line below fixes a nasty bug: Drag and drop won't work the first time and
-                    // the mouse cursor only selects text
-                    onClick: () => {},
-                  }))) || []
-                }
-                onDrop={(index: number, targetIndex: number, reset: () => void ) => {
-                  const item = data[index];
-                  const target = data[targetIndex];
-                  if (item[moveId] === target[moveId] || moveIsLoading) {
-                    return;
+          <DataTableRowContext.Provider value={rowContext}>
+            {dragAndDrop
+              ? <DragAndDropList
+                  component={DataTableRow as DragAndDropListComponent}
+                  propsArray={(data && data 
+                    .map(row => ({
+                      row,
+                      // The line below fixes a nasty bug: Drag and drop won't work the first time and
+                      // the mouse cursor only selects text
+                      onClick: () => {},
+                    }))) || []
                   }
-                  onMove({ item, target, reset });
-                }}
-              />
-            : data.map((row, index) => <Component row={row} key={index} />)
-          }
+                  onDrop={(index: number, targetIndex: number, reset: () => void ) => {
+                    const item = data[index];
+                    const target = data[targetIndex];
+                    if (item[moveId] === target[moveId] || moveIsLoading) {
+                      return;
+                    }
+                    onMove({ item, target, reset });
+                  }}
+                />
+              : data.map((row, index) => <DataTableRow row={row} key={keys[index]} />)
+            }
+          </DataTableRowContext.Provider>
         </tbody>
         {showSum && (
           <tfoot>

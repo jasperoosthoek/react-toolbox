@@ -15,7 +15,7 @@ async function buildSSR() {
     // Build client assets first with Vite (examples)
     console.log('Building client assets...');
     const { execSync } = await import('child_process');
-    execSync('vite build --config examples/vite.config.ts', { stdio: 'inherit', cwd: projectRoot });
+    execSync('vite build --config examples/vite.config.mts', { stdio: 'inherit', cwd: projectRoot });
 
     // Build server bundle with esbuild
     console.log('Building server bundle...');

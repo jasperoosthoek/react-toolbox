@@ -10,7 +10,7 @@
   ],
   "include": [
     "src/**/*",
-    "__tests__/types.formProvider.probe.ts"
+    "__tests__/types.*.probe.ts"
   ],
   "compilerOptions": {
     "outDir": "./dist/",

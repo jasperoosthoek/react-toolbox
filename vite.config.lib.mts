@@ -28,6 +28,8 @@ export default defineConfig({
         'react-localization',
       ],
       output: {
+        // Use `.default` of CommonJS modules marked `__esModule` (react-localization), so require() of the UMD build works
+        interop: 'auto',
         globals: {
           react: 'React',
           'react-dom': 'ReactDOM',

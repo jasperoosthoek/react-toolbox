@@ -421,6 +421,63 @@ describe('Table Components Tests', () => {
         expect(queryByText('Jane Smith')).toBeInTheDocument();
         expect(queryByText('John Doe')).not.toBeInTheDocument();
       });
+
+      describe('special characters', () => {
+        const specialData = [
+          { id: 1, name: 'C++ developer (m/v)', email: 'a@example.com', age: 30 },
+          { id: 2, name: '[remote] a.b', email: 'b@example.com', age: 25 },
+          { id: 3, name: 'axb', email: 'c@example.com', age: 35 },
+        ];
+
+        const renderSearchTable = () => {
+          const utils = render(
+            <TestWrapper>
+              <DataTable
+                data={specialData}
+                columns={mockColumns}
+                showHeader={{ search: true }}
+              />
+            </TestWrapper>
+          );
+          return { ...utils, searchInput: utils.getByRole('textbox') };
+        };
+
+        it.each(['(', '[', '*', '+', 'C++', '\\'])('should not crash when searching for %s', (text) => {
+          const { searchInput, container } = renderSearchTable();
+          expect(() => fireEvent.change(searchInput, { target: { value: text } })).not.toThrow();
+          expect(container.querySelector('table')).toBeInTheDocument();
+        });
+
+        it('should find rows containing the literal text', () => {
+          const { searchInput, queryByText } = renderSearchTable();
+
+          fireEvent.change(searchInput, { target: { value: 'C++' } });
+          expect(queryByText('C++ developer (m/v)')).toBeInTheDocument();
+          expect(queryByText('axb')).not.toBeInTheDocument();
+
+          fireEvent.change(searchInput, { target: { value: '(m/v)' } });
+          expect(queryByText('C++ developer (m/v)')).toBeInTheDocument();
+          expect(queryByText('[remote] a.b')).not.toBeInTheDocument();
+
+          fireEvent.change(searchInput, { target: { value: '[remote]' } });
+          expect(queryByText('[remote] a.b')).toBeInTheDocument();
+          expect(queryByText('C++ developer (m/v)')).not.toBeInTheDocument();
+        });
+
+        it('should treat a dot as a literal dot, not a wildcard', () => {
+          const { searchInput, queryByText } = renderSearchTable();
+          fireEvent.change(searchInput, { target: { value: 'a.b' } });
+          expect(queryByText('[remote] a.b')).toBeInTheDocument();
+          expect(queryByText('axb')).not.toBeInTheDocument();
+        });
+
+        it('should stay case-insensitive', () => {
+          const { searchInput, queryByText } = renderSearchTable();
+          fireEvent.change(searchInput, { target: { value: 'c++ DEVELOPER (M/V)' } });
+          expect(queryByText('C++ developer (m/v)')).toBeInTheDocument();
+          expect(queryByText('axb')).not.toBeInTheDocument();
+        });
+      });
     });
 
     describe('Sorting', () => {
@@ -1245,5 +1302,176 @@ describe('Table Components Tests', () => {
       expect(typeof DragAndDropList).toBe('function');
       expect(typeof SearchBox).toBe('function');
     });
+  });
+});
+
+describe('DataTable row identity', () => {
+  type Row = { id: number; name: string };
+  const rows: Row[] = [{ id: 1, name: 'a' }, { id: 2, name: 'b' }];
+
+  const SelectableTable = () => {
+    const [selected, setSelected] = React.useState<number[]>([]);
+    return (
+      <TestWrapper>
+        <DataTable
+          data={rows}
+          rowClassName={(r: Row) => (selected.includes(r.id) ? 'selected' : '')}
+          columns={[{
+            name: '',
+            selector: (r: Row) => (
+              <input
+                type="checkbox"
+                aria-label={`select ${r.name}`}
+                checked={selected.includes(r.id)}
+                onChange={() => setSelected((s) => (s.includes(r.id) ? s.filter((x) => x !== r.id) : [...s, r.id]))}
+              />
+            ),
+          }]}
+        />
+      </TestWrapper>
+    );
+  };
+
+  it('keeps focus on a control inside a cell when the table re-renders', () => {
+    const { getByLabelText } = render(<SelectableTable />);
+    const box = getByLabelText('select a');
+    box.focus();
+    fireEvent.click(box);
+
+    expect(box).toBeChecked();
+    expect(document.activeElement).toBe(box);
+  });
+
+  it('updates rows in place instead of remounting them', () => {
+    const { getByLabelText } = render(<SelectableTable />);
+    const box = getByLabelText('select a');
+    const row = box.closest('tr')!;
+    fireEvent.click(box);
+
+    expect(box).toBeInTheDocument();
+    expect(row).toBeInTheDocument();
+    expect(row).toHaveClass('selected');
+  });
+
+  // A cell with its own state: the count must stay with its row, not with the position
+  const Counter = ({ label }: { label: string }) => {
+    const [count, setCount] = React.useState(0);
+    return <button onClick={() => setCount(count + 1)}>{`${label}: ${count}`}</button>;
+  };
+
+  const sortByName = (getByText: (text: string) => HTMLElement) => {
+    fireEvent.click(getByText('Name')); // asc
+    fireEvent.click(getByText('Name')); // desc
+  };
+
+  it('keeps cell state with its row after sorting (keyed by row.id by default)', () => {
+    const { getByText } = render(
+      <TestWrapper>
+        <DataTable
+          data={rows}
+          columns={[
+            { name: 'Name', selector: 'name', orderBy: 'name' },
+            { name: 'Count', selector: (r: Row) => <Counter label={r.name} /> },
+          ]}
+        />
+      </TestWrapper>
+    );
+    fireEvent.click(getByText('a: 0'));
+    sortByName(getByText);
+
+    expect(getByText('a: 1')).toBeInTheDocument();
+    expect(getByText('b: 0')).toBeInTheDocument();
+    expect(getByText('b: 0').closest('tr')!.nextElementSibling).toContainElement(getByText('a: 1'));
+  });
+
+  it('keeps cell state with its row after sorting when keyed by rowKey', () => {
+    const codeRows = [{ code: 'x', name: 'a' }, { code: 'y', name: 'b' }];
+    const { getByText } = render(
+      <TestWrapper>
+        <DataTable
+          data={codeRows}
+          rowKey={(r) => r.code}
+          columns={[
+            { name: 'Name', selector: 'name', orderBy: 'name' },
+            { name: 'Count', selector: (r: { name: string }) => <Counter label={r.name} /> },
+          ]}
+        />
+      </TestWrapper>
+    );
+    fireEvent.click(getByText('a: 0'));
+    sortByName(getByText);
+
+    expect(getByText('a: 1')).toBeInTheDocument();
+    expect(getByText('b: 0')).toBeInTheDocument();
+  });
+
+  it('keeps cell state with its row after sorting when rowKey is a field name', () => {
+    const codeRows = [{ code: 'x', name: 'a' }, { code: 'y', name: 'b' }];
+    const { getByText } = render(
+      <TestWrapper>
+        <DataTable
+          data={codeRows}
+          rowKey="code"
+          columns={[
+            { name: 'Name', selector: 'name', orderBy: 'name' },
+            { name: 'Count', selector: (r: { name: string }) => <Counter label={r.name} /> },
+          ]}
+        />
+      </TestWrapper>
+    );
+    fireEvent.click(getByText('a: 0'));
+    sortByName(getByText);
+
+    expect(getByText('a: 1')).toBeInTheDocument();
+    expect(getByText('b: 0')).toBeInTheDocument();
+  });
+
+  it('sums only the rows on the current page', () => {
+    const { getByText } = render(
+      <TestWrapper>
+        <DataTable
+          data={[{ id: 1, n: 1 }, { id: 2, n: 2 }, { id: 3, n: 4 }]}
+          columns={[{ name: 'N', selector: 'n', value: 'n' }]}
+          rowsPerPage={2}
+          showSum
+        />
+      </TestWrapper>
+    );
+    expect(getByText('3')).toBeInTheDocument(); // 1 + 2, not 7
+    fireEvent.click(getByText('>'));
+    expect(getByText('4', { selector: 'tfoot td' })).toBeInTheDocument();
+  });
+
+  it('calls onClickRow with the clicked row', () => {
+    const onClickRow = jest.fn();
+    const { getByText } = render(
+      <TestWrapper>
+        <DataTable data={rows} columns={[{ name: 'Name', selector: 'name' }]} onClickRow={onClickRow} />
+      </TestWrapper>
+    );
+    fireEvent.click(getByText('b'));
+    expect(onClickRow).toHaveBeenCalledWith(rows[1]);
+  });
+
+  it('falls back to index keys when rows have duplicate ids', () => {
+    const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+    const { getAllByRole } = render(
+      <TestWrapper>
+        <DataTable data={[{ id: 1, name: 'a' }, { id: 1, name: 'b' }]} columns={[{ name: 'Name', selector: 'name' }]} />
+      </TestWrapper>
+    );
+    expect(getAllByRole('row')).toHaveLength(3); // header + 2 rows
+    expect(errorSpy.mock.calls.flat().join(' ')).not.toMatch(/same key/);
+    errorSpy.mockRestore();
+  });
+
+  it('does not crash when data goes from undefined to defined (loading state)', () => {
+    const columns = [{ name: 'Name', selector: 'name', value: 'id' }];
+    const { rerender, getByText } = render(
+      <TestWrapper><DataTable data={undefined as any} columns={columns} showSum /></TestWrapper>
+    );
+    rerender(<TestWrapper><DataTable data={rows} columns={columns} showSum /></TestWrapper>);
+    expect(getByText('a')).toBeInTheDocument();
+    expect(getByText('3')).toBeInTheDocument(); // sum of ids
   });
 });

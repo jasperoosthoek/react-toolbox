@@ -1,6 +1,6 @@
 {
   "name": "@jasperoosthoek/react-toolbox",
-  "version": "0.11.8",
+  "version": "0.12.0",
   "author": "jasperoosthoek",
   "license": "MIT",
   "repository": {
@@ -14,7 +14,7 @@
     "src/utils/",
     "src/index.ts",
     "dist/",
-    "change-log.md"
+    "CHANGELOG.md"
   ],
   "types": "dist/index.d.ts",
   "devDependencies": {
@@ -40,7 +40,9 @@
     "express": "^4.18.2",
     "jest": "^29.5.0",
     "jest-environment-jsdom": "^29.5.0",
+    "localized-strings": "^2.1.2",
     "react-dnd-html5-backend": "^16.0.1",
+    "react-dnd-test-backend": "^16.0.1",
     "react-icons": "^5.4.0",
     "react-syntax-highlighter": "^15.6.1",
     "ts-jest": "^29.1.0",
@@ -54,21 +56,27 @@
       "import": "./dist/index.es.js",
       "require": "./dist/index.umd.js",
       "types": "./dist/index.d.ts"
+    },
+    "./localization": {
+      "types": "./dist/localization/standalone.d.ts",
+      "import": "./dist/localization.mjs",
+      "default": "./dist/localization.mjs"
     }
   },
   "scripts": {
-    "build:lib": "vite build --config vite.config.lib.ts && tsc --project tsconfig.lib.json",
+    "build:lib": "vite build --config vite.config.lib.mts && vite build --config vite.config.localization.mts && tsc --project tsconfig.lib.json",
+    "test:package": "npm run build:lib && node scripts/test-package.mjs",
     "build:examples": "node examples/build-ssr.mjs",
     "build": "npm run build:lib && npm run build:examples",
     "build:vercel": "npm run build:examples",
     "dev": "node examples/ssr-server.js",
-    "dev:spa": "vite --config examples/vite.config.ts",
+    "dev:spa": "vite --config examples/vite.config.mts",
     "preview": "vite preview",
     "vercel-build": "npm run build:examples",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
-    "prepublishOnly": "npm run test && npm run build:lib"
+    "prepublishOnly": "npm run test -- --coverage && npm run build:lib"
   },
   "bugs": {
     "url": "https://github.com/jasperoosthoek/react-toolbox/issues"

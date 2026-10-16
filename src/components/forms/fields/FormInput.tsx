@@ -2,6 +2,7 @@ import React, { ChangeEvent, KeyboardEvent } from 'react';
 import { Form } from 'react-bootstrap';
 import { useFormField } from '../FormField';
 import { FormError } from './FormError';
+import { useForm } from '../FormProvider';
 
 export interface FormInputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'name' | 'onChange'> {
   name: string;
@@ -14,9 +15,25 @@ export interface FormInputProps extends Omit<React.InputHTMLAttributes<HTMLInput
 
 export const FormInput = ({ inputComponent: InputComponent, ...props }: FormInputProps) => {
   const { value, onChange, isInvalid, error, label, required, mergedProps, submit, formId, className } = useFormField(props);
+  const {
+    onChange: propOnChange,
+    value: propValue,
+    ...inputProps
+  } = mergedProps as typeof mergedProps & {
+    onChange?: (value: string) => void;
+    value?: string | number | readonly string[];
+  };
 
   const errorId = isInvalid && error ? `${formId}-${props.name}-error` : undefined;
   const controlId = `${formId}-${props.name}`;
+  const inputValue = propValue ?? value ?? '';
+  const handleValueChange = (nextValue: string) => {
+    if (typeof propOnChange === 'function') {
+      propOnChange(nextValue);
+      return;
+    }
+    onChange(nextValue);
+  };
 
   return (
     <Form.Group controlId={controlId} className={className}>
@@ -24,24 +41,24 @@ export const FormInput = ({ inputComponent: InputComponent, ...props }: FormInpu
       {isInvalid && <FormError error={error} id={errorId} />}
       {InputComponent ? (
         <InputComponent
-          value={value ?? ''}
-          onChange={onChange}
+          value={inputValue}
+          onChange={handleValueChange}
           isInvalid={isInvalid}
           aria-describedby={errorId}
-          {...mergedProps}
+          {...inputProps}
         />
       ) : (
         <Form.Control
           autoComplete="off"
-          {...mergedProps}
-          value={value ?? ''}
+          {...inputProps}
+          value={inputValue}
           isInvalid={isInvalid}
           aria-describedby={errorId}
           onChange={(e: ChangeEvent<HTMLInputElement>) => {
-            onChange(e.target.value);
+            handleValueChange(e.target.value);
           }}
           onKeyDown={(e: KeyboardEvent<HTMLInputElement>) => {
-            if (e.key === 'Enter' && mergedProps.as !== 'textarea') {
+            if (e.key === 'Enter' && inputProps.as !== 'textarea') {
               // Pressing the enter key will save data unless it is a multi line text area
               e.preventDefault();
               submit();
@@ -68,6 +85,20 @@ export interface FormDateTimeProps extends Omit<FormInputProps, 'value' | 'onCha
 }
 
 export const FormDateTime = ({ value, onChange, timezone, ...props }: FormDateTimeProps) => {
+  const { hasProvider } = useForm();
+  const {
+    value: fieldValue,
+    onChange: fieldOnChange,
+    isInvalid,
+    error,
+    label,
+    required,
+    mergedProps,
+    submit,
+    formId,
+    className,
+  } = useFormField(props);
+
   // Convert value to datetime-local format (YYYY-MM-DDTHH:mm)
   const formatForInput = (val: string | Date | undefined) => {
     if (!val) return '';
@@ -90,10 +121,11 @@ export const FormDateTime = ({ value, onChange, timezone, ...props }: FormDateTi
   };
   
   const handleChange = (inputValue: string) => {
-    if (!onChange) return;
+    const changeHandler = onChange ?? (hasProvider ? fieldOnChange : undefined);
+    if (!changeHandler) return;
     
     if (!inputValue) {
-      onChange('');
+      changeHandler('');
       return;
     }
     
@@ -101,23 +133,42 @@ export const FormDateTime = ({ value, onChange, timezone, ...props }: FormDateTi
       // Convert datetime-local value to ISO string
       const date = new Date(inputValue);
       if (isNaN(date.getTime())) {
-        onChange('');
+        changeHandler('');
         return;
       }
       
-      onChange(date.toISOString());
+      changeHandler(date.toISOString());
     } catch {
-      onChange('');
+      changeHandler('');
     }
   };
-  
+
+  const errorId = isInvalid && error ? `${formId}-${props.name}-error` : undefined;
+  const controlId = `${formId}-${props.name}`;
+  const dateTimeValue = value !== undefined ? value : fieldValue as string | Date | undefined;
+
   return (
-    <FormInput 
-      type="datetime-local"
-      value={formatForInput(value)}
-      onChange={handleChange}
-      {...props}
-    />
+    <Form.Group controlId={controlId} className={className}>
+      {label && <Form.Label>{label}{required && <IsRequiredAsterisk />}</Form.Label>}
+      {isInvalid && <FormError error={error} id={errorId} />}
+      <Form.Control
+        autoComplete="off"
+        {...mergedProps}
+        type="datetime-local"
+        value={formatForInput(dateTimeValue)}
+        isInvalid={isInvalid}
+        aria-describedby={errorId}
+        onChange={(e: ChangeEvent<HTMLInputElement>) => {
+          handleChange(e.target.value);
+        }}
+        onKeyDown={(e: KeyboardEvent<HTMLInputElement>) => {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            submit();
+          }
+        }}
+      />
+    </Form.Group>
   );
 };
 

@@ -4,6 +4,7 @@ import { BadgeProps } from 'react-bootstrap';
 import { useFormField } from '../FormField';
 import { FormError } from './FormError';
 import { IsRequiredAsterisk } from './FormInput';
+import { DisabledProps } from '../FormFields';
 
 export interface BadgeSelectionProps extends BadgeProps {
   selected: boolean;
@@ -24,14 +25,6 @@ export const BadgeSelection = ({ selected = true, disabled, cursor, onClick, sty
     {...restProps}
   />
 )
-
-type DisabledProps = {
-  list: any[];
-  value: string | number;
-  state: any;
-  initialState: any;
-  initialValue: any;
-}
 
 export interface FormBadgesSelectionProps extends Omit<
   React.InputHTMLAttributes<HTMLInputElement>,
