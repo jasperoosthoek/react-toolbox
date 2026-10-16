@@ -4,7 +4,7 @@ A comprehensive library of React components that integrates seamlessly with [rea
 
 ## Quick Start
 
-**[Live Dashboard Demo](https://dashboard-demo-olive-eight.vercel.app/employees)** | **[Interactive Examples](https://react-toolbox.vercel.app)** | **[Dashboard Source Code](https://github.com/jasperoosthoek/dashboard-demo)**
+**[Interactive Examples (Storybook)](https://react-toolbox.vercel.app)** | **[Live Dashboard Demo](https://dashboard-demo-olive-eight.vercel.app/employees)** | **[Dashboard Source Code](https://github.com/jasperoosthoek/dashboard-demo)**
 
 ### Installation
 
@@ -37,7 +37,7 @@ npm run storybook  # Interactive examples at localhost:6006
 ## Documentation & Examples
 
 ### Live Interactive Examples
-- **[Interactive Examples](https://react-toolbox.vercel.app)** - Storybook with every example and its copy-pasteable code
+- **[Interactive Examples (Storybook)](https://react-toolbox.vercel.app)** - Every example with its copy-pasteable code
 - **[Live Dashboard Demo](https://dashboard-demo-olive-eight.vercel.app/employees)** - Complete real-world application
 - **[Local Development](#development)** - Run `npm run storybook` for local examples with hot reload
 
@@ -192,7 +192,7 @@ npm run storybook
 
 - **[NPM Package](https://www.npmjs.com/package/@jasperoosthoek/react-toolbox)**
 - **[GitHub Repository](https://github.com/jasperoosthoek/react-toolbox)**
-- **[Interactive Examples](https://react-toolbox.vercel.app)**
+- **[Interactive Examples (Storybook)](https://react-toolbox.vercel.app)**
 - **[Live Dashboard Demo](https://dashboard-demo-olive-eight.vercel.app/employees)**
 - **[Dashboard Demo Source](https://github.com/jasperoosthoek/dashboard-demo)**
 
