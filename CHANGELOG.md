@@ -422,3 +422,7 @@
 ##### Version 0.11.13
 - New `NumericalEditableCell` component with `EditCellProvider` / `useEditCell`: click-to-edit number cell that saves on Enter or blur, cancels on Escape and supports an optional menu of extra actions below the input
 - Fix `DataTable` search crashing on special characters such as `(` or `C++`: the search text is now matched as plain text (case-insensitive) instead of as a regular expression
+
+##### Version 0.11.14
+- Fix `DataTable` remounting all rows on every render, which lost focus and state inside cells
+- Fix early return before hook in `DataTable`
