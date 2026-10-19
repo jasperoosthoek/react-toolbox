@@ -286,6 +286,36 @@ describe('Utils - Hooks Tests', () => {
       unmount();
 
       expect(clearIntervalSpy).toHaveBeenCalled();
+      clearIntervalSpy.mockRestore();
+    });
+
+    it('calls the latest function after a rerender without restarting the timer', () => {
+      const first = jest.fn();
+      const second = jest.fn();
+      const { rerender } = renderHook(({ func }) => useInterval(func, 1000), { initialProps: { func: first } });
+
+      act(() => {
+        jest.advanceTimersByTime(600);
+      });
+      rerender({ func: second });
+      act(() => {
+        jest.advanceTimersByTime(400);
+      });
+
+      expect(first).not.toHaveBeenCalled();
+      expect(second).toHaveBeenCalledTimes(1);
+    });
+
+    it('restarts with a changed interval', () => {
+      const func = jest.fn();
+      const { rerender } = renderHook(({ value }) => useInterval(func, value), { initialProps: { value: 1000 } });
+
+      rerender({ value: 200 });
+      act(() => {
+        jest.advanceTimersByTime(1000);
+      });
+
+      expect(func).toHaveBeenCalledTimes(5);
     });
   });
 
@@ -340,6 +370,21 @@ describe('Utils - Hooks Tests', () => {
 
       expect(result.current[0]).toEqual(newValue);
       expect(localStorageMock.setItem).toHaveBeenCalledWith(key, JSON.stringify(newValue));
+    });
+
+    it('sends the previous value as oldValue in the storage event', () => {
+      const key = 'testKeyOldValue';
+      const dispatchSpy = jest.spyOn(window, 'dispatchEvent');
+      const { result } = renderHook(() => useLocalStorage(key, 'first'));
+
+      act(() => {
+        result.current[1]('second');
+      });
+
+      const event = dispatchSpy.mock.calls.map(([e]) => e).find(e => e instanceof StorageEvent) as StorageEvent;
+      expect(event.oldValue).toBe(JSON.stringify('first'));
+      expect(event.newValue).toBe(JSON.stringify('second'));
+      dispatchSpy.mockRestore();
     });
 
     it('should respond to storage events', () => {

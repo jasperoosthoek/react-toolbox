@@ -25,6 +25,10 @@ interface ErrorBoundaryProps {
   children: ReactNode;
 }
   
+/**
+ * Collects errors sent with `dispatchError(error)` and provides them to its descendants through `useError()`. It is
+ * not a React error boundary: errors thrown while rendering are not caught.
+ */
 export const ErrorBoundary: React.FC<ErrorBoundaryProps> = ({ children }) => {
   const [error, setError] = useState<any | null>(null);
 

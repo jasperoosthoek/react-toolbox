@@ -44,20 +44,26 @@ export const useSetState = <T>(initialState: T): [T, (subState: Partial<T>, call
 }
 
 // https://devtrium.com/posts/set-interval-react
-export const useInterval = (func: () => void, value: number) => useEffect(() => {
-  if (typeof func !== 'function') {
-    throw('First argument of useInterval should be a function');
-  } else if(
-    typeof value !== 'number'
-    || !isFinite(value)
-    || value <= 0
-  ) {
-    throw('Second argument of useInterval should be a positive number');
-  }
-  const interval = setInterval(func, value);
+// Calls the latest func on every tick; a changed interval restarts the timer
+export const useInterval = (func: () => void, value: number) => {
+  const funcRef = useRef(func);
+  funcRef.current = func;
 
-  return () => clearInterval(interval);
-}, []);
+  useEffect(() => {
+    if (typeof funcRef.current !== 'function') {
+      throw('First argument of useInterval should be a function');
+    } else if(
+      typeof value !== 'number'
+      || !isFinite(value)
+      || value <= 0
+    ) {
+      throw('Second argument of useInterval should be a positive number');
+    }
+    const interval = setInterval(() => funcRef.current(), value);
+
+    return () => clearInterval(interval);
+  }, [value]);
+};
 
 export const useLocalStorage = <T,>(key: string, initialValue: T): [T, (value: T) => void] => {
   // Get initial value from localStorage or use provided initial value
@@ -93,12 +99,13 @@ export const useLocalStorage = <T,>(key: string, initialValue: T): [T, (value: T
   const setLocalStorage = useCallback((value: T) => {
     try {
       setState(value);
+      const oldValue = localStorage.getItem(key);
       localStorage.setItem(key, JSON.stringify(value));
       // Dispatch storage event for components in the same window
       window.dispatchEvent(new StorageEvent('storage', {
         key,
         newValue: JSON.stringify(value),
-        oldValue: localStorage.getItem(key),
+        oldValue,
       }));
     } catch (error) {
       console.error('Error writing to localStorage:', error);

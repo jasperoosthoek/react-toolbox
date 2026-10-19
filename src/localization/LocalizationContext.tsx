@@ -1,4 +1,4 @@
-import React, { useState, useContext, useMemo } from 'react';
+import React, { useState, useContext, useMemo, useEffect } from 'react';
 import LocalizedStrings from 'react-localization';
 import {
   defaultLocalization,
@@ -55,14 +55,15 @@ export interface LocalizationProviderProps extends RestProps {
 const emptyLocalization: AdditionalLocalization = {};
 
 export const LocalizationProvider = ({
-  lang: langProp = 'en',
+  lang: requestedLang,
   localization: localizationProp = emptyLocalization,
   languages: languagesOverride,
   children,
   ...restProps
  }: LocalizationProviderProps) => {
+  const langProp = requestedLang ?? 'en';
   // The lang prop sets the language whenever it changes; setLanguage changes it in between
-  const [lang, setLanguage] = useState(langProp);
+  const [selectedLang, setLanguage] = useState(langProp);
   const [prevLangProp, setPrevLangProp] = useState(langProp);
   if (langProp !== prevLangProp) {
     setPrevLangProp(langProp);
@@ -84,6 +85,16 @@ export const LocalizationProvider = ({
   // Memoized on the content so the array (and everything derived from it) keeps its identity between renders
   const languagesKey = languageList.join(',');
   const languages = useMemo(() => languageList, [languagesKey]);
+
+  // A language that isn't available (a lang prop missing from languages, or the default 'en' when languages leaves it
+  // out) becomes the first available one, so lang, text and strings always agree
+  const lang = languages.includes(selectedLang) ? selectedLang : languages[0] ?? selectedLang;
+
+  useEffect(() => {
+    if (requestedLang !== undefined && !languages.includes(requestedLang)) {
+      console.error(`Language ${requestedLang} not available`);
+    }
+  }, [requestedLang, languages]);
   
   const localizationStrings = useMemo(() => {
     return languages.reduce(

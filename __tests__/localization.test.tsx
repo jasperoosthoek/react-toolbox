@@ -535,6 +535,42 @@ describe('Localization Tests', () => {
     });
   });
 
+  describe('A language that is not available', () => {
+    const Probe = () => {
+      const { lang, text, strings } = useLocalization();
+      return <span data-testid="out">{`${lang} ${text`cancel`} ${strings.getString('cancel')}`}</span>;
+    };
+    let errorSpy: jest.SpyInstance;
+    beforeEach(() => {
+      errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+    });
+    afterEach(() => {
+      errorSpy.mockRestore();
+    });
+
+    it('uses the first language when languages leaves out the default en, without an error', () => {
+      const { getByTestId } = render(<LocalizationProvider languages={['nl']}><Probe /></LocalizationProvider>);
+      expect(getByTestId('out')).toHaveTextContent('nl Annuleren Annuleren');
+      expect(errorSpy).not.toHaveBeenCalled();
+    });
+
+    it('uses the first language for a lang prop that is not available and logs an error', () => {
+      const { getByTestId } = render(<LocalizationProvider lang="de"><Probe /></LocalizationProvider>);
+      expect(getByTestId('out')).toHaveTextContent('en Cancel Cancel');
+      expect(errorSpy).toHaveBeenCalledWith('Language de not available');
+    });
+
+    it('reconciles a lang prop that changes to an unavailable language', () => {
+      const { getByTestId, rerender } = render(
+        <LocalizationProvider lang="fr" languages={['nl', 'fr']}><Probe /></LocalizationProvider>
+      );
+      expect(getByTestId('out')).toHaveTextContent('fr Annuler Annuler');
+      rerender(<LocalizationProvider lang="es" languages={['nl', 'fr']}><Probe /></LocalizationProvider>);
+      expect(getByTestId('out')).toHaveTextContent('nl Annuleren Annuleren');
+      expect(errorSpy).toHaveBeenCalledWith('Language es not available');
+    });
+  });
+
   describe('Provider props after the first render', () => {
     // A child with its own state, to detect remounts
     const Child = () => {
