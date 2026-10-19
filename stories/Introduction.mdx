@@ -7,8 +7,12 @@ import { Meta } from '@storybook/addon-docs/blocks';
 Components that work together with [react-bootstrap](https://react-bootstrap.github.io/):
 `npm install @jasperoosthoek/react-toolbox`
 
-Each story is a working example with its code. Use the **Language** menu in the toolbar to render the stories in
-English, Dutch or French.
+- **Components**: one component per page. Change its props in the **Controls** panel, see the calls it makes in
+  **Actions**, and the code of a story under **Show code** on the Docs page. Form fields are shown inside a
+  `FormProvider`, with the form's data and a Submit button below them.
+- **Examples**: larger examples that combine components, each with its own code.
+
+Use the **Language** menu in the toolbar to render the stories in English, Dutch or French.
 
 Every story is wrapped in a `DndProvider` (for drag and drop in `DataTable`) and a `LocalizationProvider` with the
 custom strings of the localization examples, as an application would set them up.

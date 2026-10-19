@@ -3,6 +3,10 @@ import { toZonedTime, fromZonedTime } from 'date-fns-tz';
 
 export const getTimestamp = () => Math.round(new Date().getTime() / 1000);
 
+/**
+ * Today's date in UTC, as a Date at local midnight of that day: `format(getToday(), 'yyyy-MM-dd')` gives the UTC date
+ * in every time zone. It is not UTC midnight (00:00:00.000Z) unless the host runs in UTC.
+ */
 export const getToday = () => {
   return startOfDay(
     toZonedTime(

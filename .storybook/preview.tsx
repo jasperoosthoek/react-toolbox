@@ -38,9 +38,8 @@ const preview: Preview = {
   ],
   parameters: {
     layout: 'padded',
-    docs: {
-      // The examples show their own code (ExampleSection), the generated source would only be <SomeExample />
-      canvas: { sourceState: 'none' },
+    options: {
+      storySort: { order: ['Introduction', 'Components', 'Examples'] },
     },
   },
   tags: ['autodocs'],

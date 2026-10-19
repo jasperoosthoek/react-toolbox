@@ -434,3 +434,11 @@
 - Fix `text` and `textByLang` getting a new identity on every render
 - Fix `require()` of the package crashing with "is not a constructor"
 - Fix the published package not containing `CHANGELOG.md`
+
+##### Version 0.12.1
+- Fix `LocalizationProvider` reporting a `lang` that isn't in its `languages` while `text` and `strings` used another language: it now uses the first available language (and logs an error for an unavailable `lang` prop)
+- Fix `FormSelect` turning numeric option values into strings
+- Fix `useInterval` keeping the first callback and interval; it now calls the latest callback and restarts when the interval changes
+- Fix `UploadTextButton` crashing when the file dialog is cancelled
+- Fix `useLocalStorage` sending the new value as `oldValue` in its storage event
+- Localization functions may have typed parameters, such as `(name: string) => ...`, and messages may be nested objects (looked up with a dot path)

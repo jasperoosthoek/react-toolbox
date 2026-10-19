@@ -1,7 +1,10 @@
-export type LocalizationFunction = (...args: (string | number)[]) => string;
+// any[] so functions with typed parameters fit, such as (name: string) => ... or (count: number) => ...; text passes
+// the values given in the template as they are
+export type LocalizationFunction = (...args: any[]) => string;
 
+// A message is a string, a function, or an object of nested messages looked up with a dot path ("status.open")
 export type LocalizationElement = {
-  [languageString: string]: (string | LocalizationFunction)
+  [languageString: string]: string | LocalizationFunction | LocalizationElement;
 }
 
 export type AdditionalLocalization = {

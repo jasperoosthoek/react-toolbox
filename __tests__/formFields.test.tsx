@@ -1130,6 +1130,22 @@ describe('Form Field Components Tests', () => {
       expect(getByText('Inactive')).toBeInTheDocument();
       expect(getByText('Pending')).toBeInTheDocument();
     });
+
+    it('keeps the type of the option value: a number stays a number', () => {
+      const onSubmit = jest.fn();
+      const Submit = () => <button data-testid="submit" onClick={useForm().submit} />;
+      const { getByTestId } = render(
+        <FormProvider formFields={{ team: { label: 'Team' }, code: { label: 'Code' } }} onSubmit={onSubmit}>
+          <FormSelect name="team" options={[{ value: 1, label: 'Backend' }, { value: 2, label: 'Frontend' }]} />
+          <FormSelect name="code" options={[{ value: '01', label: 'One' }, { value: '02', label: 'Two' }]} />
+          <Submit />
+        </FormProvider>
+      );
+      fireEvent.change(document.querySelectorAll('select')[0], { target: { value: '2' } });
+      fireEvent.change(document.querySelectorAll('select')[1], { target: { value: '02' } });
+      fireEvent.click(getByTestId('submit'));
+      expect(onSubmit).toHaveBeenCalledWith({ team: 2, code: '02' }, expect.any(Function));
+    });
   });
 
   describe('Form Input Variants', () => {

@@ -1,4 +1,4 @@
-// Phase 1 of the Storybook port: each story renders an example from examples/components unchanged.
+// Each story renders an example from examples/components unchanged, with the example's own code view.
 import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import {
@@ -8,10 +8,14 @@ import {
   DataTableLocalizationExample,
   LanguageSwitcherExample,
   LocalizationReferenceExample,
-} from '../examples/components/LocalizationExamples';
+} from '../../examples/components/LocalizationExamples';
 
 const meta = {
-  title: 'Localization',
+  title: 'Examples/Localization',
+  parameters: {
+    // The examples show their own code, the generated source would only be <SomeExample />
+    docs: { canvas: { sourceState: 'none' } },
+  },
 } satisfies Meta;
 
 export default meta;

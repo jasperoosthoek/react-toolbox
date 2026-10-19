@@ -508,6 +508,26 @@ describe('Button Components Tests', () => {
     it('should be a valid React component', () => {
       expect(typeof UploadTextButton).toBe('function');
     });
+
+    it('reads the chosen file as text', async () => {
+      const onLoadFile = jest.fn();
+      const { container } = render(<UploadTextButton onLoadFile={onLoadFile} />);
+      const input = container.querySelector('input[type="file"]') as HTMLInputElement;
+
+      fireEvent.change(input, { target: { files: [new File(['hello'], 'hello.txt', { type: 'text/plain' })] } });
+
+      await waitFor(() => expect(onLoadFile).toHaveBeenCalledWith('hello'));
+    });
+
+    it('does nothing when the file dialog is cancelled (an empty file list)', () => {
+      const readAsText = jest.spyOn(FileReader.prototype, 'readAsText');
+      const { container } = render(<UploadTextButton onLoadFile={jest.fn()} />);
+      const input = container.querySelector('input[type="file"]') as HTMLInputElement;
+
+      expect(() => fireEvent.change(input, { target: { files: [] } })).not.toThrow();
+      expect(readAsText).not.toHaveBeenCalled();
+      readAsText.mockRestore();
+    });
   });
 
   describe('makeIconButton factory', () => {

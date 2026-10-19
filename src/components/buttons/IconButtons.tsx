@@ -135,9 +135,10 @@ export const UploadTextButton = ({ accept, onLoadFile, ...restProps }: UploadTex
           if (inputFile.current) inputFile.current.value = '';
         };
         
-        const files = e?.target?.files;
-        if (files) {
-          reader.readAsText(files[0]);
+        // Cancelling the file dialog can fire change with an empty list
+        const file = e?.target?.files?.[0];
+        if (file) {
+          reader.readAsText(file);
         }
       }}
     />

@@ -27,7 +27,9 @@ export const FormSelect = (props: FormSelectProps) => {
         value={value ?? ''}
         isInvalid={isInvalid}
         onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
-          onChange(e.target.value);
+          // The DOM only knows strings: store the option's own value, so a numeric value stays a number
+          const option = options.find(option => String(option.value) === e.target.value);
+          onChange(option ? option.value : e.target.value);
         }}
       >
         <option value="" disabled>

@@ -1,4 +1,4 @@
-// Phase 1 of the Storybook port: each story renders an example from examples/components unchanged.
+// Each story renders an example from examples/components unchanged, with the example's own code view.
 import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import {
@@ -7,10 +7,14 @@ import {
   FlexibleFormExample,
   RendererFormExample,
   MixedFormExample,
-} from '../examples/components/FormExamples';
+} from '../../examples/components/FormExamples';
 
 const meta = {
-  title: 'Forms',
+  title: 'Examples/Forms',
+  parameters: {
+    // The examples show their own code, the generated source would only be <SomeExample />
+    docs: { canvas: { sourceState: 'none' } },
+  },
 } satisfies Meta;
 
 export default meta;
