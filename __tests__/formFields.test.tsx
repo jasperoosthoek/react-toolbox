@@ -123,6 +123,58 @@ describe('Form Field Components Tests', () => {
         expect(javascriptBadge).toHaveClass('badge', 'badge-secondary');
       });
 
+      it('should select a badge in a multiple selection that starts without a value', () => {
+        let formData: any;
+        const ShowData = () => {
+          formData = useForm().formData;
+          return null;
+        };
+        const { getByText } = render(
+          <FormProvider formFields={{ tags: { label: 'Tags' } }} onSubmit={jest.fn()}>
+            <FormBadgesSelection name="tags" list={mockOptions} multiple />
+            <ShowData />
+          </FormProvider>
+        );
+
+        fireEvent.click(getByText('React'));
+        expect(getByText('React')).toHaveClass('badge-primary');
+        expect(formData.tags).toEqual(['1']);
+
+        fireEvent.click(getByText('TypeScript'));
+        expect(getByText('React')).toHaveClass('badge-primary');
+        expect(getByText('TypeScript')).toHaveClass('badge-primary');
+        expect(formData.tags).toEqual(['1', '2']);
+
+        fireEvent.click(getByText('React'));
+        expect(getByText('React')).toHaveClass('badge-secondary');
+        expect(getByText('TypeScript')).toHaveClass('badge-primary');
+        expect(formData.tags).toEqual(['2']);
+      });
+
+      it('should store numbers in an integer multiple selection that starts without a value', () => {
+        let formData: any;
+        const ShowData = () => {
+          formData = useForm().formData;
+          return null;
+        };
+        const { getByText } = render(
+          <FormProvider formFields={{ tags: { label: 'Tags' } }} onSubmit={jest.fn()}>
+            <FormBadgesSelection name="tags" list={mockOptions} multiple integer />
+            <ShowData />
+          </FormProvider>
+        );
+
+        fireEvent.click(getByText('React'));
+        fireEvent.click(getByText('JavaScript'));
+        expect(getByText('React')).toHaveClass('badge-primary');
+        expect(getByText('JavaScript')).toHaveClass('badge-primary');
+        expect(formData.tags).toEqual([1, 3]);
+
+        fireEvent.click(getByText('React'));
+        expect(getByText('React')).toHaveClass('badge-secondary');
+        expect(formData.tags).toEqual([3]);
+      });
+
       it('should handle badge clicks for single selection', () => {
         const { getByText } = renderWithFormProvider(
           <FormBadgesSelection name="tags" list={mockOptions} />,

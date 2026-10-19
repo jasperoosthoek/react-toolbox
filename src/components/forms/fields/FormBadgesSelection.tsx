@@ -69,7 +69,8 @@ export const FormBadgesSelection = (props: FormBadgesSelectionProps) => {
       <div className={`form-control ${isInvalid ? 'is-invalid' : ''}`}>
         {list.map((item: any, key) => {
           const selected = isMultiple
-            ? !!badgeValue && Array.isArray(badgeValue) && badgeValue.includes(item[idKey])
+            // Without integer a clicked id is stored as a string, so compare 1 and '1' as equal
+            ? Array.isArray(badgeValue) && badgeValue.some(id => `${id}` === `${item[idKey]}`)
             : badgeValue === item[idKey];
           return (
             <BadgeSelection
@@ -82,13 +83,15 @@ export const FormBadgesSelection = (props: FormBadgesSelectionProps) => {
               selected={selected}
               cursor='pointer'
               onClick={() => {
-                if (Array.isArray(badgeValue)) {
+                if (isMultiple) {
+                  // A multiple selection without a value yet starts as an empty list
+                  const selection = Array.isArray(badgeValue) ? badgeValue : [];
                   if(selected) {
-                    onChange(badgeValue.filter(id => parseInteger(id) !== parseInteger(item[idKey])));
+                    onChange(selection.filter(id => parseInteger(id) !== parseInteger(item[idKey])));
                   } else {
                     onChange(
                       [
-                        ...badgeValue,
+                        ...selection,
                         integer
                           ? parseInt(item[idKey])
                           : `${item[idKey]}`
